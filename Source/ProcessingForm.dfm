@@ -1,0 +1,19 @@
+object frmProcessing: TfrmProcessing
+  Left = 585
+  Top = 520
+  BorderStyle = bsNone
+  BorderWidth = 1
+  Caption = 'frmProcessing'
+  ClientHeight = 51
+  ClientWidth = 495
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'Tahoma'
+  Font.Style = []
+  OldCreateOrder = False
+  Position = poScreenCenter
+  PixelsPerInch = 96
+  TextHeight = 13
+end

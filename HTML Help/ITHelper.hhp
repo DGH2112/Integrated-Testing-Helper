@@ -1,0 +1,33 @@
+[OPTIONS]
+Auto Index=Yes
+Compatibility=1.1 or later
+Compiled file=..\ITHelper.chm
+Contents file=toc.hhc
+Default Window=ITHelperMainWindow
+Default topic=Welcome.html
+Display compile notes=No
+Display compile progress=Yes
+Full-text search=Yes
+Language=0x809 English (United Kingdom)
+Title=Integrated Testing Helper Help
+
+[WINDOWS]
+ITHelperMainWindow="Integrated Testing Helper Help","toc.hhc",,"Welcome.html","Welcome.html",,,,,0x62520,,0x304e,[100,100,740,580],0x8b0000,,,,,,0
+
+
+[FILES]
+Welcome.html
+Installation.html
+GlobalOptions.html
+ProjectOptions.html
+Options.html
+About.html
+CheckForUpdates.html
+CompilationTools.html
+Help.html
+MessageFonts.html
+ZipOptions.html
+EnabledOptions.html
+
+[INFOTYPES]
+

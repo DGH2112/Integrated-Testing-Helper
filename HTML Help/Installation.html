@@ -1,0 +1,36 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "">
+
+<html>
+  <head>
+    <title>Installation</title>
+    <link rel="StyleSheet" href="HelpStyles.css" media="all"/>
+  </head>
+
+  <body>
+    <h1>Installation</h1>
+
+    <p>The Integrated Testing Helper is design to be loaded as a DLL expert. You
+    can use GExperts (<a href="http://www.gexperts.org/">http://www.gexperts.org/</a>)
+    Experts Manager to do this or follow the instructions below:</p>
+
+    <ol>
+      <li>From the start menu select Run;</li>
+      <li>Enter <code>regedit</code> and press &gt;Enter>;</li>
+      <li>Browse to the key <code>HKCU\Software\Borland\BDS\4.0\</code>;</li>
+      <li>If there is no key called "Experts" then you will need to create one;</li>
+      <li>Under "Experts" create a new string as follows:
+        <ul>
+          <li><strong>Key</strong> = <code>ITHelper2006</code>;</li>
+          <li><strong>Value</strong> = <code>Drive:\Path\ITHelper2006.DLL</code>.</li>
+        </ul>
+      </li>
+    </ol>
+
+    <a>The above example refers to RAD Studio 2006. For other version you may need to
+    substitute Borland for either Codegear or Embarcadero and change the version number
+    accordingly.</a>
+
+    <p>On reloading the IDE the IDE Experts should appear in the IDE.</p>
+  </body>
+</html>
+

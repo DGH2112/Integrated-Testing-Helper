@@ -1,0 +1,77 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "">
+
+<html>
+  <head>
+    <title>Global Options</title>
+    <link rel="StyleSheet" href="HelpStyles.css" media="all"/>
+  </head>
+
+  <body>
+    <h1>Global Options</h1>
+
+    <p>This dialogue allows you to configure the global options that affect the way the
+    application is configured and is applicable to all projects.</p>
+
+    <img src="Images/GlobalOptions.gif" alt=""/>
+
+    <p><strong>Group Messages into their own tab</strong> - This places the messages
+    that are output by the add-in and the external tools, to be output into a dedicated
+    message tab rather than among the standard compiler messages.</p>
+
+    <p><strong>Auto Scroll Messages</strong> - This option scrolls the message view to
+    the last message automatically as they are added;</p>
+
+    <p><strong>Zip Executable</strong> - Here you can now specify the command line
+    archiving executable you wish to use to "Zip" the project information;</p>
+
+    <p><strong>Zip Parameters</strong> - Here you can now specify the the archiving
+    parameters to be passed to the above executable. There are three macros which are
+    expanded by the system and they are as follows:</p>
+
+    <ul>
+      <li><em>$REPSONSEFILE$</em> This is the file name containing a list of all the
+      files to be zipped which is created by the Integrated Testing Helper. Used in
+      combination with the @ switch of WinZip or 7Zip;</li>
+      <li><em>$ZIPFILE$</em> This is the name of the zip file specified for the current
+      compiling project&#39;s archive (see Zip Options);</li>
+      <li><em>$FILELIST$</em> This inserts a space separated list of double quoted files
+      names into the command line for zipping.</li>
+    </ul>
+
+    <p><strong>Switch to Messages after a Successful Compile</strong>This option
+    switches to the helper messages if the last compile was successful.</p>
+
+    <p><strong>Clear Messages After Period of Time (seconds)</strong> - This allows
+    the message list to be cleared if the last compile was more than the specified
+    period of time ago. If you do not want the messages cleared set this to 0
+    (zero).</p>
+
+    <h2>Shortcuts</h2>
+
+    <p>This list view allows you wo assign IDE shortcuts to all the actions that the
+    Integrated Testing Helper defines in the IDE.</p>
+
+    <p>To assign a shortcut, select the action in the list, enter the shortcut in the
+    shortcut edit control below by pressing the shortcut combination you want to use and
+    then pressing the <strong>Assign</strong> button.</p>
+
+    <h2>Configure Check for Updates</h2>
+
+    <p>This option allows you to configure the Check for Updates on application startup by
+    enabling this option (disabled by default) and specifying the interval between checks
+    in days.</p>
+
+    <img src="Images/CheckForUpdatesOptions.gif" alt=""/>
+
+    <p>The next time the application is started (if Check for Updates has never been run
+    before) the application will check the internet for updates.</p>
+
+    <h2>Note</h2>
+
+    <p>These settings are stored in a single INI file named
+    <code>ITHelper#### Settings for USERNAME on COMPUTER.ini</code> in your Application
+    Data directory under your profile.</p>
+
+  </body>
+</html>
+

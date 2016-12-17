@@ -1,0 +1,97 @@
+a:active {
+  color            :maroon;
+}
+
+a:link {
+  color            :navy;
+}
+
+a:visited {
+  color            :green;
+}
+
+a:hover {
+  background-Color :green;
+  color            :white;
+}
+
+body {
+  background-Color :White;
+  font-family      :"Arial", Arial;
+  font-size        :x-small;
+}
+
+code {
+  color            :navy;
+}
+
+div.Indent {
+  margin-left      :1em;
+}
+
+em {
+  color            :blue;
+}
+
+h1 {
+  color            :navy;
+  font-family      :"Times New Roman", Time New Roman;
+  border           :black thin solid;
+  padding          :0.25em;
+  margin           :0em;
+  background-Color :#FFEEFF;
+}
+
+h2 {
+  color            :maroon;
+  text-decoration  :underline;
+  font-family      :"Times New Roman", Time New Roman;
+}
+
+h4 {
+  color            :Navy;
+}
+
+h5 {
+  color            :Purple;
+  border-top       :1px Purple solid;
+}
+
+h6 {
+  color            :DarkGreen;
+  text-decoration  :underline;
+}
+
+img.right {
+  float            :right;
+  max-width        :50%;
+}
+
+img {
+  max-width        :100%;
+}
+
+strong {
+  color            :purple;
+}
+
+table {
+  border-collapse : collapse;
+  border          : solid 2px black;
+  background      : White;
+  text-align      : left;
+  font-size       : 1em;
+}
+
+td {
+  padding         : 0.25em;
+  border          : 1px gray solid;
+}
+
+th {
+  border          : 1px solid;
+  background      : #CCCCCC;
+  padding         : 0.5em;
+  text-align      : Left
+}
+

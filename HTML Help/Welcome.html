@@ -1,0 +1,102 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "">
+
+<html>
+  <head>
+    <title>Welcome</title>
+    <link rel="StyleSheet" href="HelpStyles.css" media="all"/>
+  </head>
+
+  <body>
+    <h1>Welcome</h1>
+
+    <p>Welcome to the on-line help for the Integrated Testing Helper (ITHelper).</p>
+
+    <p>This is a Open Tools API plugin for Delphi and RAD Studio that allows you to run
+    command-line application before and after the compilation of you projects. It also
+    provides the ability to zip you projects files into an archive on each
+    compile/build and manage the application&#39;s version information.</p>
+
+    <h2><a name="Supported"/>Supported IDEs</h2>
+
+    <p>The supported IDEs are as follows:</p>
+
+    <ul>
+      <li>Borland Delphi 7</li>
+      <li>Borland Developer Studio 2005*</li>
+      <li>Borland Developer Studio 2006</li>
+      <li>CodeGear RAD Studio 2007</li>
+      <li>CodeGear RAD Studio 2009</li>
+      <li>Embarcadero RAD Studio 2010</li>
+      <li>Embarcadero RAD Studio XE</li>
+      <li>Embarcadero RAD Studio XE2</li>
+    </ul>
+
+    <p>*I do not have an installation or compiler for this version so can only assume
+    there are no problems based on functional version higher and low than this version.</p>
+
+    <img class="right" src="Images/Output.gif" alt=""/>
+
+    <h2><a name="Overview"/>Overview</h2>
+
+    <p>The tool detected error codes being returned from the command-line
+    programs and will stop with a failure messages IF the ERRORLEVEL is greater
+    than 0 (zero).</p>
+
+    <p>Output from the command-line applications is captured and placed in the
+    Build Message window along with all the compiler messages. Green messages
+    are successful runs and red messages are failures (These colours can be
+    re-configured in the <a href="MessageFonts.html">Message Fonts</a> dialogue).</p>
+
+    <p><strong>Note:</strong><em> The zipping functionality requires a base directory from
+    which all files are zipped if you are using relative paths. The default WinZip
+    settings use relative paths so you must specify a directory sufficiently towards the
+    root of the drive to avoid WinZip complaining about ".." relative paths when you
+    open the archive</em>.</p>
+
+    <h2><a name="WhatsNew">What&#39;s New</a></h2>
+
+    <p>In this release I&#39;ve made quite a number of changes both visually and under
+    the bonnet. Below is a non-exhaustive list of the changes:</p>
+
+    <ul>
+      <li>The underlying code has been significantly refactored to all for better
+      maintenance and facility integration of more options;</li>
+      <li>All project related information is migrated to a <code>.ITHELPER</code> INI
+      file in the same directory as the project. This allows for the ITHElper&#39;s
+      information to be more oprtable. As a consequence, I&#39;ve introduced 2 new macro
+      expansions to allow for different drive mappings. Please see the help for
+      <a href="ProjectOptions.html">Project Options</a> for more details;</li>
+      <li>The complicated Options dialogue has been broken down into individual options
+      for <a href="GlobalOptions.html">Global Options</a>,
+      <a href="ProjectOptions.html">Project Options</a>,
+      <a href="CompilationTools.html">Before and After Compiliation Tools</a>,
+      <a href="ZipOptions.html">ZIP Options</a> and
+      <a href="MessageFonts.html">Message Fonts</a>;</li>
+      <li>Due to a bug in the XE2 IDE&#39;s handling of project information via the Open
+      Tools API I&#39;ve provided the ability for ITHelper to manage project version
+      information for all supported IDEs. This can be configured in the
+      <a href="ProjectOptions.html">Project Options</a> dialogue.</li>
+    </ul>
+
+    <h2><a name="Topics"/>Topics</h2>
+
+    <p>The help for the Integrated Testing Helper is broken down into the following
+    sections:</p>
+
+    <ul>
+      <li><a href="Installation.html">Installation</a></li>
+      <li><a href="EnabledOptions.html">Enabled Options</a></li>
+      <li><a href="GlobalOptions.html">Global Options</a></li>
+      <li><a href="ProjectOptions.html">Project Options</a></li>
+      <li><a href="CompilationTools.html">Before Compilation Tools</a></li>
+      <li><a href="CompilationTools.html">After Compilation Tools</a></li>
+      <li><a href="ZipOptions.html">Zip Options</a></li>
+      <li><a href="MessageFonts.html">Message Font</a></li>
+      <li><a href="CheckForUpdates.html">Check for Updates</a></li>
+      <li><a href="Help.html">Help</a></li>
+      <li><a href="About.html">About</a></li>
+    </ul>
+
+  </body>
+</html>
+

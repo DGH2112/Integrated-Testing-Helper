@@ -1,0 +1,80 @@
+(**
+
+  This module defines a package for the Delphi IDE to provide Before and After
+  Compile support for running external applications.
+
+  @Version 1.0
+  @Author  David Hoyle
+  @Date    08 Jul 2012
+
+**)
+package ITHelperXE2;
+
+{$R *.res}
+{$R '..\DLL\ITHelperVersionInfo.res'}
+{$R '..\SplashScreenIcon.res'}
+{$R '..\ITHelperMenuIcons.res'}
+{$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
+{$ALIGN 8}
+{$ASSERTIONS ON}
+{$BOOLEVAL OFF}
+{$DEBUGINFO ON}
+{$EXTENDEDSYNTAX ON}
+{$IMPORTEDDATA ON}
+{$IOCHECKS ON}
+{$LOCALSYMBOLS ON}
+{$LONGSTRINGS ON}
+{$OPENSTRINGS ON}
+{$OPTIMIZATION ON}
+{$OVERFLOWCHECKS OFF}
+{$RANGECHECKS OFF}
+{$DEFINITIONINFO ON}
+{$SAFEDIVIDE OFF}
+{$STACKFRAMES ON}
+{$TYPEDADDRESS OFF}
+{$VARSTRINGCHECKS ON}
+{$WRITEABLECONST ON}
+{$MINENUMSIZE 1}
+{$IMAGEBASE $400000}
+{$DEFINE DEBUG}
+{$DEFINE DEBUG}
+{$DEFINE EUREKALOG}
+{$DEFINE EUREKALOG_VER6}
+{$DEFINE PACKAGEBUILD}
+{$ENDIF IMPLICITBUILDING}
+{$DESCRIPTION 'Integrated Testing Helper'}
+{$IMPLICITBUILD ON}
+
+requires
+  rtl,
+  designide,
+  vcl,
+  vclx;
+
+contains
+  TestingHelperWizard in '..\Source\TestingHelperWizard.pas',
+  ConfigurationForm in '..\Source\ConfigurationForm.pas' {frmConfigure},
+  TestingHelperUtils in '..\Source\TestingHelperUtils.pas',
+  ProcessingForm in '..\Source\ProcessingForm.pas' {frmProcessing},
+  AdditionalZipFilesForm in '..\Source\AdditionalZipFilesForm.pas' {Form1},
+  ProgrammeInfoForm in '..\..\..\Library\ProgrammeInfoForm.pas' {frmProgrammeInfo},
+  DGHLibrary in '..\..\..\Library\DGHLibrary.pas',
+  ExternalProcessInfo in '..\..\..\Library\ExternalProcessInfo.pas',
+  MSXML2_TLB in '..\..\..\Library\MSXML2_TLB.pas',
+  CheckForUpdates in '..\..\..\Library\CheckForUpdates.pas',
+  CheckForUpdatesForm in '..\..\..\Library\CheckForUpdatesForm.pas' {frmCheckForUpdates},
+  EnabledOptions in '..\Source\EnabledOptions.pas' {frmEnabledOptions},
+  CheckForUpdatesOptionsForm in '..\..\..\Library\CheckForUpdatesOptionsForm.pas' {frmCheckForUpdatesOptions},
+  GlobalOptions in '..\Source\GlobalOptions.pas',
+  IDENotifierInterface in '..\Source\IDENotifierInterface.pas',
+  ITHInitialiseOTAInterfaces in '..\Source\ITHInitialiseOTAInterfaces.pas',
+  ProjectManagerMenuInterface in '..\Source\ProjectManagerMenuInterface.pas',
+  FontDialogue in '..\Source\FontDialogue.pas' {frmFontDialogue},
+  ZIPDialogue in '..\Source\ZIPDialogue.pas' {frmZIPDialogue},
+  GlobalOptionsDialogue in '..\Source\GlobalOptionsDialogue.pas' {frmGlobalOptionsDialogue},
+  ProjectOptionsDialogue in '..\Source\ProjectOptionsDialogue.pas' {frmProjectOptionsDialogue},
+  About in '..\..\..\Library\About.pas' {frmAbout},
+  DGHSpectrum in '..\..\..\Components\Source\DGHSpectrum.pas';
+
+end.
+

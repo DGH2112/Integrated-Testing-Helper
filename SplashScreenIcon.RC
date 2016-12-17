@@ -1,0 +1,7 @@
+/*
+
+  This is a Windows Resource File which generates a Splash Screen Icon for the
+  BDS 2006 IDE.
+
+*/
+TestingHelperSplashScreenBitMap BITMAP "Images\SplashScreenIcon.bmp"

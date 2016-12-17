@@ -1,0 +1,73 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "">
+
+<html>
+  <head>
+    <title>Project Options</title>
+    <link rel="StyleSheet" href="HelpStyles.css" media="all"/>
+  </head>
+
+  <body>
+    <h1>Project Options</h1>
+
+    <p>This dialogue allows you to specify various optiosn for the specifiy project you
+    are compiling.</p>
+
+    <img src="Images/ProjectOptions.gif" alt=""/>
+
+    <li><strong>Extension Warning Exclusions</strong> - This option allow you to define a
+    semi-colon (;) separated list of file <em>wildcard (only the * is supported but in
+    multiple positions)</em> extensions for resource files you DO NOT want warnings about
+    where they are not bound to the project using an RC file. NOTE: Even with these
+    warning disabled these resource files are still zipped to the archive.</li>
+
+    <li><strong>Increment Build On Compile</strong> - This increments the build number of
+    the compiled project after a successful compilation.</li>
+
+    <li><strong>Copy Version Information From</strong> - This has been updated to
+    reference an executable file rather than the target of another project in the project
+    group. This then allow you to get the version number from another project executable
+    even if its compiled with another version of the compiler.</li>
+
+    <h2>Version Information</h2>
+
+    <a>Due to problems with the Open Tools API in Delphi XE2 I have been forced to
+    manage version information for the project manually. The reaso for this is that
+    although you can get the version information for a project in XE2 and change the
+    value, these values do not end up in the compiled project UNLESS you open the
+    project&#39;s options dialogue and press OK. If you don&#39;t do this, the changes
+    are even lost of closing and saving the project.</a>
+
+    <p><strong>Enable ITHelper Version Control</strong> - This option enables the creation
+    of a resource file managed by ITHelper. You need to ensure that the IDE does not
+    include version information in the project&#39;s main resource as you will get
+    duplicate version resource messages.</p>
+
+    <p>The <strong>Major</strong>, <strong>Minor</strong>, <strong>Release</strong> and
+    <strong>Build</strong> numbers refer to the version information and if this is enabled
+    it is these numfers that are incremented or changes through the increment on compile
+    and copy version inforamtion items above.</p>
+
+    <p>The table below allow you to specify additionak version information. Note: The
+    FileVersion items is automatically updated when the numbers above are changed.</p>
+
+    <p><strong>Include Resource In Project</strong> - This make ITHelper add the resource
+    files (RC), which it builds, to be included in the project and therefore managed by
+    the project</p>
+
+    <p><strong>Compile the Resource with BRC32</strong> - This pre-compiles the RC file
+    into a RES file. You only need to use this on early compilers where the IDE does not
+    do this for you or where you want to manage the RES file manually.</p>
+
+    <p><strong>Resource Path Name (exc Ext)</strong> - This is the name of the resource
+    (RC) file that ITHelper will create which will contain the version information and
+    optionally be included in the project. You MUST not include the extension and you can
+    specify relative paths (not full paths). The relativity is with respect to the
+    main project file.</p>
+
+    <h2>Note</h2>
+
+    <p>These project settings are stored in a <code>ProjectName.ITHelper ini file in the
+    same directory as the project.</code></p>
+  </body>
+</html>
+

@@ -1,0 +1,66 @@
+@ECHO OFF
+PUSHD
+SETLOCAL
+
+ON ERRORLEVEL 1 (GOTO EXITHND)
+
+SWITCH %1
+  CASE D7
+    SET strTitle=Delphi 7
+    SET strProject=ITHelper70
+    SET strELCompiler=Delphi7
+    SET strOps=dof
+  CASE D2006
+    SET strTitle=Delphi 2006
+    SET strProject=ITHelper2006
+    SET strELCompiler=Delphi10
+    SET strOps=bdsproj
+  CASE D2007
+    SET strTitle=Delphi 2007
+    SET strProject=ITHelper2007
+    SET strELCompiler=Delphi11
+    SET strOps=bdsproj
+  CASE D2009
+    SET strTitle=Delphi 2009
+    SET strProject=ITHelper2009
+    SET strELCompiler=Delphi12
+    SET strOps=dproj
+  CASE D2010
+    SET strTitle=Delphi 2010
+    SET strProject=ITHelper2010
+    SET strELCompiler=Delphi14
+    SET strOps=dproj
+  CASE DXE
+    SET strTitle=Delphi XE
+    SET strProject=ITHelperXE
+    SET strELCompiler=Delphi15
+    SET strOps=dproj
+  CASE DXE2
+    SET strTitle=Delphi XE2
+    SET strProject=ITHelperXE2
+    SET strELCompiler=Delphi16
+    SET strOps=dproj
+ENDSWITCH
+
+ECHO ----------------------------------------------
+ECHO  Compiling Browse and Doc It for %strTitle%
+ECHO ----------------------------------------------
+ECHO.
+IFF "%2" EQ "DLL" .OR. "%2" EQ "BOTH" THEN
+  :: DLL
+  ::CDD "D:\HoylD\Borland Studio Projects\IDE Addins\Integrated Testing Helper\"
+  ::"D:\HoylD\Borland Studio Projects\Applications\Update Version Info\VersionInfo.EXE" Test\ITHelperTests.EXE DLL\%strProject%.%strOps%
+  CDD "D:\HoylD\Borland Studio Projects\IDE Addins\Integrated Testing Helper\DLL\
+  "D:\HoylD\Borland Studio Projects\Library\EurekaLog 6\%strELCompiler%\el7c" -Q %strProject%.dpr
+ENDIFF
+IFF "%2" EQ "Package" .OR. "%2" EQ "BOTH" THEN
+  :: Package
+  ::CDD "D:\HoylD\Borland Studio Projects\IDE Addins\Integrated Testing Helper\"
+  ::"D:\HoylD\Borland Studio Projects\Applications\Update Version Info\VersionInfo.EXE" Test\ITHelperTests.EXE Package\%strProject%.%strOps%
+  CDD "D:\HoylD\Borland Studio Projects\IDE Addins\Integrated Testing Helper\Package\"
+  "D:\HoylD\Borland Studio Projects\Library\EurekaLog 6\%strELCompiler%\el7c.exe" -Q %strProject%.dpk
+ENDIFF
+
+:EXITHND
+ENDLOCAL
+POPD

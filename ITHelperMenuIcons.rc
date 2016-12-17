@@ -1,0 +1,14 @@
+/*
+
+  Images for the IDE menu items.
+
+*/
+ITHEnabledImage           BITMAP "Images\ITHelperEnabledImage.bmp"
+ITHGlobalOptionsImage     BITMAP "Images\ITHelperGlobalOptionsImage.bmp"
+ITHProjectOptionsImage    BITMAP "Images\ITHelperProjectOptionsImage.bmp"
+ITHBeforeCompilationImage BITMAP "Images\ITHelperBeforeCompilationImage.bmp"
+ITHAfterCompilationImage  BITMAP "Images\ITHelperAfterCompilationImage.bmp"
+ITHZipDlgImage            BITMAP "Images\ITHelperZipDlgImage.bmp"
+ITHFontDlgImage           BITMAP "Images\ITHelperFontDlgImage.bmp"
+ITHCheckForUpdatesImage   BITMAP "Images\ITHelperCheckForUpdatesImage.bmp"
+

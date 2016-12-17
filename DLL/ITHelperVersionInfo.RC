@@ -1,0 +1,30 @@
+LANGUAGE LANG_ENGLISH,SUBLANG_ENGLISH_US
+
+1 VERSIONINFO LOADONCALL MOVEABLE DISCARDABLE IMPURE
+FILEVERSION 1, 0, 16, 1197
+PRODUCTVERSION 1, 0, 16, 1197
+FILEFLAGSMASK VS_FFI_FILEFLAGSMASK
+FILEOS VOS__WINDOWS32
+FILETYPE VFT_APP
+{
+  BLOCK "StringFileInfo"
+  {
+    BLOCK "040904E4"
+    {
+     VALUE "CompanyName", "Season's Fall Music Limited (c) 1989\000"
+     VALUE "FileDescription", "Integrated Testing Helper for Delphi and RAD Studio\000"
+     VALUE "FileVersion", "1.0.16.1197\000"
+     VALUE "InternalName", "ITHelper\000"
+     VALUE "LegalCopyright", "Season's Fall Music Limited (c) 1989\000"
+     VALUE "LegalTrademarks", "Season's Fall Music Limited (c) 1989\000"
+     VALUE "OriginalFilename", "ITHelper\000"
+     VALUE "ProductName", "ITHelper\000"
+     VALUE "ProductVersion", "1.0p\000"
+     VALUE "Comments", "A RAD Studio IDE adding for automating pre and post compilation processing.\000"
+    }
+  }
+  BLOCK "VarFileInfo"
+  {
+    VALUE "Translation", 1033, 1252
+  }
+}

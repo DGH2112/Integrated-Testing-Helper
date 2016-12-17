@@ -1,0 +1,23 @@
+[Setup]
+WarnBefore=0
+WarnAfter=0
+IncBuild=0
+CopyVersionInfoFrom=D:\HoylD\Borland Studio Projects\IDE Addins\Integrated Testing Helper\Test\ITHelperTests.exe
+ExcludedResExts=.dcr
+
+[Zipping]
+Enabled=1
+ZipFile=D:\HoylD\Web Page\Zips\integratedtestinghelper.zip
+BasePath=D:\HoylD\Borland Studio Projects\
+ExclusionFiles=
+
+[Additional Zip Files]
+Item0=D:\HoylD\Borland Studio Projects\IDE Addins\Integrated Testing Helper\Images\*.bmp
+
+[Pre-Compilation]
+D:\HoylD\Borland Studio Projects\IDE Addins\Integrated Testing Helper\Test\ITHelperTests.exe||D:\HoylD\Borland Studio Projects\IDE Addins\Integrated Testing Helper\Test\=1
+D:\HoylD\Borland Studio Projects\Applications\Check DFMs\CheckDFMs.exe|ITHelper2010.dpr|D:\HoylD\Borland Studio Projects\IDE Addins\Integrated Testing Helper\DLL\=1
+
+[Post-Compilation]
+D:\HoylD\Borland Studio Projects\Applications\Update HoylD XML\HoylDXML.exe|ithelper2010.dll "..\..\..\Web Page\HoylD-Live.xml" ITHelper2006|D:\HoylD\Borland Studio Projects\IDE Addins\Integrated Testing Helper\=1
+

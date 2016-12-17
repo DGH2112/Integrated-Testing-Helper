@@ -1,0 +1,32 @@
+LANGUAGE LANG_ENGLISH,SUBLANG_ENGLISH_US
+
+1 VERSIONINFO LOADONCALL MOVEABLE DISCARDABLE IMPURE
+FILEVERSION 1, 0, 15, 1053
+PRODUCTVERSION 1, 0, 15, 1053
+FILEFLAGSMASK VS_FFI_FILEFLAGSMASK
+FILEOS VOS__WINDOWS32
+FILETYPE VFT_APP
+{
+  BLOCK "StringFileInfo"
+  {
+  BLOCK "040904E4"
+    {
+   VALUE "CompanyName", "Season's Fall Music Limited (c) 1989\000"
+   VALUE "FileDescription", "Provides support for running external utilities before and after compilation.\000"
+   VALUE "FileVersion", "1.0.15.1053\000"
+   VALUE "InternalName", "ITHelper2006.exe\000"
+   VALUE "LegalCopyright", "Season's Fall Music Limited (c) 1989\000"
+   VALUE "LegalTrademarks", "Season's Fall Music Limited (c) 1989\000"
+   VALUE "OriginalFilename", "ITHelper2006.exe\000"
+   VALUE "ProductName", "ITHelper2006.exe\000"
+   VALUE "ProductVersion", "1.0\000"
+   VALUE "Comment", "Provides support for running external utilities before and after compilation.\000"
+    }
+  }
+  BLOCK "VarFileInfo"
+  {
+    VALUE "Translation", 1033, 1252
+  }
+}
+
+MAINICON ICON LOADONCALL MOVEABLE DISCARDABLE IMPURE "DLL\ITHelper2006.ICO"

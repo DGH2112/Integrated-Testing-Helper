@@ -1,0 +1,66 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "">
+
+<html>
+  <head>
+    <title>Compilation Tools</title>
+    <link rel="StyleSheet" href="HelpStyles.css" media="all"/>
+  </head>
+
+  <body>
+   <h1>Before and After Compilation Tools</h1>
+
+   <p>The same dialogue is used for both the before and after tools. In this dialogue you
+   can configure command line tools to be run before or after each project
+   compilation.</p>
+
+   <p>For instance, you might want to run a set of unit tests before compiling the code (
+   if you use project dependencies, this works well) and run deployment code after, say
+   building a setup programme for installation, after compilation.</p>
+
+   <img src="Images/CompilationTools.gif" alt=""/>
+
+   <p>If you press the Add button or select an existing item and press Edit you will be
+   presented with the below dialogue for editing the information associated with a
+   tool.</p>
+
+   <img src="Images/ProgrammeInfo.gif" alt=""/>
+
+   <p><strong>Title</strong> - This is a descriptive title you can enter to help you
+   understand what the tool does, especially if you run the same executable / batch files
+   multiple times but for different reasons.</p>
+
+   <p><strong>Programme</strong> - This is the executable or batch file you want to run.
+   It does not need double quotes if the file name has spaces.</p>
+
+   <p><strong>Parameters</strong> - These should the any parameters your executable or
+   batch file requires to run. You do need to place double quotes around parameters that
+   have spaces in them.</p>
+
+   <p><strong>Working Directory</strong> - This is the directory where the application
+   should be run from and act as the applications current directory. This also does not
+   need double quotes for paths with spaces.</p>
+
+   <p><strong>Starting Window State</strong> - This is not applicable to this
+   application.</p>
+
+   <p>The above dialogue allows the use of a number of macros that are expanded by the
+   system. These have been implemented to allow the information to be more portable in
+   line with moving all the project information into their own INI files along side the
+   project file. The available marcos as as follows:</p>
+
+   <ul>
+     <li><em>{$PROJDRIVE$}</em>: This is expanded to be the drive letter and colon of the
+     project file;</li>
+     <li><em>{$PROJPATH$}</em>: This is expanded to be the drive and path of the project
+     file with a trailing backslash.</li>
+   </ul>
+
+   <p>This dialogue remembers its size and position separately for both the before and
+   after tools.</p>
+
+   <p>Like the <a href="ProjectOptions.html">Project Options</a> this information is
+   stored in an INI file with the extension .ITHelper along side the project file.</p>
+
+  </body>
+</html>
+

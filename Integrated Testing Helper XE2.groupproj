@@ -1,0 +1,48 @@
+﻿	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+		<PropertyGroup>
+			<ProjectGuid>{5488C80C-83EE-4531-988B-D1C5CF9A6E33}</ProjectGuid>
+		</PropertyGroup>
+		<ItemGroup>
+			<Projects Include="Test\ITHelperTests.dproj">
+				<Dependencies/>
+			</Projects>
+			<Projects Include="DLL\ITHelperXE2.dproj">
+				<Dependencies/>
+			</Projects>
+		</ItemGroup>
+		<ProjectExtensions>
+			<Borland.Personality>Default.Personality.12</Borland.Personality>
+			<Borland.ProjectType/>
+			<BorlandProject>
+				<Default.Personality/>
+			</BorlandProject>
+		</ProjectExtensions>
+		<Target Name="ITHelperTests">
+			<MSBuild Projects="Test\ITHelperTests.dproj"/>
+		</Target>
+		<Target Name="ITHelperTests:Clean">
+			<MSBuild Projects="Test\ITHelperTests.dproj" Targets="Clean"/>
+		</Target>
+		<Target Name="ITHelperTests:Make">
+			<MSBuild Projects="Test\ITHelperTests.dproj" Targets="Make"/>
+		</Target>
+		<Target Name="ITHelperXE2">
+			<MSBuild Projects="DLL\ITHelperXE2.dproj"/>
+		</Target>
+		<Target Name="ITHelperXE2:Clean">
+			<MSBuild Projects="DLL\ITHelperXE2.dproj" Targets="Clean"/>
+		</Target>
+		<Target Name="ITHelperXE2:Make">
+			<MSBuild Projects="DLL\ITHelperXE2.dproj" Targets="Make"/>
+		</Target>
+		<Target Name="Build">
+			<CallTarget Targets="ITHelperTests;ITHelperXE2"/>
+		</Target>
+		<Target Name="Clean">
+			<CallTarget Targets="ITHelperTests:Clean;ITHelperXE2:Clean"/>
+		</Target>
+		<Target Name="Make">
+			<CallTarget Targets="ITHelperTests:Make;ITHelperXE2:Make"/>
+		</Target>
+		<Import Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')" Project="$(BDS)\Bin\CodeGear.Group.Targets"/>
+	</Project>

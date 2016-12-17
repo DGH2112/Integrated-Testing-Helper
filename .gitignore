@@ -115,3 +115,20 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+*.eof
+*.txaPackage
+*.prjconfig
+*.bpg
+*.INI
+*.elf
+*.2007
+TestProject*.*
+TestForm*.*
+*.Zip
+*.$$$
+ITHelperTests*.*
+Test/Source/ToolsAPI.pas
+Test/Source/TestTestingHelperUtils.pas
+Test/Source/TestGlobalOptions.pas
+Test/ITHelperVersionInfo.res
+Test/ITHelperVersionInfo.RC
