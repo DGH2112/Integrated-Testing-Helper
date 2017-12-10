@@ -135,6 +135,7 @@
         <DCCReference Include="..\Source\ITHelper.CommonFunctions.pas"/>
         <DCCReference Include="..\Source\ITHelper.Constants.pas"/>
         <DCCReference Include="..\Source\ITHelper.ResourceStrings.pas"/>
+        <DCCReference Include="..\Source\ITHelper.AboutBox.pas"/>
         <None Include="..\Source\CompilerDefinitions.inc"/>
         <BuildConfiguration Include="Debug">
             <Key>Cfg_2</Key>

@@ -50,7 +50,8 @@ uses
   ITHelper.SplashScreen in '..\Source\ITHelper.SplashScreen.pas',
   ITHelper.CommonFunctions in '..\Source\ITHelper.CommonFunctions.pas',
   ITHelper.Constants in '..\Source\ITHelper.Constants.pas',
-  ITHelper.ResourceStrings in '..\Source\ITHelper.ResourceStrings.pas';
+  ITHelper.ResourceStrings in '..\Source\ITHelper.ResourceStrings.pas',
+  ITHelper.AboutBox in '..\Source\ITHelper.AboutBox.pas';
 
 {$R *.res}
 

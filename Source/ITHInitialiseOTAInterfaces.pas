@@ -15,8 +15,6 @@ Interface
 Uses
   ToolsAPI;
 
-  procedure Register;
-
   Function InitWizard(Const BorlandIDEServices : IBorlandIDEServices;
     RegisterProc : TWizardRegisterProc;
     var Terminate: TWizardTerminateProc) : Boolean; StdCall;
@@ -46,21 +44,6 @@ Const
   (** A constant to define the failed state of a wizard / notifier interface. **)
   iWizardFailState = -1;
 
-{$IFDEF D2005}
-
-Var
-  (** This is a handle for the splash screen bitmap resource **)
-  bmSplashScreen : HBITMAP;
-  (** This is a variable to hold the major version number for the package. **)
-  iMajor : Integer;
-  (** This is a variable to hold the minor version number for the package. **)
-  iMinor : Integer;
-  (** This is a variable to hold the bug fix version number for the package. **)
-  iBugFix : Integer;
-  (** This is a variable to hold the build number for the package.  **)
-  iBuild : Integer;
-{$ENDIF}
-
 Var
   (** A private variable to hold the index number of the wizard returned in the
       Register procedure. **)
@@ -72,23 +55,21 @@ Var
   (** A private variable to hold the index number of the project menu creator
       notifier so that it can be removed later. **)
   iPrjMgrMenu : Integer = iWizardFailState;
-  (** A private variable to hold the About Plugin reference for later release. **)
-  iAboutPlugin : Integer = iWizardFailState;
   {$ENDIF}
 
 (**
 
-  This method is called by both Register and InitWizard as common code for initialising
-  the wizard interfaces in the IDE adding.
+  This method is called by both Register and InitWizard as common code for initialising the wizard 
+  interfaces in the IDE adding.
 
   @precon  None.
   @postcon Returns a valid instance of the TTestingHelperWizard;
 
-  @param   WizardType as a TWizardType
+  @param   WizardType as a TWizardType as a constant
   @return  a TTestingHelperWizard
 
 **)
-Function InitialiseWizard(WizardType : TWizardType) : TTestingHelperWizard;
+Function InitialiseWizard(Const WizardType : TWizardType) : TTestingHelperWizard;
 
 Var
   Svcs : IOTAServices;
@@ -114,31 +95,8 @@ Begin
   iPrjMgrMenu := (BorlandIDEServices As IOTAProjectManager).AddMenuItemCreatorNotifier(
     MenuNotifier);
   {$ENDIF}
-  bmSplashScreen := LoadBitmap(hInstance, 'TestingHelperSplashScreenBitMap');
-  iAboutPlugin := (BorlandIDEServices As IOTAAboutBoxServices).AddPluginInfo(
-    Format(strSplashScreenName, [iMajor, iMinor, Copy(strRevisions, iBugFix + 1, 1), Application.Title]),
-    'An IDE expert to allow the configuration of pre and post compilation processes and ' +
-    'automatically ZIP the successfully compiled project for release.',
-    bmSplashScreen,
-    False,
-    Format(strSplashScreenBuild, [iMajor, iMinor, iBugfix, iBuild]),
-    Format('SKU Build %d.%d.%d.%d', [iMajor, iMinor, iBugfix, iBuild]));
   {$ENDIF}
 End;
-
-(**
-
-  This method is called by the IDE to initialise the package in the IDE.
-
-  @precon  None.
-  @postcon Initialises the package wizard.
-
-**)
-procedure Register;
-
-begin
-  InitialiseWizard(wtPackageWizard);
-end;
 
 (**
 
@@ -148,6 +106,9 @@ end;
   @precon  None.
   @postcon Initialises the wizard.
 
+  @nometric MissingCONSTInParam
+  @nohint   Terminate
+
   @param   BorlandIDEServices as an IBorlandIDEServices as a constant
   @param   RegisterProc       as a TWizardRegisterProc
   @param   Terminate          as a TWizardTerminateProc as a reference
@@ -156,7 +117,7 @@ end;
 **)
 Function InitWizard(Const BorlandIDEServices : IBorlandIDEServices;
   RegisterProc : TWizardRegisterProc;
-  var Terminate: TWizardTerminateProc) : Boolean; StdCall;
+  Var Terminate: TWizardTerminateProc) : Boolean; StdCall;
 
 Begin
   Result := BorlandIDEServices <> Nil;
@@ -180,8 +141,4 @@ Finalization
   {$ENDIF}
   If iWizardIndex > iWizardFailState Then
     (BorlandIDEServices As IOTAServices).RemoveNotifier(iWizardIndex);
-  {$IFDEF D2010}
-  If iAboutPlugin > iWizardFailState Then
-    (BorlandIDEServices As IOTAAboutBoxServices).RemovePluginInfo(iAboutPlugin);
-  {$ENDIF}
 End.

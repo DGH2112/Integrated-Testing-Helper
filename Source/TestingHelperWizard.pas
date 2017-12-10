@@ -32,14 +32,15 @@ Type
   (** This class implements the IDE Wizard which provides the IDE interface
       to the package. **)
   TTestingHelperWizard = Class(TNotifierObject, IOTAWizard)
-    {$IFDEF D2005} Strict {$ENDIF} Private
+  Strict Private
+    FAboutBoxIndex    : Integer;
     FGlobalOps        : TGlobalOptions;
     FTestingHelperMenu: TMenuItem;
     //FHTMLHelpCookie   : THandle;
     {$IFNDEF D2005}
     FMenuTimer        : TTimer;
     {$ENDIF}
-    {$IFDEF D2005} Strict {$ENDIF} Protected
+  Strict Protected
     Procedure BeforeCompilationClick(Sender: TObject);
     Procedure AfterCompilationClick(Sender: TObject);
     Procedure ToggleEnabled(Sender: TObject);
@@ -97,7 +98,8 @@ Uses
   ZIPDialogue,
   GlobalOptionsDialogue,
   ProjectOptionsDialogue, 
-  ITHelper.SplashScreen;
+  ITHelper.SplashScreen, 
+  ITHelper.AboutBox;
 
 (**
 
@@ -240,6 +242,7 @@ Constructor TTestingHelperWizard.Create;
 
 Begin
   InstallSplashScreen;
+  FAboutBoxIndex := AddAboutBoxEntry;
   FTestingHelperMenu := CreateMenuItem('ITHTestingHelper', '&Testing Helper', 'Tools',
     Nil, Nil, True, False, '');
   CreateMenuItem('ITHEnabled', 'Oops...', 'ITHTestingHelper', ToggleEnabled,
@@ -294,6 +297,7 @@ Begin
   ClearMessages([cmCompiler]);
   {$ENDIF}
   FGlobalOps.Free;
+  RemoveAboutBoxEntry(FAboutBoxIndex);
   Inherited Destroy;
 End;
 
