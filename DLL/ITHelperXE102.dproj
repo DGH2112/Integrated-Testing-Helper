@@ -139,10 +139,6 @@
         <DCCReference Include="..\Source\ProjectOptionsDialogue.pas">
             <Form>frmProjectOptionsDialogue</Form>
         </DCCReference>
-        <DCCReference Include="..\..\..\Library\About.pas">
-            <Form>frmAbout</Form>
-        </DCCReference>
-        <DCCReference Include="..\..\..\Components\Source\DGHSpectrum.pas"/>
         <BuildConfiguration Include="Debug">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

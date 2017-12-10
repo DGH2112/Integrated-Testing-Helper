@@ -4,7 +4,7 @@
   external tools before and after the compilation of the current project.
 
   @Version 1.0
-  @Date    08 Jul 2012
+  @Date    10 Dec 2017
   @Author  David Hoyle
 
 **)
@@ -57,7 +57,6 @@ Type
     Procedure BeforeCompilation(Project: IOTAProject);
     Procedure AfterCompilation(Project: IOTAProject);
     Procedure ZIPOptions(Project: IOTAProject);
-    Procedure AboutClick(Sender : TObject);
     Procedure HelpClick(Sender : TObject);
     {$IFNDEF D2005}
     Procedure MenuTimerEvent(Sender: TObject);
@@ -99,8 +98,7 @@ Uses
   FontDialogue,
   ZIPDialogue,
   GlobalOptionsDialogue,
-  ProjectOptionsDialogue,
-  About;
+  ProjectOptionsDialogue;
 
 ResourceString
   (** This is the software ID for check for updates on the internet. **)
@@ -120,31 +118,6 @@ Procedure TTestingHelperWizard.CheckForUpdatesClick(Sender: TObject);
 
 Begin
   TCheckForUpdates.Execute(strSoftwareID, FGlobalOps.INIFileName, Sender <> Nil);
-End;
-
-(**
-
-  This is an on click event handler for the About action.
-
-  @precon  None.
-  @postcon Displays the about dialogue.
-
-  @param   Sender as a TObject
-
-**)
-Procedure TTestingHelperWizard.AboutClick(Sender: TObject);
-
-Var
-  strTitle : String;
-
-Begin
-  strTitle := Application.Title;
-  Try
-    Application.Title := 'Integrated Testing Helper';
-    TfrmAbout.ShowAbout;
-  Finally
-    Application.Title := strTitle;
-  End;
 End;
 
 (**
@@ -309,8 +282,6 @@ Begin
   CreateMenuItem('ITHCheckForUpdates', 'Check for &Updates...', 'ITHTestingHelper',
     CheckForUpdatesClick, Nil, False, True, '', clFuchsia);
   CreateMenuItem('ITHHelp', '&Help...', 'ITHTestingHelper', HelpClick, Nil, False,
-    True, '');
-  CreateMenuItem('ITHAbout', '&About...', 'ITHTestingHelper', AboutClick, Nil, False,
     True, '');
   {$IFNDEF D2005} // Code to patch shortcuts into the menus in D7 and below.
   FMenuTimer          := TTimer.Create(Nil);

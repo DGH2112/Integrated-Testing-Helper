@@ -26,7 +26,6 @@ Library ITHelperXE102;
 
 uses
   ShareMem,
-  //ExceptionLog,
   SysUtils,
   Classes,
   TestingHelperWizard in '..\Source\TestingHelperWizard.pas',
@@ -49,9 +48,7 @@ uses
   FontDialogue in '..\Source\FontDialogue.pas' {frmFontDialogue},
   ZIPDialogue in '..\Source\ZIPDialogue.pas' {frmZIPDialogue},
   GlobalOptionsDialogue in '..\Source\GlobalOptionsDialogue.pas' {frmGlobalOptionsDialogue},
-  ProjectOptionsDialogue in '..\Source\ProjectOptionsDialogue.pas' {frmProjectOptionsDialogue},
-  About in '..\..\..\Library\About.pas' {frmAbout},
-  DGHSpectrum in '..\..\..\Components\Source\DGHSpectrum.pas';
+  ProjectOptionsDialogue in '..\Source\ProjectOptionsDialogue.pas' {frmProjectOptionsDialogue};
 
 {$R *.res}
 
