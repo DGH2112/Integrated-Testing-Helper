@@ -26,13 +26,7 @@ Implementation
 
 Uses
   TestingHelperWizard,
-  ProjectManagerMenuInterface,
-  Forms,
-  Windows,
-  SysUtils,
-  IDENotifierInterface, 
-  ITHelper.ResourceStrings, 
-  ITHelper.Constants;
+  IDENotifierInterface;
 
 {$INCLUDE 'CompilerDefinitions.inc'}
 
@@ -51,11 +45,6 @@ Var
   (** A private variable to hold the index number of the IDE notifier returned in the
       Register procedure. **)
   iIDENotifierIndex : Integer = iWizardFailState;
-  {$IFDEF D2005}
-  (** A private variable to hold the index number of the project menu creator
-      notifier so that it can be removed later. **)
-  iPrjMgrMenu : Integer = iWizardFailState;
-  {$ENDIF}
 
 (**
 
@@ -66,36 +55,22 @@ Var
   @postcon Returns a valid instance of the TTestingHelperWizard;
 
   @param   WizardType as a TWizardType as a constant
-  @return  a TTestingHelperWizard
+  @return  a TITHWizard
 
 **)
-Function InitialiseWizard(Const WizardType : TWizardType) : TTestingHelperWizard;
+Function InitialiseWizard(Const WizardType : TWizardType) : TITHWizard;
 
 Var
   Svcs : IOTAServices;
-  {$IFDEF D2005}
-  MenuNotifier: TProjectManagerMenu;
-  {$ENDIF}
 
 Begin
   Svcs := BorlandIDEServices As IOTAServices;
   ToolsAPI.BorlandIDEServices := BorlandIDEServices;
-  Application.Handle := Svcs.GetParentHandle;
-  Result := TTestingHelperWizard.Create;
+  Result := TITHWizard.Create;
   If WizardType = wtPackageWizard Then
     iWizardIndex := (BorlandIDEServices As IOTAWizardServices).AddWizard(Result);
   iIDENotifierIndex := (BorlandIDEServices As IOTAServices).AddNotifier(
     TTestingHelperIDENotifier.Create(Result.GlobalOps));
-  {$IFDEF D2005}
-  MenuNotifier := TProjectManagerMenu.Create(Result);
-  {$IFNDEF D2010}
-  iPrjMgrMenu := (BorlandIDEServices As IOTAProjectManager).AddMenuCreatorNotifier(
-    MenuNotifier);
-  {$ELSE}
-  iPrjMgrMenu := (BorlandIDEServices As IOTAProjectManager).AddMenuItemCreatorNotifier(
-    MenuNotifier);
-  {$ENDIF}
-  {$ENDIF}
 End;
 
 (**
@@ -107,7 +82,7 @@ End;
   @postcon Initialises the wizard.
 
   @nometric MissingCONSTInParam
-  @nohint   Terminate
+  @nohints
 
   @param   BorlandIDEServices as an IBorlandIDEServices as a constant
   @param   RegisterProc       as a TWizardRegisterProc
@@ -131,14 +106,6 @@ Initialization
 Finalization
   If iIDENotifierIndex > iWizardFailState Then
     (BorlandIDEServices As IOTAServices).RemoveNotifier(iIDENotifierIndex);
-  {$IFDEF D2005}
-  If iPrjMgrMenu > iWizardFailState Then
-    {$IFNDEF D2010}
-    (BorlandIDEServices As IOTAProjectManager).RemoveMenuCreatorNotifier(iPrjMgrMenu);
-    {$ELSE}
-    (BorlandIDEServices As IOTAProjectManager).RemoveMenuItemCreatorNotifier(iPrjMgrMenu);
-    {$ENDIF}
-  {$ENDIF}
   If iWizardIndex > iWizardFailState Then
     (BorlandIDEServices As IOTAServices).RemoveNotifier(iWizardIndex);
 End.

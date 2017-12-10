@@ -5,7 +5,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    26 Jun 2012
+  @Date    10 Dec 2017
 
 **)
 Unit ProjectManagerMenuInterface;
@@ -24,34 +24,38 @@ Uses
 
 Type
   (** A class to handle the creation of a menu for the project manager. **)
-  TProjectManagerMenu = Class(TNotifierObject,
-    {$IFNDEF D2010} INTAProjectMenuCreatorNotifier
-    {$ELSE} IOTAProjectMenuItemCreatorNotifier {$ENDIF})
-    {$IFDEF D2005} Strict {$ENDIF} Private
-    FWizard: TTestingHelperWizard;
-    {$IFDEF D2005} Strict {$ENDIF} Protected
-    Procedure OptionsClick(Sender: TObject);
-  Public
-    Constructor Create(Wizard: TTestingHelperWizard);
-    {$IFNDEF D2010}
-    Function AddMenu(Const Ident: String): TMenuItem;
-    {$ELSE}
-    Procedure AddMenu(Const Project: IOTAProject; Const IdentList: TStrings;
-      Const ProjectManagerMenuList: IInterfaceList; IsMultiSelect: Boolean);
-    {$ENDIF}
-    Function CanHandle(Const Ident: String): Boolean;
+  TITHProjectManagerMenu = Class(TNotifierObject, IOTANotifier,
+    {$IFNDEF D2010} INTAProjectMenuCreatorNotifier {$ELSE} IOTAProjectMenuItemCreatorNotifier {$ENDIF})
+  Strict Private
+    FWizard: TITHWizard;
+  Strict Protected
+    // IOTANotifier
     Procedure AfterSave;
     Procedure BeforeSave;
     Procedure Destroyed;
     Procedure Modified;
+    {$IFNDEF D2010}
+    // INTAProjectMenuCreatorNotifier
+    Function AddMenu(Const Ident: String): TMenuItem;
+    Function CanHandle(Const Ident: String): Boolean;
+    {$ENDIF}
+    {$IFDEF D2010}
+    // IOTAProjectMenuItemCreatorNotifier
+    Procedure AddMenu(Const Project: IOTAProject; Const IdentList: TStrings;
+      Const ProjectManagerMenuList: IInterfaceList; IsMultiSelect: Boolean);
+    {$ENDIF}
+    // General Methods
+    Procedure OptionsClick(Sender: TObject);
+  Public
+    Constructor Create(Const Wizard: TITHWizard);
   End;
 
   {$IFDEF D2010}
 
 (** A class to define a Delphi 2010 Project Menu Item. **)
   TITHelperProjectMenu = Class(TNotifierObject, IOTALocalMenu, IOTAProjectManagerMenu)
-    {$IFDEF D2005} Strict {$ENDIF} Private
-    FWizard  : TTestingHelperWizard;
+  Strict Private
+    FWizard  : TITHWizard;
     FProject : IOTAProject;
     FPosition: Integer;
     FCaption : String;
@@ -59,8 +63,8 @@ Type
     FVerb    : String;
     FParent  : String;
     FSetting : TSetting;
-    {$IFDEF D2005} Strict {$ENDIF} Protected
-  Public
+  Strict Protected
+    // IOTALocalMenu
     Function GetCaption: String;
     Function GetChecked: Boolean;
     Function GetEnabled: Boolean;
@@ -77,14 +81,16 @@ Type
     Procedure SetParent(Const Value: String);
     Procedure SetPosition(Value: Integer);
     Procedure SetVerb(Const Value: String);
+    // IOTAProjectManagerMenu
     Function GetIsMultiSelectable: Boolean;
     Procedure SetIsMultiSelectable(Value: Boolean);
     Procedure Execute(Const MenuContextList: IInterfaceList); Overload;
     Function PreExecute(Const MenuContextList: IInterfaceList): Boolean;
     Function PostExecute(Const MenuContextList: IInterfaceList): Boolean;
-    Constructor Create(Wizard: TTestingHelperWizard; Project: IOTAProject;
-      strCaption, strName, strVerb, strParent: String; iPosition: Integer;
-      Setting: TSetting);
+    // General Methods
+  Public
+    Constructor Create(Const Wizard: TITHWizard; Const Project: IOTAProject; Const strCaption, strName,
+      strVerb, strParent: String; Const iPosition: Integer; Const Setting: TSetting);
   End;
   {$ENDIF}
   {$ENDIF}
@@ -99,15 +105,27 @@ Uses
   TestingHelperUtils;
 
 ResourceString
+  (** A resource string for plug-ins main menu. **)
   strMainCaption = 'Integrated Testing Helper';
-  strMainName = 'ITHelperMainMenu';
+  (** A resource string for Project options menu. **)
   strProjectCaption = 'Project Options';
-  strProjectName = 'ITHProjMgrProjectOptions';
+  (** A resource string for Before Compilation menu. **)
   strBeforeCaption = 'Before Compilation';
-  strBeforeName = 'ITHProjMgrBefore';
+  (** A resource string for After Compilation Menu. **)
   strAfterCaption = 'After Compilation';
-  strAfterName = 'ITHProjMgrAfter';
+  (** A resource string for ZIP Options menu. **)
   strZIPCaption = 'ZIP Options';
+
+Const
+  (** A constant string identifier for the main menu. **)
+  strMainName = 'ITHelperMainMenu';
+  (** A constant string identifier for Project Options. **)
+  strProjectName = 'ITHProjMgrProjectOptions';
+  (** A constant string identifier for Before Options. **)
+  strBeforeName = 'ITHProjMgrBefore';
+  (** A constant string identifier for After Options. **)
+  strAfterName = 'ITHProjMgrAfter';
+  (** A constant string identifier for ZIP Options. **)
   strZIPName = 'ITHProjMgrZIPOptions';
 
 { TProjectManagerMenu }
@@ -160,16 +178,20 @@ Begin
       Result.Add(SM);
     End;
 End;
-  {$ELSE}
+
+{$ELSE}
 
 (**
 
-  This method create a menu to be displayed in the project manager for handling
-  the configuration of Integrated Testing Helper Options.
+  This method create a menu to be displayed in the project manager for handling the configuration of 
+  Integrated Testing Helper Options.
 
   @precon  None.
-  @postcon Create a menu to be displayed in the project manager for handling
-           the configuration of Integrated Testing Helper Options.
+  @postcon Create a menu to be displayed in the project manager for handling the configuration of 
+           Integrated Testing Helper Options.
+
+  @nometric MissingCONSTInParam
+  @nohints
 
   @param   Project                as an IOTAProject as a constant
   @param   IdentList              as a TStrings as a constant
@@ -177,9 +199,11 @@ End;
   @param   IsMultiSelect          as a Boolean
 
 **)
-Procedure TProjectManagerMenu.AddMenu(Const Project: IOTAProject;
-  Const IdentList: TStrings; Const ProjectManagerMenuList: IInterfaceList;
-  IsMultiSelect: Boolean);
+Procedure TITHProjectManagerMenu.AddMenu(Const Project: IOTAProject; Const IdentList: TStrings;
+  Const ProjectManagerMenuList: IInterfaceList; IsMultiSelect: Boolean);
+
+Const
+  strOptions = 'Options';
 
 Var
   i, j     : Integer;
@@ -194,7 +218,7 @@ Begin
         For j     := 0 To ProjectManagerMenuList.Count - 1 Do
           Begin
             M := ProjectManagerMenuList.Items[j] As IOTAProjectManagerMenu;
-            If CompareText(M.Verb, 'Options') = 0 Then
+            If CompareText(M.Verb, strOptions) = 0 Then
               Begin
                 iPosition := M.Position + 1;
                 Break;
@@ -224,8 +248,10 @@ End;
   @precon  None.
   @postcon None.
 
+  @nometric EmptyMethod
+
 **)
-Procedure TProjectManagerMenu.AfterSave;
+Procedure TITHProjectManagerMenu.AfterSave;
 Begin
 End;
 
@@ -236,11 +262,14 @@ End;
   @precon  None.
   @postcon None.
 
+  @nometric EmptyMethod
+
 **)
-Procedure TProjectManagerMenu.BeforeSave;
+Procedure TITHProjectManagerMenu.BeforeSave;
 Begin
 End;
 
+{$IFNDEF D2010}
 (**
 
   This method is called for the selected node in the project manager asking if
@@ -254,10 +283,12 @@ End;
   @return  a Boolean
 
 **)
-Function TProjectManagerMenu.CanHandle(Const Ident: String): Boolean;
+Function TITHProjectManagerMenu.CanHandle(Const Ident: String): Boolean;
+
 Begin
   Result := sProjectContainer = Ident;
 End;
+{$ENDIF}
 
 (**
 
@@ -266,10 +297,11 @@ End;
   @precon  None.
   @postcon Holds a reference to the main wizard for configuring options.
 
-  @param   Wizard as a TTestingHelperWizard
+  @param   Wizard as a TITHWizard as a constant
 
 **)
-Constructor TProjectManagerMenu.Create(Wizard: TTestingHelperWizard);
+Constructor TITHProjectManagerMenu.Create(Const Wizard: TITHWizard);
+
 Begin
   FWizard := Wizard;
 End;
@@ -281,8 +313,10 @@ End;
   @precon  None.
   @postcon None.
 
+  @nometric EmptyMethod
+
 **)
-Procedure TProjectManagerMenu.Destroyed;
+Procedure TITHProjectManagerMenu.Destroyed;
 Begin
 End;
 
@@ -293,8 +327,10 @@ End;
   @precon  None.
   @postcon None.
 
+  @nometric EmptyMethod
+
 **)
-Procedure TProjectManagerMenu.Modified;
+Procedure TITHProjectManagerMenu.Modified;
 Begin
 End;
 
@@ -308,7 +344,7 @@ End;
   @param   Sender as a TObject
 
 **)
-Procedure TProjectManagerMenu.OptionsClick(Sender: TObject);
+Procedure TITHProjectManagerMenu.OptionsClick(Sender: TObject);
 
 Var
   Project : IOTAProject;
@@ -338,19 +374,19 @@ End;
   @precon  None.
   @postcon Initialises the class with reference to the project and the wizard.
 
-  @param   Wizard     as a TTestingHelperWizard
-  @param   Project    as an IOTAProject
-  @param   strCaption as a String
-  @param   strName    as a String
-  @param   strVerb    as a String
-  @param   strParent  as a String
-  @param   iPosition  as an Integer
-  @param   Setting    as a TSetting
+  @param   Wizard     as a TITHWizard as a constant
+  @param   Project    as an IOTAProject as a constant
+  @param   strCaption as a String as a constant
+  @param   strName    as a String as a constant
+  @param   strVerb    as a String as a constant
+  @param   strParent  as a String as a constant
+  @param   iPosition  as an Integer as a constant
+  @param   Setting    as a TSetting as a constant
 
 **)
-Constructor TITHelperProjectMenu.Create(Wizard: TTestingHelperWizard;
-  Project: IOTAProject; strCaption, strName, strVerb, strParent: String;
-  iPosition: Integer; Setting: TSetting);
+Constructor TITHelperProjectMenu.Create(Const Wizard: TITHWizard; Const Project: IOTAProject;
+  Const strCaption, strName, strVerb, strParent: String; Const iPosition: Integer;
+  Const Setting: TSetting);
 
 Begin
   FWizard   := Wizard;
@@ -361,6 +397,24 @@ Begin
   FVerb     := strVerb;
   FParent   := strParent;
   FSetting  := Setting;
+End;
+
+(**
+
+  This is an execute method implementation for the IOTAProjectManageMenu interface.
+
+  @precon  None.
+  @postcon Displays the Configuation Options dialogue for the current project.
+
+  @nohints
+
+  @param   MenuContextList as an IInterfaceList as a constant
+
+**)
+Procedure TITHelperProjectMenu.Execute(Const MenuContextList: IInterfaceList);
+
+Begin
+  FWizard.ConfigureOptions(FProject, FSetting);
 End;
 
 (**
@@ -429,6 +483,23 @@ End;
 
 (**
 
+  This is an GetIsMultiSelectable method implementation for the IOTAProjectManageMenu
+  interface.
+
+  @precon  None.
+  @postcon Returns false for not being a multi-selectable menu item.
+
+  @return  a Boolean
+
+**)
+Function TITHelperProjectMenu.GetIsMultiSelectable: Boolean;
+
+Begin
+  Result := False;
+End;
+
+(**
+
   This is an GetName method implementation for the IOTAProjectManageMenu interface.
 
   @precon  None.
@@ -493,11 +564,52 @@ End;
 
 (**
 
+  This is a post execute method implementation for the IOTAProjectManageMenu interface.
+
+  @precon  None.
+  @postcon Does nothing and returns false.
+
+  @nohints
+
+  @param   MenuContextList as an IInterfaceList as a constant
+  @return  a Boolean
+
+**)
+Function TITHelperProjectMenu.PostExecute(Const MenuContextList: IInterfaceList): Boolean;
+
+Begin
+  Result := False;
+End;
+
+(**
+
+  This is a pre execute method implementation for the IOTAProjectManageMenu interface.
+
+  @precon  None.
+  @postcon Does nothing and returns false.
+
+  @nohints
+
+  @param   MenuContextList as an IInterfaceList as a constant
+  @return  a Boolean
+
+**)
+Function TITHelperProjectMenu.PreExecute(Const MenuContextList: IInterfaceList): Boolean;
+
+Begin
+  Result := False;
+End;
+
+(**
+
   This is an SetCaption method implementation for the IOTAProjectManageMenu
   interface.
 
   @precon  None.
   @postcon Does nothing.
+
+  @nometric EmptyMethod
+  @nohints
 
   @param   Value as a String as a Constant
 
@@ -516,6 +628,9 @@ End;
   @precon  None.
   @postcon Does nothing.
 
+  @nometric MissingCONSTInParam EmptyMethod
+  @nohints
+
   @param   Value as a Boolean
 
 **)
@@ -532,6 +647,9 @@ End;
 
   @precon  None.
   @postcon Does nothing.
+
+  @nometric MissingCONSTInParam EmptyMethod
+  @nohints
 
   @param   Value as a Boolean
 
@@ -550,10 +668,33 @@ End;
   @precon  None.
   @postcon Does nothing.
 
+  @nometric MissingCONSTInParam EmptyMethod
+  @nohints
+
   @param   Value as a Integer
 
 **)
 Procedure TITHelperProjectMenu.SetHelpContext(Value: Integer);
+
+Begin
+  // Do nothing.
+End;
+
+(**
+
+  This is an SetIsMultiSelectable method implementation for the IOTAProjectManageMenu
+  interface.
+
+  @precon  None.
+  @postcon Does nothing.
+
+  @nometric MissingCONSTInParam EmptyMethod
+  @nohints
+
+  @param   Value as a Boolean
+
+**)
+Procedure TITHelperProjectMenu.SetIsMultiSelectable(Value: Boolean);
 
 Begin
   // Do nothing.
@@ -566,6 +707,9 @@ End;
 
   @precon  None.
   @postcon Does nothing.
+
+  @nometric EmptyMethod
+  @nohints
 
   @param   Value as a String as a Constant
 
@@ -584,6 +728,9 @@ End;
   @precon  None.
   @postcon Does nothing.
 
+  @nometric EmptyMethod
+  @nohints
+
   @param   Value as a String as a Constant
 
 **)
@@ -600,6 +747,9 @@ End;
 
   @precon  None.
   @postcon Does nothing.
+
+  @nometric MissingCONSTInParam EmptyMethod
+  @nohints
 
   @param   Value as a Integer
 
@@ -618,6 +768,9 @@ End;
   @precon  None.
   @postcon Does nothing.
 
+  @nometric EmptyMethod
+  @nohints
+
   @param   Value as a String as a Constant
 
 **)
@@ -627,89 +780,6 @@ Begin
   // Do nothing.
 End;
 
-(**
-
-  This is an GetIsMultiSelectable method implementation for the IOTAProjectManageMenu
-  interface.
-
-  @precon  None.
-  @postcon Returns false for not being a multi-selectable menu item.
-
-  @return  a Boolean
-
-**)
-Function TITHelperProjectMenu.GetIsMultiSelectable: Boolean;
-
-Begin
-  Result := False;
-End;
-
-(**
-
-  This is an SetIsMultiSelectable method implementation for the IOTAProjectManageMenu
-  interface.
-
-  @precon  None.
-  @postcon Does nothing.
-
-  @param   Value as a Boolean
-
-**)
-Procedure TITHelperProjectMenu.SetIsMultiSelectable(Value: Boolean);
-
-Begin
-  // Do nothing.
-End;
-
-(**
-
-  This is an execute method implementation for the IOTAProjectManageMenu interface.
-
-  @precon  None.
-  @postcon Displays the Configuation Options dialogue for the current project.
-
-  @param   MenuContextList as an IInterfaceList as a constant
-
-**)
-Procedure TITHelperProjectMenu.Execute(Const MenuContextList: IInterfaceList);
-
-Begin
-  FWizard.ConfigureOptions(FProject, FSetting);
-End;
-
-(**
-
-  This is a pre execute method implementation for the IOTAProjectManageMenu interface.
-
-  @precon  None.
-  @postcon Does nothing and returns false.
-
-  @param   MenuContextList as an IInterfaceList as a constant
-  @return  a Boolean
-
-**)
-Function TITHelperProjectMenu.PreExecute(Const MenuContextList: IInterfaceList): Boolean;
-
-Begin
-  Result := False;
-End;
-
-(**
-
-  This is a post execute method implementation for the IOTAProjectManageMenu interface.
-
-  @precon  None.
-  @postcon Does nothing and returns false.
-
-  @param   MenuContextList as an IInterfaceList as a constant
-  @return  a Boolean
-
-**)
-Function TITHelperProjectMenu.PostExecute(Const MenuContextList: IInterfaceList): Boolean;
-
-Begin
-  Result := False;
-End;
 {$ENDIF}
 {$ENDIF}
 

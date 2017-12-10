@@ -31,14 +31,16 @@ Type
 
   (** This class implements the IDE Wizard which provides the IDE interface
       to the package. **)
-  TTestingHelperWizard = Class(TNotifierObject, IOTAWizard)
+  TITHWizard = Class(TNotifierObject, IOTAWizard)
   Strict Private
-    FAboutBoxIndex    : Integer;
-    FGlobalOps        : TGlobalOptions;
-    FTestingHelperMenu: TMenuItem;
-    //FHTMLHelpCookie   : THandle;
+    FAboutBoxIndex          : Integer;
+    FGlobalOps              : TGlobalOptions;
+    FTestingHelperMenu      : TMenuItem;
+    FProjectMgrMenuIndex    : Integer;
+    FProjectMgrMenuNotifier : IOTAProjectMenuItemCreatorNotifier;
+    //FHTMLHelpCookie    : THandle;
     {$IFNDEF D2005}
-    FMenuTimer        : TTimer;
+    FMenuTimer              : TTimer;
     {$ENDIF}
   Strict Protected
     Procedure BeforeCompilationClick(Sender: TObject);
@@ -53,10 +55,10 @@ Type
     Procedure UpdateEnabled(Sender: TObject);
     Procedure BeforeCompilationUpdate(Sender: TObject);
     Procedure AfterCompilationUpdate(Sender: TObject);
-    Procedure ProjectOptions(Project: IOTAProject);
-    Procedure BeforeCompilation(Project: IOTAProject);
-    Procedure AfterCompilation(Project: IOTAProject);
-    Procedure ZIPOptions(Project: IOTAProject);
+    Procedure ProjectOptions(Const Project: IOTAProject);
+    Procedure BeforeCompilation(Const Project: IOTAProject);
+    Procedure AfterCompilation(Const Project: IOTAProject);
+    Procedure ZIPOptions(Const Project: IOTAProject);
     Procedure HelpClick(Sender : TObject);
     {$IFNDEF D2005}
     Procedure MenuTimerEvent(Sender: TObject);
@@ -68,7 +70,7 @@ Type
     Function GetIDString: String;
     Function GetName: String;
     Function GetState: TWizardState;
-    Procedure ConfigureOptions(Project: IOTAProject; Setting: TSetting);
+    Procedure ConfigureOptions(Const Project: IOTAProject; Const Setting: TSetting);
     (**
       This property provides external code with access to the global options of the
       application.
@@ -94,6 +96,7 @@ Uses
   Variants,
   EnabledOptions,
   ActnList,
+  ProjectManagerMenuInterface,
   FontDialogue,
   ZIPDialogue,
   GlobalOptionsDialogue,
@@ -103,17 +106,17 @@ Uses
 
 (**
 
-  This method displays the After Compilation options dialogue for configuring tools to be
-  run after a successful compilation.
+  This method displays the After Compilation options dialogue for configuring tools to be run after a 
+  successful compilation.
 
   @precon  Project must be a valid instance.
-  @postcon Displays the After Compilation options dialogue for configuring tools to be
-           run after a successful compilation.
+  @postcon Displays the After Compilation options dialogue for configuring tools to be run after a 
+           successful compilation.
 
-  @param   Project as an IOTAProject
+  @param   Project as an IOTAProject as a constant
 
 **)
-Procedure TTestingHelperWizard.AfterCompilation(Project: IOTAProject);
+Procedure TITHWizard.AfterCompilation(Const Project: IOTAProject);
 
 Begin
   If TfrmConfigure.Execute(Project, FGlobalOps, dtAfter) Then
@@ -130,7 +133,8 @@ End;
   @param   Sender as a TObject
 
 **)
-Procedure TTestingHelperWizard.AfterCompilationClick(Sender: TObject);
+Procedure TITHWizard.AfterCompilationClick(Sender: TObject);
+
 Begin
   If ActiveProject <> Nil Then
     AfterCompilation(ActiveProject);
@@ -146,44 +150,49 @@ End;
   @param   Sender as a TObject
 
 **)
-Procedure TTestingHelperWizard.AfterCompilationUpdate(Sender: TObject);
+Procedure TITHWizard.AfterCompilationUpdate(Sender: TObject);
+
+ResourceString
+  strAfterCompilationOptionsFor = 'After Compilation Options for %s';
+  strAfterCompilationOptionsNoActiveProject = 'After Compilation Options: No Active Project!';
 
 Var
   strProject: String;
-  P         : IOTAProject;
+  P : IOTAProject;
+  A : TAction;
 
 Begin
   If Sender Is TAction Then
-    With Sender As TAction Do
-      Begin
-        P := ActiveProject;
-        If P <> Nil Then
-          Begin
-            Enabled    := True;
-            strProject := GetProjectName(P);
-            Caption    := Format('After Compilation Options for %s', [strProject])
-          End
-        Else
-          Begin
-            Caption := 'After Compilation Options: No Active Project!';
-            Enabled := False;
-          End;
-      End;
+    Begin
+      A := Sender As TAction;
+      P := ActiveProject;
+      If P <> Nil Then
+        Begin
+          A.Enabled    := True;
+          strProject := GetProjectName(P);
+          A.Caption    := Format(strAfterCompilationOptionsFor, [strProject])
+        End
+      Else
+        Begin
+          A.Caption := strAfterCompilationOptionsNoActiveProject;
+          A.Enabled := False;
+        End;
+    End;
 End;
 
 (**
 
-  This method displays the Before Compilation options dialogue for configuring tools to be
-  run before a successful compilation.
+  This method displays the Before Compilation options dialogue for configuring tools to be run before a 
+  successful compilation.
 
   @precon  Project must be a valid instance.
-  @postcon Displays the Before Compilation options dialogue for configuring tools to be
-           run before a successful compilation.
+  @postcon Displays the Before Compilation options dialogue for configuring tools to be run before a 
+           successful compilation.
 
-  @param   Project as an IOTAProject
+  @param   Project as an IOTAProject as a constant
 
 **)
-Procedure TTestingHelperWizard.BeforeCompilation(Project: IOTAProject);
+Procedure TITHWizard.BeforeCompilation(Const Project: IOTAProject);
 
 Begin
   If TfrmConfigure.Execute(Project, FGlobalOps, dtBefore) Then
@@ -200,11 +209,51 @@ End;
   @param   Sender as a TObject
 
 **)
-Procedure TTestingHelperWizard.BeforeCompilationClick(Sender: TObject);
+Procedure TITHWizard.BeforeCompilationClick(Sender: TObject);
 
 Begin
   If ActiveProject <> Nil Then
     BeforeCompilation(ActiveProject);
+End;
+
+(**
+
+  This is an on update event handler for the Before Compilation action.
+
+  @precon  None.
+  @postcon Enables or disables the action based on the availability of a project.
+
+  @param   Sender as a TObject
+
+**)
+Procedure TITHWizard.BeforeCompilationUpdate(Sender: TObject);
+
+ResourceString
+  strBeforeCompilationOptionsFor = 'Before Compilation Options for %s';
+  strBeforeCompilationOptionsNoActiveProject = 'Before Compilation Options: No Active Project!';
+
+Var
+  P         : IOTAProject;
+  strProject: String;
+  A : TAction;
+
+Begin
+  If Sender Is TAction Then
+    Begin
+      A := Sender As TAction;
+      P := ActiveProject;
+      If P <> Nil Then
+        Begin
+          A.Enabled    := True;
+          strProject := GetProjectName(P);
+          A.Caption    := Format(strBeforeCompilationOptionsFor, [strProject])
+        End
+      Else
+        Begin
+          A.Caption := strBeforeCompilationOptionsNoActiveProject;
+          A.Enabled := False;
+        End;
+    End;
 End;
 
 (**
@@ -214,11 +263,11 @@ End;
   @precon  None.
   @postcon Displays the options dialogue for the given project.
 
-  @param   Project as an IOTAProject
-  @param   Setting as a TSetting
+  @param   Project as an IOTAProject as a constant
+  @param   Setting as a TSetting as a constant
 
 **)
-Procedure TTestingHelperWizard.ConfigureOptions(Project: IOTAProject; Setting: TSetting);
+Procedure TITHWizard.ConfigureOptions(Const Project: IOTAProject; Const Setting: TSetting);
 
 Begin
   If Project <> Nil Then
@@ -238,11 +287,21 @@ End;
   @postcon Initialises the wizard and creates a menu item.
 
 **)
-Constructor TTestingHelperWizard.Create;
+Constructor TITHWizard.Create;
+
+Var
+  PM : IOTAProjectManager;
 
 Begin
   InstallSplashScreen;
   FAboutBoxIndex := AddAboutBoxEntry;
+  FProjectMgrMenuNotifier := TITHProjectManagerMenu.Create(Self);
+  If Supports(BorlandIDEServices, IOTAProjectManager, PM) Then
+    {$IFNDEF D2010}
+    FProjectMgrMenu := PM.AddMenuCreatorNotifier(FProjectMgrMenuNotifier);
+    {$ELSE}
+    FProjectMgrMenuIndex := PM.AddMenuItemCreatorNotifier(FProjectMgrMenuNotifier);
+    {$ENDIF}
   FTestingHelperMenu := CreateMenuItem('ITHTestingHelper', '&Testing Helper', 'Tools',
     Nil, Nil, True, False, '');
   CreateMenuItem('ITHEnabled', 'Oops...', 'ITHTestingHelper', ToggleEnabled,
@@ -282,8 +341,11 @@ End;
   @postcon Removes the meun item from the IDE.
 
 **)
-Destructor TTestingHelperWizard.Destroy;
+Destructor TITHWizard.Destroy;
 
+Var
+  PM : IOTAProjectManager;
+  
 Begin
   HTMLHelp(0, Nil, HH_CLOSE_ALL, 0);
   //HTMLHelp(Application.Handle, Nil, HH_UNINITIALIZE, FHTMLHelpCookie);
@@ -297,12 +359,132 @@ Begin
   ClearMessages([cmCompiler]);
   {$ENDIF}
   FGlobalOps.Free;
+  If FProjectMgrMenuIndex > -1 Then
+    If Supports(BorlandIDEServices, IOTAPRojectManager, PM) Then
+      {$IFNDEF D2010}
+      PM.RemoveMenuCreatorNotifier(FProjectMgrMenuIndex);
+      {$ELSE}
+      PM.RemoveMenuItemCreatorNotifier(FProjectMgrMenuIndex);
+      {$ENDIF}
   RemoveAboutBoxEntry(FAboutBoxIndex);
   Inherited Destroy;
 End;
 
-{$IFNDEF D2005}
+(**
 
+  This method is a null implementation of the Wizards Execute interface.
+
+  @precon  None.
+  @postcon None.
+
+  @nometric EmptyMethod
+
+**)
+Procedure TITHWizard.Execute;
+
+Begin
+End;
+
+(**
+
+  This is an on click event handler for the Font Dialogue menu item.
+
+  @precon  None.
+  @postcon Displays the message fonts dialogue.
+
+  @param   Sender as a TObject
+
+**)
+Procedure TITHWizard.FontDialogueClick(Sender: TObject);
+
+Begin
+  TfrmFontDialogue.Execute(FGlobalOps);
+End;
+
+(**
+
+  This method is an implementation of the Wizards GetIDString interface.
+
+  @precon  None.
+  @postcon Returns the IDE Wizard`s ID String.
+
+  @return  a String
+
+**)
+Function TITHWizard.GetIDString: String;
+
+Begin
+  Result := 'TestingHelper';
+End;
+
+(**
+
+  This method is an implementation of the Wizards GetName interface.
+
+  @precon  None.
+  @postcon Returns the IDE Wizard`s Name.
+
+  @return  a string
+
+**)
+Function TITHWizard.GetName: String;
+
+ResourceString
+  strName = 'Testing Helper - Support for running external tools before and after compilations.';
+
+Begin
+  Result := strName;
+End;
+
+(**
+
+  This method is an implementation of the Wizards GetState interface.
+
+  @precon  None.
+  @postcon Returns the IDE Wizard`s State.
+
+  @return  a TWizardState
+
+**)
+Function TITHWizard.GetState: TWizardState;
+
+Begin
+  Result := [wsEnabled];
+End;
+
+(**
+
+  This is an on click event handler for the Global Options dialogue action.
+
+  @precon  None.
+  @postcon Displazs the Global Options dialogue.
+
+  @param   Sender as a TObject
+
+**)
+Procedure TITHWizard.GlobalOptionDialogueClick(Sender: TObject);
+
+Begin
+  TfrmGlobalOptionsDialogue.Execute(FGlobalOps);
+End;
+
+(**
+
+  This is an on click event handler for the Help action.
+
+  @precon  None.
+  @postcon Displays the HTML Help for the add-in.
+
+  @param   Sender as a TObject
+
+**)
+Procedure TITHWizard.HelpClick(Sender: TObject);
+
+Begin
+  HTMLHelp(0, PChar(ITHHTMLHelpFile('Welcome')), HH_DISPLAY_TOC, 0);
+End;
+
+{$IFNDEF D2005}
 (**
 
   This is an on timer event handler for the menu timer.
@@ -332,10 +514,10 @@ End;
   @precon  Project must be a valid instance.
   @postcon Displays the Project Options dialogue.
 
-  @param   Project as an IOTAProject
+  @param   Project as an IOTAProject as a constant
 
 **)
-Procedure TTestingHelperWizard.ProjectOptions(Project: IOTAProject);
+Procedure TITHWizard.ProjectOptions(Const Project: IOTAProject);
 
 Begin
   TfrmProjectOptionsDialogue.Execute(FGlobalOps, Project);
@@ -351,7 +533,7 @@ End;
   @param   Sender as a TObject
 
 **)
-Procedure TTestingHelperWizard.ProjectOptionsClick(Sender: TObject);
+Procedure TITHWizard.ProjectOptionsClick(Sender: TObject);
 
 Begin
   If ActiveProject <> Nil Then
@@ -368,139 +550,34 @@ End;
   @param   Sender as a TObject
 
 **)
-Procedure TTestingHelperWizard.ProjectOptionsUpdate(Sender: TObject);
+Procedure TITHWizard.ProjectOptionsUpdate(Sender: TObject);
+
+ResourceString
+  strProjectOptionsFor = 'Project Options for %s';
+  strProjectOptionsNoActiveProject = 'Project Options: No Active Project!';
 
 Var
-  P         : IOTAProject;
+  P : IOTAProject;
   strProject: String;
+  A : TAction;
 
 Begin
   If Sender Is TAction Then
-    With Sender As TAction Do
-      Begin
-        P := ActiveProject;
-        If P <> Nil Then
-          Begin
-            Enabled    := True;
-            strProject := GetProjectName(P);
-            Caption    := Format('Project Options for %s', [strProject])
-          End
-        Else
-          Begin
-            Caption := 'Project Options: No Active Project!';
-            Enabled := False;
-          End;
-      End;
-End;
-
-(**
-
-  This method is a null implementation of the Wizards Execute interface.
-
-  @precon  None.
-  @postcon None.
-
-**)
-Procedure TTestingHelperWizard.Execute;
-
-Begin
-End;
-
-(**
-
-  This is an on click event handler for the Font Dialogue menu item.
-
-  @precon  None.
-  @postcon Displays the message fonts dialogue.
-
-  @param   Sender as a TObject
-
-**)
-Procedure TTestingHelperWizard.FontDialogueClick(Sender: TObject);
-
-Begin
-  TfrmFontDialogue.Execute(FGlobalOps);
-End;
-
-(**
-
-  This method is an implementation of the Wizards GetIDString interface.
-
-  @precon  None.
-  @postcon Returns the IDE Wizard`s ID String.
-
-  @return  a String
-
-**)
-Function TTestingHelperWizard.GetIDString: String;
-
-Begin
-  Result := 'TestingHelper';
-End;
-
-(**
-
-  This method is an implementation of the Wizards GetName interface.
-
-  @precon  None.
-  @postcon Returns the IDE Wizard`s Name.
-
-  @return  a string
-
-**)
-Function TTestingHelperWizard.GetName: String;
-
-Begin
-  Result := 'Testing Helper - Support for running external tools before and ' +
-    'after compilations.';
-End;
-
-(**
-
-  This method is an implementation of the Wizards GetState interface.
-
-  @precon  None.
-  @postcon Returns the IDE Wizard`s State.
-
-  @return  a TWizardState
-
-**)
-Function TTestingHelperWizard.GetState: TWizardState;
-
-Begin
-  Result := [wsEnabled];
-End;
-
-(**
-
-  This is an on click event handler for the Global Options dialogue action.
-
-  @precon  None.
-  @postcon Displazs the Global Options dialogue.
-
-  @param   Sender as a TObject
-
-**)
-Procedure TTestingHelperWizard.GlobalOptionDialogueClick(Sender: TObject);
-
-Begin
-  TfrmGlobalOptionsDialogue.Execute(FGlobalOps);
-End;
-
-(**
-
-  This is an on click event handler for the Help action.
-
-  @precon  None.
-  @postcon Displays the HTML Help for the add-in.
-
-  @param   Sender as a TObject
-
-**)
-Procedure TTestingHelperWizard.HelpClick(Sender: TObject);
-
-Begin
-  HTMLHelp(0, PChar(ITHHTMLHelpFile('Welcome')), HH_DISPLAY_TOC, 0);
+    Begin
+      A := Sender As TAction;
+      P := ActiveProject;
+      If P <> Nil Then
+        Begin
+          A.Enabled    := True;
+          strProject := GetProjectName(P);
+          A.Caption    := Format(strProjectOptionsFor, [strProject])
+        End
+      Else
+        Begin
+          A.Caption := strProjectOptionsNoActiveProject;
+          A.Enabled := False;
+        End;
+    End;
 End;
 
 (**
@@ -513,7 +590,10 @@ End;
   @param   Sender as a TObject
 
 **)
-Procedure TTestingHelperWizard.ToggleEnabled(Sender: TObject);
+Procedure TITHWizard.ToggleEnabled(Sender: TObject);
+
+ResourceString
+  strThereNotActiveProjectToEnabledOrDisable = 'There is not active project to enabled or disable.';
 
 Var
   strProjectGroup: String;
@@ -529,42 +609,7 @@ Begin
         FGlobalOps.ProjectGroupOps := Ops;
     End
   Else
-    ShowMessage('There is not active project to enabled or disable.');
-End;
-
-(**
-
-  This is an on update event handler for the Before Compilation action.
-
-  @precon  None.
-  @postcon Enables or disables the action based on the availability of a project.
-
-  @param   Sender as a TObject
-
-**)
-Procedure TTestingHelperWizard.BeforeCompilationUpdate(Sender: TObject);
-
-Var
-  P         : IOTAProject;
-  strProject: String;
-
-Begin
-  If Sender Is TAction Then
-    With Sender As TAction Do
-      Begin
-        P := ActiveProject;
-        If P <> Nil Then
-          Begin
-            Enabled    := True;
-            strProject := GetProjectName(P);
-            Caption    := Format('Before Compilation Options for %s', [strProject])
-          End
-        Else
-          Begin
-            Caption := 'Before Compilation Options: No Active Project!';
-            Enabled := False;
-          End;
-      End;
+    ShowMessage(strThereNotActiveProjectToEnabledOrDisable);
 End;
 
 (**
@@ -577,29 +622,34 @@ End;
   @param   Sender as a TObject
 
 **)
-Procedure TTestingHelperWizard.UpdateEnabled(Sender: TObject);
+Procedure TITHWizard.UpdateEnabled(Sender: TObject);
+
+ResourceString
+  strITHelperFor = 'ITHelper for %s';
+  strNotAvailable = 'Not Available';
 
 Var
   strProjectGroup: String;
-  PG             : IOTAProjectGroup;
+  PG : IOTAProjectGroup;
+  A : TAction;
 
 Begin
   If Sender Is TAction Then
-    With Sender As TAction Do
-      Begin
-        PG := ProjectGroup;
-        If PG <> Nil Then
-          Begin
-            Enabled         := True;
-            strProjectGroup := ExtractFileName(PG.FileName);
-            Caption         := Format('ITHelper for %s', [strProjectGroup]);
-          End
-        Else
-          Begin
-            Caption := 'Not Available';
-            Enabled := False;
-          End;
-      End;
+    Begin
+      A := Sender As TAction;
+      PG := ProjectGroup;
+      If PG <> Nil Then
+        Begin
+          A.Enabled         := True;
+          strProjectGroup := ExtractFileName(PG.FileName);
+          A.Caption         := Format(strITHelperFor, [strProjectGroup]);
+        End
+      Else
+        Begin
+          A.Caption := strNotAvailable;
+          A.Enabled := False;
+        End;
+    End;
 End;
 
 (**
@@ -612,7 +662,7 @@ End;
   @param   Sender as a TObject
 
 **)
-Procedure TTestingHelperWizard.ZIPDialogueClick(Sender: TObject);
+Procedure TITHWizard.ZIPDialogueClick(Sender: TObject);
 
 Begin
   If ActiveProject <> Nil Then
@@ -629,47 +679,52 @@ End;
   @param   Sender as a TObject
 
 **)
-Procedure TTestingHelperWizard.ZIPDialogueUpdate(Sender: TObject);
+Procedure TITHWizard.ZIPDialogueUpdate(Sender: TObject);
+
+ResourceString
+  strZIPOptionsFor = 'ZIP Options for %s';
+  strZIPOptionsNoActiveProject = 'ZIP Options: No Active Project!';
 
 Var
   P         : IOTAProject;
   strProject: String;
+  A : TAction;
 
 Begin
   If Sender Is TAction Then
-    With Sender As TAction Do
-      Begin
-        P := ActiveProject;
-        If P <> Nil Then
-          Begin
-            Enabled    := True;
-            strProject := GetProjectName(P);
-            Caption    := Format('ZIP Options for %s', [strProject])
-          End
-        Else
-          Begin
-            Caption := 'ZIP Options: No Active Project!';
-            Enabled := False;
-          End;
-      End;
+    Begin
+      A := Sender As TAction;
+      P := ActiveProject;
+      If P <> Nil Then
+        Begin
+          A.Enabled    := True;
+          strProject := GetProjectName(P);
+          A.Caption    := Format(strZIPOptionsFor, [strProject])
+        End
+      Else
+        Begin
+          A.Caption := strZIPOptionsNoActiveProject;
+          A.Enabled := False;
+        End;
+    End;
 End;
 
 (**
 
-  This method displays the ZIP Options dialogue for configuring the zipping of the project
-  after a successful compilation.
+  This method displays the ZIP Options dialogue for configuring the zipping of the project after a 
+  successful compilation.
 
   @precon  Project must be a valid instance.
-  @postcon Displays the ZIP Options dialogue for configuring the zipping of the project
-           after a successful compilation.
+  @postcon Displays the ZIP Options dialogue for configuring the zipping of the project after a 
+           successful compilation.
 
-  @param   Project as an IOTAProject
+  @param   Project as an IOTAProject as a constant
 
 **)
-Procedure TTestingHelperWizard.ZIPOptions(Project: IOTAProject);
+Procedure TITHWizard.ZIPOptions(Const Project: IOTAProject);
 
 Begin
-  TfrmZIPDialogue.Execute(ActiveProject, FGlobalOps);
+  TfrmZIPDialogue.Execute(Project, FGlobalOps);
 End;
 
 End.
