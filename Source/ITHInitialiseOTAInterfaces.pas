@@ -34,7 +34,7 @@ Uses
   SysUtils,
   IDENotifierInterface;
 
-{$INCLUDE '..\..\..\Library\CompilerDefinitions.inc'}
+{$INCLUDE 'CompilerDefinitions.inc'}
 
 Type
   (** A type to distinguish between packages and DLL experts. **)

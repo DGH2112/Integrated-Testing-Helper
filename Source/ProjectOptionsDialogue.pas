@@ -12,7 +12,7 @@ Unit ProjectOptionsDialogue;
 
 Interface
 
-{$I '..\..\..\Library\CompilerDefinitions.inc'}
+{$I 'CompilerDefinitions.inc'}
 
 Uses
   Windows,

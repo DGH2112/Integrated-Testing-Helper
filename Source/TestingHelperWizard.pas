@@ -23,7 +23,7 @@ Uses
   IniFiles,
   GlobalOptions;
 
-{$INCLUDE '..\..\..\Library\CompilerDefinitions.inc'}
+{$INCLUDE 'CompilerDefinitions.inc'}
 
 Type
   (** An enumerate to define which dialogue should be displayed. **)

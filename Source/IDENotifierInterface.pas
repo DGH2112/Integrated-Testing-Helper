@@ -23,7 +23,7 @@ Uses
   ExternalProcessInfo,
   GlobalOptions;
 
-{$INCLUDE '..\..\..\Library\CompilerDefinitions.inc'}
+{$INCLUDE 'CompilerDefinitions.inc'}
 
 Type
   (** A class to implement the IDE notifier interfaces **)

@@ -154,6 +154,9 @@ object frmProjectOptionsDialogue: TfrmProjectOptionsDialogue
       ColWidths = (
         150
         444)
+      RowHeights = (
+        19
+        19)
     end
     object edtMajor: TEdit
       Left = 56

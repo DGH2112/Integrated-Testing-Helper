@@ -26,7 +26,7 @@ Uses
   Buttons,
   GlobalOptions;
 
-{$INCLUDE '..\..\..\Library\CompilerDefinitions.inc'}
+{$INCLUDE 'CompilerDefinitions.inc'}
 
 Type
   (** A form to represent the form interface. **)

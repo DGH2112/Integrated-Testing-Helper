@@ -27,7 +27,7 @@ Uses
   ToolsAPI,
   GlobalOptions;
 
-{$INCLUDE '..\..\..\Library\CompilerDefinitions.inc'}
+{$INCLUDE 'CompilerDefinitions.inc'}
 
 Type
   (** A class to represent the form. **)

@@ -11,7 +11,7 @@ unit TestingHelperUtils;
 
 interface
 
-{$INCLUDE '..\..\..\Library\CompilerDefinitions.inc'}
+{$INCLUDE 'CompilerDefinitions.inc'}
 
 Uses
   SysUtils,

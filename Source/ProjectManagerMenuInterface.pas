@@ -12,7 +12,8 @@ Unit ProjectManagerMenuInterface;
 
 Interface
 
-{$INCLUDE '..\..\..\Library\CompilerDefinitions.inc'}
+{$INCLUDE 'CompilerDefinitions.inc'}
+
 {$IFDEF D2005}
 
 Uses
