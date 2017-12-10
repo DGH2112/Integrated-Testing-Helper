@@ -1,7 +1,13 @@
 /*
 
   This is a Windows Resource File which generates a Splash Screen Icon for the
-  BDS 2006 IDE.
+  BDS 2006 IDE and above.
+
+  @Author  David Hoyle
+  @Version 2.0
+  @Date    10 Dec 2017
 
 */
-TestingHelperSplashScreenBitMap BITMAP "Images\SplashScreenIcon.bmp"
+ITHelperSplashScreen24x24 BITMAP "Images\ITHelperSplashScreen24x24.bmp"
+ITHelperSplashScreen48x48 BITMAP "Images\ITHelperSplashScreen48x48.bmp"
+

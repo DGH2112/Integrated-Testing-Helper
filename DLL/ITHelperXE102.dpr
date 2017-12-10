@@ -4,8 +4,10 @@
   implement an IDE wizard.
 
   @Author  David Hoyle
-  @Date    20 Jul 2012
-  @Version 1.0
+  @Date    10 Dec 2017
+  @Version 2.0
+
+  @nometric EmptyBEGINEND
 
 **)
 Library ITHelperXE102;
@@ -44,7 +46,11 @@ uses
   FontDialogue in '..\Source\FontDialogue.pas' {frmFontDialogue},
   ZIPDialogue in '..\Source\ZIPDialogue.pas' {frmZIPDialogue},
   GlobalOptionsDialogue in '..\Source\GlobalOptionsDialogue.pas' {frmGlobalOptionsDialogue},
-  ProjectOptionsDialogue in '..\Source\ProjectOptionsDialogue.pas' {frmProjectOptionsDialogue};
+  ProjectOptionsDialogue in '..\Source\ProjectOptionsDialogue.pas' {frmProjectOptionsDialogue},
+  ITHelper.SplashScreen in '..\Source\ITHelper.SplashScreen.pas',
+  ITHelper.CommonFunctions in '..\Source\ITHelper.CommonFunctions.pas',
+  ITHelper.Constants in '..\Source\ITHelper.Constants.pas',
+  ITHelper.ResourceStrings in '..\Source\ITHelper.ResourceStrings.pas';
 
 {$R *.res}
 

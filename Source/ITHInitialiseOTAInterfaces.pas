@@ -5,7 +5,7 @@
 
   @Version 1.0
   @Author  David Hoyle
-  @Date    26 Mar 2016
+  @Date    10 Dec 2017
 
 **)
 Unit ITHInitialiseOTAInterfaces;
@@ -32,7 +32,9 @@ Uses
   Forms,
   Windows,
   SysUtils,
-  IDENotifierInterface;
+  IDENotifierInterface, 
+  ITHelper.ResourceStrings, 
+  ITHelper.Constants;
 
 {$INCLUDE 'CompilerDefinitions.inc'}
 
@@ -45,13 +47,6 @@ Const
   iWizardFailState = -1;
 
 {$IFDEF D2005}
-ResourceString
-  (** This is a text string of revision from nil and a to z. **)
-  strRevision = ' abcdefghijklmnopqrstuvwxyz';
-  (** This is a message string to appear in the splash screen **)
-  strSplashScreenName = 'Integrated Testing Helper %d.%d%s for %s';
-  (** This is another message string to appear in the splash screen **)
-  strSplashScreenBuild = 'Freeware by David Hoyle (Build %d.%d.%d.%d)';
 
 Var
   (** This is a handle for the splash screen bitmap resource **)
@@ -121,7 +116,7 @@ Begin
   {$ENDIF}
   bmSplashScreen := LoadBitmap(hInstance, 'TestingHelperSplashScreenBitMap');
   iAboutPlugin := (BorlandIDEServices As IOTAAboutBoxServices).AddPluginInfo(
-    Format(strSplashScreenName, [iMajor, iMinor, Copy(strRevision, iBugFix + 1, 1), Application.Title]),
+    Format(strSplashScreenName, [iMajor, iMinor, Copy(strRevisions, iBugFix + 1, 1), Application.Title]),
     'An IDE expert to allow the configuration of pre and post compilation processes and ' +
     'automatically ZIP the successfully compiled project for release.',
     bmSplashScreen,
@@ -169,67 +164,8 @@ Begin
     RegisterProc(InitialiseWizard(wtDLLWizard));
 End;
 
-{$IFDEF D2005}
-(**
-
-  This is a method which obtains information about the package from is version
-  information with the package resources.
-
-  @precon  None.
-  @postcon Extracts and display the applications version number present within
-           the EXE file.
-
-  @param   iMajor  as an Integer as a reference
-  @param   iMinor  as an Integer as a reference
-  @param   iBugFix as an Integer as a reference
-  @param   iBuild  as an Integer as a reference
-
-**)
-Procedure BuildNumber(var iMajor, iMinor, iBugFix, iBuild : Integer);
-
-Var
-  VerInfoSize: DWORD;
-  VerInfo: Pointer;
-  VerValueSize: DWORD;
-  VerValue: PVSFixedFileInfo;
-  Dummy: DWORD;
-  strBuffer : Array[0..MAX_PATH] Of Char;
-
-Begin
-  { Build Number }
-  GetModuleFileName(hInstance, strBuffer, MAX_PATH);
-  VerInfoSize := GetFileVersionInfoSize(strBuffer, Dummy);
-  If VerInfoSize <> 0 Then
-    Begin
-      GetMem(VerInfo, VerInfoSize);
-      Try
-        GetFileVersionInfo(strBuffer, 0, VerInfoSize, VerInfo);
-        VerQueryValue(VerInfo, '\', Pointer(VerValue), VerValueSize);
-        With VerValue^ Do
-          Begin
-            iMajor := dwFileVersionMS shr 16;
-            iMinor := dwFileVersionMS and $FFFF;
-            iBugFix := dwFileVersionLS shr 16;
-            iBuild := dwFileVersionLS and $FFFF;
-          End;
-      Finally
-        FreeMem(VerInfo, VerInfoSize);
-      End;
-    End;
-End;
-{$ENDIF}
-
 (** Create a splash screen on BDS 2006 and above. **)
 Initialization
-  {$IFDEF D2005}
-  bmSplashScreen := LoadBitmap(hInstance, 'TestingHelperSplashScreenBitMap');
-  BuildNumber(iMajor, iMinor, iBugFix, iBuild);
-  (SplashScreenServices As IOTASplashScreenServices).AddPluginBitmap(
-    Format(strSplashScreenName, [iMajor, iMinor, Copy(strRevision, iBugFix + 1, 1), Application.Title]),
-    bmSplashScreen,
-    False,
-    Format(strSplashScreenBuild, [iMajor, iMinor, iBugfix, iBuild]));
-  {$ENDIF}
 (** Ensure that the wizard is removed from the IDE.  **)
 Finalization
   If iIDENotifierIndex > iWizardFailState Then

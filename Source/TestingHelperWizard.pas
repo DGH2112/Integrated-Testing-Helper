@@ -96,11 +96,8 @@ Uses
   FontDialogue,
   ZIPDialogue,
   GlobalOptionsDialogue,
-  ProjectOptionsDialogue;
-
-ResourceString
-  (** This is the software ID for check for updates on the internet. **)
-  strSoftwareID = 'ITHelper2006';
+  ProjectOptionsDialogue, 
+  ITHelper.SplashScreen;
 
 (**
 
@@ -242,6 +239,7 @@ End;
 Constructor TTestingHelperWizard.Create;
 
 Begin
+  InstallSplashScreen;
   FTestingHelperMenu := CreateMenuItem('ITHTestingHelper', '&Testing Helper', 'Tools',
     Nil, Nil, True, False, '');
   CreateMenuItem('ITHEnabled', 'Oops...', 'ITHTestingHelper', ToggleEnabled,
