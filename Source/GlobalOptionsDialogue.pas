@@ -51,7 +51,6 @@ Type
     lvShortcuts: TListView;
     btnHelp: TBitBtn;
     Procedure btnBrowseZipEXEClick(Sender: TObject);
-    Procedure btnCheckForUpdatesClick(Sender: TObject);
     procedure lvShortcutsSelectItem(Sender: TObject; Item: TListItem; Selected: Boolean);
     procedure btnAssignClick(Sender: TObject);
     procedure btnHelpClick(Sender: TObject);
@@ -71,7 +70,6 @@ Implementation
 
 Uses
   IniFiles,
-  CheckForUpdatesOptionsForm,
   ActnList,
   TestingHelperUtils,
   Menus;
@@ -113,22 +111,6 @@ Begin
   dlgOpenEXE.FileName   := ExtractFileName(edtZipEXE.Text);
   If dlgOpenEXE.Execute Then
     edtZipEXE.Text := dlgOpenEXE.FileName;
-End;
-
-(**
-
-  This is an on click event handler for the CheckForUpdates button.
-
-  @precon  None.
-  @postcon Displays the dialogue for configuring the Check for Updates functionality.
-
-  @param   Sender as a TObject
-
-**)
-Procedure TfrmGlobalOptionsDialogue.btnCheckForUpdatesClick(Sender: TObject);
-
-Begin
-  TfrmCheckForUpdatesOptions.Execute(FGlobalOps.INIFileName);
 End;
 
 (**

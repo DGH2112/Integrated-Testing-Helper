@@ -112,16 +112,8 @@
         </DCCReference>
         <DCCReference Include="..\..\..\Library\dghlibrary.pas"/>
         <DCCReference Include="..\..\..\Library\ExternalProcessInfo.pas"/>
-        <DCCReference Include="..\..\..\LIBRARY\MSXML2_TLB.pas"/>
-        <DCCReference Include="..\..\..\LIBRARY\checkforupdates.pas"/>
-        <DCCReference Include="..\..\..\LIBRARY\CheckForUpdatesForm.pas">
-            <Form>frmCheckForUpdates</Form>
-        </DCCReference>
         <DCCReference Include="..\Source\EnabledOptions.pas">
             <Form>frmEnabledOptions</Form>
-        </DCCReference>
-        <DCCReference Include="..\..\..\Library\CheckForUpdatesOptionsForm.pas">
-            <Form>frmCheckForUpdatesOptions</Form>
         </DCCReference>
         <DCCReference Include="..\Source\ITHInitialiseOTAInterfaces.pas"/>
         <DCCReference Include="..\Source\ProjectManagerMenuInterface.pas"/>

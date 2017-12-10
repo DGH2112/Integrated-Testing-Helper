@@ -43,7 +43,6 @@ Type
     Procedure BeforeCompilationClick(Sender: TObject);
     Procedure AfterCompilationClick(Sender: TObject);
     Procedure ToggleEnabled(Sender: TObject);
-    Procedure CheckForUpdatesClick(Sender: TObject);
     Procedure FontDialogueClick(Sender: TObject);
     Procedure ZIPDialogueClick(Sender: TObject);
     Procedure ZIPDialogueUpdate(Sender: TObject);
@@ -90,7 +89,6 @@ Uses
   Forms,
   DGHLibrary,
   ExternalProcessInfo,
-  CheckForUpdates,
   StrUtils,
   Variants,
   EnabledOptions,
@@ -103,22 +101,6 @@ Uses
 ResourceString
   (** This is the software ID for check for updates on the internet. **)
   strSoftwareID = 'ITHelper2006';
-
-(**
-
-  This is an on click event for the Check for Updates menu item.
-
-  @precon  None.
-  @postcon Invokes the checking for updates on the internet.
-
-  @param   Sender as a TObject
-
-**)
-Procedure TTestingHelperWizard.CheckForUpdatesClick(Sender: TObject);
-
-Begin
-  TCheckForUpdates.Execute(strSoftwareID, FGlobalOps.INIFileName, Sender <> Nil);
-End;
 
 (**
 
@@ -279,8 +261,6 @@ Begin
   CreateMenuItem('ITHFontDlg', 'Message &Fonts...', 'ITHTestingHelper', FontDialogueClick,
     Nil, False, True, '', clOlive);
   CreateMenuItem('ITHSeparator2', '', 'ITHTestingHelper', Nil, Nil, False, True, '');
-  CreateMenuItem('ITHCheckForUpdates', 'Check for &Updates...', 'ITHTestingHelper',
-    CheckForUpdatesClick, Nil, False, True, '', clFuchsia);
   CreateMenuItem('ITHHelp', '&Help...', 'ITHTestingHelper', HelpClick, Nil, False,
     True, '');
   {$IFNDEF D2005} // Code to patch shortcuts into the menus in D7 and below.
@@ -290,7 +270,6 @@ Begin
   FMenuTimer.Enabled  := True;
   {$ENDIF}
   FGlobalOps := TGlobalOptions.Create;
-  CheckForUpdatesClick(Nil);
   //FHTMLHelpCookie := HTMLHelp(Application.Handle, Nil, HH_INITIALIZE, 0);
 End;
 

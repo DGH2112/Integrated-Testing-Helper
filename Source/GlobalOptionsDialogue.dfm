@@ -159,7 +159,6 @@ object frmGlobalOptionsDialogue: TfrmGlobalOptionsDialogue
       DDDDDDD91DDDDDAA2DDDDDDD91DDDAAAA2DDDDDDD91DDA2DAA2DDDDDD91DAADD
       DAA2D91119DDADDDDDAADD999DDDDDDDDDDADDDDDDDDDDDDDDDD}
     TabOrder = 8
-    OnClick = btnCheckForUpdatesClick
   end
   object hkShortcut: THotKey
     Left = 8
