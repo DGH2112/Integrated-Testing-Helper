@@ -4,7 +4,7 @@
   implement an IDE wizard.
 
   @Author  David Hoyle
-  @Date    10 Dec 2017
+  @Date    12 Dec 2017
   @Version 2.0
 
   @nometric EmptyBEGINEND
@@ -40,7 +40,7 @@ uses
   ExternalProcessInfo in '..\..\..\Library\ExternalProcessInfo.pas',
   EnabledOptions in '..\Source\EnabledOptions.pas' {frmEnabledOptions},
   ITHInitialiseOTAInterfaces in '..\Source\ITHInitialiseOTAInterfaces.pas',
-  ProjectManagerMenuInterface in '..\Source\ProjectManagerMenuInterface.pas',
+  ITHelper.ProjectManagerMenuInterface in '..\Source\ITHelper.ProjectManagerMenuInterface.pas',
   IDENotifierInterface in '..\Source\IDENotifierInterface.pas',
   GlobalOptions in '..\Source\GlobalOptions.pas',
   FontDialogue in '..\Source\FontDialogue.pas' {frmFontDialogue},

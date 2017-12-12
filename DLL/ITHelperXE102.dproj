@@ -116,7 +116,7 @@
             <Form>frmEnabledOptions</Form>
         </DCCReference>
         <DCCReference Include="..\Source\ITHInitialiseOTAInterfaces.pas"/>
-        <DCCReference Include="..\Source\ProjectManagerMenuInterface.pas"/>
+        <DCCReference Include="..\Source\ITHelper.ProjectManagerMenuInterface.pas"/>
         <DCCReference Include="..\Source\IDENotifierInterface.pas"/>
         <DCCReference Include="..\Source\GlobalOptions.pas"/>
         <DCCReference Include="..\Source\FontDialogue.pas">

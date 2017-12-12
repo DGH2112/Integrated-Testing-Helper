@@ -4,7 +4,7 @@
   external tools before and after the compilation of the current project.
 
   @Version 1.0
-  @Date    10 Dec 2017
+  @Date    12 Dec 2017
   @Author  David Hoyle
 
 **)
@@ -96,7 +96,7 @@ Uses
   Variants,
   EnabledOptions,
   ActnList,
-  ProjectManagerMenuInterface,
+  ITHelper.ProjectManagerMenuInterface,
   FontDialogue,
   ZIPDialogue,
   GlobalOptionsDialogue,
