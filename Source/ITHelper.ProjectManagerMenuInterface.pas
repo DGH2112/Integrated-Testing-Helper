@@ -5,7 +5,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    10 Dec 2017
+  @Date    30 Dec 2017
 
 **)
 Unit ITHelper.ProjectManagerMenuInterface;
@@ -18,7 +18,7 @@ Interface
 
 Uses
   ToolsAPI,
-  TestingHelperWizard,
+  ITHelper.Wizard,
   Classes,
   Menus;
 
@@ -101,8 +101,7 @@ Implementation
 
 Uses
   SysUtils,
-  DGHLibrary,
-  TestingHelperUtils;
+  ITHelper.TestingHelperUtils;
 
 ResourceString
   (** A resource string for plug-ins main menu. **)
@@ -190,7 +189,7 @@ End;
   @postcon Create a menu to be displayed in the project manager for handling the configuration of 
            Integrated Testing Helper Options.
 
-  @nometric MissingCONSTInParam
+  @nocheck MissingCONSTInParam
   @nohints
 
   @param   Project                as an IOTAProject as a constant
@@ -248,7 +247,7 @@ End;
   @precon  None.
   @postcon None.
 
-  @nometric EmptyMethod
+  @nocheck EmptyMethod
 
 **)
 Procedure TITHProjectManagerMenu.AfterSave;
@@ -262,7 +261,7 @@ End;
   @precon  None.
   @postcon None.
 
-  @nometric EmptyMethod
+  @nocheck EmptyMethod
 
 **)
 Procedure TITHProjectManagerMenu.BeforeSave;
@@ -313,7 +312,7 @@ End;
   @precon  None.
   @postcon None.
 
-  @nometric EmptyMethod
+  @nocheck EmptyMethod
 
 **)
 Procedure TITHProjectManagerMenu.Destroyed;
@@ -327,7 +326,7 @@ End;
   @precon  None.
   @postcon None.
 
-  @nometric EmptyMethod
+  @nocheck EmptyMethod
 
 **)
 Procedure TITHProjectManagerMenu.Modified;
@@ -608,7 +607,7 @@ End;
   @precon  None.
   @postcon Does nothing.
 
-  @nometric EmptyMethod
+  @nocheck EmptyMethod
   @nohints
 
   @param   Value as a String as a Constant
@@ -628,7 +627,7 @@ End;
   @precon  None.
   @postcon Does nothing.
 
-  @nometric MissingCONSTInParam EmptyMethod
+  @nocheck MissingCONSTInParam EmptyMethod
   @nohints
 
   @param   Value as a Boolean
@@ -648,7 +647,7 @@ End;
   @precon  None.
   @postcon Does nothing.
 
-  @nometric MissingCONSTInParam EmptyMethod
+  @nocheck MissingCONSTInParam EmptyMethod
   @nohints
 
   @param   Value as a Boolean
@@ -668,7 +667,7 @@ End;
   @precon  None.
   @postcon Does nothing.
 
-  @nometric MissingCONSTInParam EmptyMethod
+  @nocheck MissingCONSTInParam EmptyMethod
   @nohints
 
   @param   Value as a Integer
@@ -688,7 +687,7 @@ End;
   @precon  None.
   @postcon Does nothing.
 
-  @nometric MissingCONSTInParam EmptyMethod
+  @nocheck MissingCONSTInParam EmptyMethod
   @nohints
 
   @param   Value as a Boolean
@@ -708,7 +707,7 @@ End;
   @precon  None.
   @postcon Does nothing.
 
-  @nometric EmptyMethod
+  @nocheck EmptyMethod
   @nohints
 
   @param   Value as a String as a Constant
@@ -728,7 +727,7 @@ End;
   @precon  None.
   @postcon Does nothing.
 
-  @nometric EmptyMethod
+  @nocheck EmptyMethod
   @nohints
 
   @param   Value as a String as a Constant
@@ -748,7 +747,7 @@ End;
   @precon  None.
   @postcon Does nothing.
 
-  @nometric MissingCONSTInParam EmptyMethod
+  @nocheck MissingCONSTInParam EmptyMethod
   @nohints
 
   @param   Value as a Integer
@@ -768,7 +767,7 @@ End;
   @precon  None.
   @postcon Does nothing.
 
-  @nometric EmptyMethod
+  @nocheck EmptyMethod
   @nohints
 
   @param   Value as a String as a Constant

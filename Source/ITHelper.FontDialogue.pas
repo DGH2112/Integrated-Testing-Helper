@@ -5,10 +5,10 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    11 Jul 2012
+  @Date    30 Dec 2017
 
 **)
-Unit FontDialogue;
+Unit ITHelper.FontDialogue;
 
 Interface
 
@@ -25,11 +25,11 @@ Uses
   StdCtrls,
   ExtCtrls,
   Buttons,
-  GlobalOptions;
+  ITHelper.GlobalOptions;
 
 Type
   (** A class to represent the form interface. **)
-  TfrmFontDialogue = Class(TForm)
+  TfrmITHFontDialogue = Class(TForm)
     lblHeaderFontName: TLabel;
     lblToolFontName: TLabel;
     gbxMessageColours: TGroupBox;
@@ -55,18 +55,19 @@ Type
     FFontColour: Array [Low(TITHFonts) .. High(TITHFonts)] Of TColor;
     FFontStyle : Array [Low(TITHFonts) .. High(TITHFonts)] Of TFontStyles;
     FUpdating  : Boolean;
-    Procedure InitialiseMessageOptions(GlobalOps: TGlobalOptions);
-    Procedure SaveMessageOptions(GlobalOps: TGlobalOptions);
+    Procedure InitialiseMessageOptions(Const GlobalOps: TITHGlobalOptions);
+    Procedure SaveMessageOptions(Const GlobalOps: TITHGlobalOptions);
   Public
     { Public declarations }
-    Class Procedure Execute(GlobalOptions: TGlobalOptions);
+    Class Procedure Execute(Const GlobalOptions: TITHGlobalOptions);
   End;
 
 Implementation
 
 {$R *.dfm}
 
-uses TestingHelperUtils;
+Uses
+  ITHelper.TestingHelperUtils;
 
 (**
 
@@ -78,10 +79,13 @@ uses TestingHelperUtils;
   @param   Sender as a TObject
 
 **)
-Procedure TfrmFontDialogue.btnHelpClick(Sender: TObject);
+Procedure TfrmITHFontDialogue.btnHelpClick(Sender: TObject);
+
+Const
+  strMessageFonts = 'MessageFonts';
 
 Begin
-  HTMLHelp(0, PChar(ITHHTMLHelpFile('MessageFonts')), HH_DISPLAY_TOPIC, 0);
+  HTMLHelp(0, PChar(ITHHTMLHelpFile(strMessageFonts)), HH_DISPLAY_TOPIC, 0);
 End;
 
 (**
@@ -94,7 +98,7 @@ End;
   @param   Sender as a TObject
 
 **)
-Procedure TfrmFontDialogue.cbxMessageTypeClick(Sender: TObject);
+Procedure TfrmITHFontDialogue.cbxMessageTypeClick(Sender: TObject);
 
 Var
   iMessageType: TITHFonts;
@@ -123,7 +127,7 @@ End;
   @param   Sender as a TObject
 
 **)
-Procedure TfrmFontDialogue.clbxFontColourClick(Sender: TObject);
+Procedure TfrmITHFontDialogue.clbxFontColourClick(Sender: TObject);
 
 Var
   iMessageType : TITHFonts;
@@ -143,20 +147,23 @@ End;
   @precon  GlobalOptions must be a valid instance.
   @postcon Displays the dialogue.
 
-  @param   GlobalOptions as a TGlobalOptions
+  @param   GlobalOptions as a TITHGlobalOptions as a constant
 
 **)
-Class Procedure TfrmFontDialogue.Execute(GlobalOptions: TGlobalOptions);
+Class Procedure TfrmITHFontDialogue.Execute(Const GlobalOptions: TITHGlobalOptions);
+
+Var
+  frm: TfrmITHFontDialogue;
 
 Begin
-  With TfrmFontDialogue.Create(Nil) Do
-    Try
-      InitialiseMessageOptions(GlobalOptions);
-      If ShowModal = mrOK Then
-        SaveMessageOptions(GlobalOptions);
-    Finally
-      Free;
-    End;
+  frm := TfrmITHFontDialogue.Create(Nil);
+  Try
+    frm.InitialiseMessageOptions(GlobalOptions);
+    If frm.ShowModal = mrOK Then
+      frm.SaveMessageOptions(GlobalOptions);
+  Finally
+    frm.Free;
+  End;
 End;
 
 (**
@@ -169,7 +176,7 @@ End;
   @param   Sender as a TObject
 
 **)
-Procedure TfrmFontDialogue.FontStyleClick(Sender: TObject);
+Procedure TfrmITHFontDialogue.FontStyleClick(Sender: TObject);
 
 Var
   iMessageType: TITHFonts;
@@ -197,10 +204,10 @@ End;
   @precon  None.
   @postcon Initialises the message font checkboxes in the dialogue.
 
-  @param   GlobalOps as a TGlobalOptions
+  @param   GlobalOps as a TITHGlobalOptions as a constant
 
 **)
-Procedure TfrmFontDialogue.InitialiseMessageOptions(GlobalOps: TGlobalOptions);
+Procedure TfrmITHFontDialogue.InitialiseMessageOptions(Const GlobalOps: TITHGlobalOptions);
 
 Const
   strFontDescriptions: Array [Low(TITHFonts) .. High(TITHFonts)
@@ -233,10 +240,10 @@ End;
   @precon  None.
   @postcon Saves the message options to the Options record structure.
 
-  @param   GlobalOps as a TGlobalOptions
+  @param   GlobalOps as a TITHGlobalOptions as a constant
 
 **)
-Procedure TfrmFontDialogue.SaveMessageOptions(GlobalOps: TGlobalOptions);
+Procedure TfrmITHFontDialogue.SaveMessageOptions(Const GlobalOps: TITHGlobalOptions);
 
 Var
   iMessageType: TITHFonts;

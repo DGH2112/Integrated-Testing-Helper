@@ -4,11 +4,11 @@
   external tools before and after the compilation of the current project.
 
   @Version 1.0
-  @Date    12 Dec 2017
+  @Date    30 Dec 2017
   @Author  David Hoyle
 
 **)
-Unit TestingHelperWizard;
+Unit ITHelper.Wizard;
 
 Interface
 
@@ -17,11 +17,11 @@ Uses
   Classes,
   Menus,
   Contnrs,
-  TestingHelperUtils,
+  ITHelper.TestingHelperUtils,
   ExtCtrls,
-  ConfigurationForm,
+  ITHelper.ConfigurationForm,
   IniFiles,
-  GlobalOptions;
+  ITHelper.GlobalOptions;
 
 {$INCLUDE 'CompilerDefinitions.inc'}
 
@@ -34,7 +34,7 @@ Type
   TITHWizard = Class(TNotifierObject, IOTAWizard)
   Strict Private
     FAboutBoxIndex          : Integer;
-    FGlobalOps              : TGlobalOptions;
+    FGlobalOps              : TITHGlobalOptions;
     FTestingHelperMenu      : TMenuItem;
     FProjectMgrMenuIndex    : Integer;
     FProjectMgrMenuNotifier : IOTAProjectMenuItemCreatorNotifier;
@@ -76,9 +76,9 @@ Type
       application.
       @precon  None.
       @postcon Returns the global options.
-      @return  a TGlobalOptions
+      @return  a TITHGlobalOptions
     **)
-    Property GlobalOps: TGlobalOptions Read FGlobalOps;
+    Property GlobalOps: TITHGlobalOptions Read FGlobalOps;
   End;
 
 Implementation
@@ -87,20 +87,19 @@ Uses
   Windows,
   SysUtils,
   Dialogs,
-  ProcessingForm,
   Graphics,
   Forms,
-  DGHLibrary,
-  ExternalProcessInfo,
   StrUtils,
   Variants,
-  EnabledOptions,
   ActnList,
+  ITHelper.EnabledOptions,
+  ITHelper.ProcessingForm,
+  ITHelper.ExternalProcessInfo,
   ITHelper.ProjectManagerMenuInterface,
-  FontDialogue,
-  ZIPDialogue,
-  GlobalOptionsDialogue,
-  ProjectOptionsDialogue, 
+  ITHelper.FontDialogue,
+  ITHelper.ZIPDialogue,
+  ITHelper.GlobalOptionsDialogue,
+  ITHelper.ProjectOptionsDialogue, 
   ITHelper.SplashScreen, 
   ITHelper.AboutBox;
 
@@ -119,7 +118,7 @@ Uses
 Procedure TITHWizard.AfterCompilation(Const Project: IOTAProject);
 
 Begin
-  If TfrmConfigure.Execute(Project, FGlobalOps, dtAfter) Then
+  If TfrmITHConfigureDlg.Execute(Project, FGlobalOps, dtAfter) Then
     FGlobalOps.Save;
 End;
 
@@ -195,7 +194,7 @@ End;
 Procedure TITHWizard.BeforeCompilation(Const Project: IOTAProject);
 
 Begin
-  If TfrmConfigure.Execute(Project, FGlobalOps, dtBefore) Then
+  If TfrmITHConfigureDlg.Execute(Project, FGlobalOps, dtBefore) Then
     FGlobalOps.Save;
 End;
 
@@ -329,7 +328,7 @@ Begin
   FMenuTimer.Interval := 1000;
   FMenuTimer.Enabled  := True;
   {$ENDIF}
-  FGlobalOps := TGlobalOptions.Create;
+  FGlobalOps := TITHGlobalOptions.Create;
   //FHTMLHelpCookie := HTMLHelp(Application.Handle, Nil, HH_INITIALIZE, 0);
 End;
 
@@ -356,7 +355,7 @@ Begin
   {$IFNDEF DXE20}
   //: @bug This has been removed from Delphi XE2 as it generates an Access Violation as
   //: the IDE closes down.
-  ClearMessages([cmCompiler]);
+  ClearMessages([cmCompiler, cmGroup]);
   {$ENDIF}
   FGlobalOps.Free;
   If FProjectMgrMenuIndex > -1 Then
@@ -377,7 +376,7 @@ End;
   @precon  None.
   @postcon None.
 
-  @nometric EmptyMethod
+  @nocheck EmptyMethod
 
 **)
 Procedure TITHWizard.Execute;
@@ -398,7 +397,7 @@ End;
 Procedure TITHWizard.FontDialogueClick(Sender: TObject);
 
 Begin
-  TfrmFontDialogue.Execute(FGlobalOps);
+  TfrmITHFontDialogue.Execute(FGlobalOps);
 End;
 
 (**
@@ -465,7 +464,7 @@ End;
 Procedure TITHWizard.GlobalOptionDialogueClick(Sender: TObject);
 
 Begin
-  TfrmGlobalOptionsDialogue.Execute(FGlobalOps);
+  TfrmITHGlobalOptionsDialogue.Execute(FGlobalOps);
 End;
 
 (**
@@ -520,7 +519,7 @@ End;
 Procedure TITHWizard.ProjectOptions(Const Project: IOTAProject);
 
 Begin
-  TfrmProjectOptionsDialogue.Execute(FGlobalOps, Project);
+  TfrmITHProjectOptionsDialogue.Execute(FGlobalOps, Project);
 End;
 
 (**
@@ -598,7 +597,7 @@ ResourceString
 Var
   strProjectGroup: String;
   PG             : IOTAProjectGroup;
-  Ops            : TEnabledOptions;
+  Ops            : TITHEnabledOptions;
 
 Begin
   PG := ProjectGroup;
@@ -724,7 +723,7 @@ End;
 Procedure TITHWizard.ZIPOptions(Const Project: IOTAProject);
 
 Begin
-  TfrmZIPDialogue.Execute(Project, FGlobalOps);
+  TfrmITHZIPDialogue.Execute(Project, FGlobalOps);
 End;
 
 End.

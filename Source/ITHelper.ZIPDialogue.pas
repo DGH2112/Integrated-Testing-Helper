@@ -5,10 +5,10 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    08 Jul 2012
+  @Date    30 Dec 2017
 
 **)
-Unit ZIPDialogue;
+Unit ITHelper.ZIPDialogue;
 
 Interface
 
@@ -25,13 +25,13 @@ Uses
   StdCtrls,
   Buttons,
   ToolsAPI,
-  GlobalOptions;
+  ITHelper.GlobalOptions;
 
 {$INCLUDE 'CompilerDefinitions.inc'}
 
 Type
   (** A class to represent the form. **)
-  TfrmZIPDialogue = Class(TForm)
+  TfrmITHZIPDialogue = Class(TForm)
     lblZipInfo: TLabel;
     lblZIPName: TLabel;
     lblAdditionalFiles: TLabel;
@@ -58,8 +58,8 @@ Type
     Procedure cbxEnabledZippingClick(Sender: TObject);
     Procedure edtZipEXEExit(Sender: TObject);
     Procedure btnOKClick(Sender: TObject);
-    Procedure InitialiseOptions(GlobalOps: TGlobalOptions);
-    Procedure SaveOptions(GlobalOps: TGlobalOptions);
+    Procedure InitialiseOptions(Const GlobalOps: TITHGlobalOptions);
+    Procedure SaveOptions(Const GlobalOps: TITHGlobalOptions);
     procedure btnHelpClick(Sender: TObject);
   Private
     { Private declarations }
@@ -67,7 +67,7 @@ Type
     FFileName: String;
   Public
     { Public declarations }
-    Class Procedure Execute(Project: IOTAProject; GlobalOps: TGlobalOptions);
+    Class Procedure Execute(Const Project: IOTAProject; Const GlobalOps: TITHGlobalOptions);
   End;
 
 Implementation
@@ -75,11 +75,23 @@ Implementation
 {$R *.dfm}
 
 Uses
-  AdditionalZipFilesForm,
+  ITHelper.AdditionalZipFilesForm,
   FileCtrl,
-  TestingHelperUtils,
-  dghlibrary,
-  IniFiles;
+  ITHelper.TestingHelperUtils,
+  IniFiles, 
+  ITHelper.CommonFunctions;
+
+Const
+  (** An INI Section for the dialogues size and position. **)
+  strZIPDlgSection = 'ZIP Dlg';
+  (** An INI Key for the top **)
+  strTopKey = 'Top';
+  (** An INI Key for the left **)
+  strLeftLey = 'Left';
+  (** An INI Key for the height **)
+  strHeightKey = 'Height';
+  (** An INI Key for the width **)
+  strWidthKey = 'Width';
 
 (**
 
@@ -91,7 +103,7 @@ Uses
   @param   Sender as a TObject
 
 **)
-Procedure TfrmZIPDialogue.btnAddZipClick(Sender: TObject);
+Procedure TfrmITHZIPDialogue.btnAddZipClick(Sender: TObject);
 
 Var
   strWildcard: String;
@@ -115,7 +127,10 @@ End;
   @param   Sender as a TObject
 
 **)
-Procedure TfrmZIPDialogue.btnBrowseBasePathClick(Sender: TObject);
+Procedure TfrmITHZIPDialogue.btnBrowseBasePathClick(Sender: TObject);
+
+ResourceString
+  strZipBaseDirectory = 'Zip Base Directory';
 
 Var
   strDir: String;
@@ -124,7 +139,7 @@ Begin
   strDir := edtBasePath.Text;
   If strDir = '' Then
     strDir := ExpandMacro(ExtractFilePath(edtZipName.Text), FProject);
-  If SelectDirectory('Zip Base Directory', '', strDir {$IFDEF D2005},
+  If SelectDirectory(strZipBaseDirectory, '', strDir {$IFDEF D2005},
     [sdNewFolder, sdShowShares, sdNewUI, sdValidateDir] {$ENDIF}) Then
     edtBasePath.Text := strDir + '\';
 End;
@@ -140,7 +155,7 @@ End;
   @param   Sender as a TObject
 
 **)
-Procedure TfrmZIPDialogue.btnBrowseZipClick(Sender: TObject);
+Procedure TfrmITHZIPDialogue.btnBrowseZipClick(Sender: TObject);
 
 Begin
   dlgOpenZIP.FileName := ExtractFileName(ExpandMacro(edtZipName.Text, FProject));
@@ -159,7 +174,7 @@ End;
   @param   Sender as a TObject
 
 **)
-Procedure TfrmZIPDialogue.btnDeleteZipClick(Sender: TObject);
+Procedure TfrmITHZIPDialogue.btnDeleteZipClick(Sender: TObject);
 
 Begin
   If lbAdditionalWildcards.ItemIndex > -1 Then
@@ -176,7 +191,7 @@ End;
   @param   Sender as a TObject
 
 **)
-Procedure TfrmZIPDialogue.btnEditZipClick(Sender: TObject);
+Procedure TfrmITHZIPDialogue.btnEditZipClick(Sender: TObject);
 
 Var
   strWildcard: String;
@@ -202,10 +217,13 @@ End;
   @param   Sender as a TObject
 
 **)
-Procedure TfrmZIPDialogue.btnHelpClick(Sender: TObject);
+Procedure TfrmITHZIPDialogue.btnHelpClick(Sender: TObject);
+
+Const
+  strZIPOptions = 'ZIPOptions';
 
 Begin
-  HtmlHelp(0, PChar(ITHHTMLHelpFile('ZIPOptions')), HH_DISPLAY_TOPIC, 0);
+  HtmlHelp(0, PChar(ITHHTMLHelpFile(strZIPOptions)), HH_DISPLAY_TOPIC, 0);
 End;
 
 (**
@@ -219,22 +237,24 @@ End;
   @param   Sender as a TObject
 
 **)
-Procedure TfrmZIPDialogue.btnOKClick(Sender: TObject);
+Procedure TfrmITHZIPDialogue.btnOKClick(Sender: TObject);
+
+ResourceString
+  strZipFileBaseDirectoryDoesNotExist = 'The zip file base directory "%s" does not exist.';
+  strZipFilePathDirectoryDoesNotExist = 'The zip file path directory "%s" does not exist.';
 
 Begin
-  If cbxEnabledZipping.Checked And Not
-  {$IFDEF Dxe20}System.{$ENDIF}SysUtils.DirectoryExists(ExpandMacro(edtBasePath.Text,
+  If cbxEnabledZipping.Checked And Not SysUtils.DirectoryExists(ExpandMacro(edtBasePath.Text,
       FProject)) Then
     Begin
-      MessageDlg(Format('The zip file base directory "%s" does not exist.',
+      MessageDlg(Format(strZipFileBaseDirectoryDoesNotExist,
           [ExpandMacro(edtBasePath.Text, FProject)]), mtError, [mbOK], 0);
       ModalResult := mrNone;
     End;
-  If cbxEnabledZipping.Checked And Not
-  {$IFDEF Dxe20}System.{$ENDIF}SysUtils.DirectoryExists(ExtractFilePath(ExpandMacro(
+  If cbxEnabledZipping.Checked And Not SysUtils.DirectoryExists(ExtractFilePath(ExpandMacro(
     edtZipName.Text, FProject))) Then
     Begin
-      MessageDlg(Format('The zip file path directory "%s" does not exist.',
+      MessageDlg(Format(strZipFilePathDirectoryDoesNotExist,
           [ExpandMacro(ExtractFilePath(edtZipName.Text), FProject)]), mtError, [mbOK], 0);
       ModalResult := mrNone;
     End;
@@ -252,7 +272,7 @@ End;
   @param   Sender as a TObject
 
 **)
-Procedure TfrmZIPDialogue.cbxEnabledZippingClick(Sender: TObject);
+Procedure TfrmITHZIPDialogue.cbxEnabledZippingClick(Sender: TObject);
 
 Begin
   lblZIPName.Enabled               := cbxEnabledZipping.Checked;
@@ -280,7 +300,7 @@ End;
   @param   Sender as a TObject
 
 **)
-Procedure TfrmZIPDialogue.edtZipEXEExit(Sender: TObject);
+Procedure TfrmITHZIPDialogue.edtZipEXEExit(Sender: TObject);
 
 ResourceString
   strCorrect = 'The zip executable "%s" has been found!';
@@ -306,25 +326,31 @@ End;
   @precon  Project and GlobalOps must be valid instances.
   @postcon Dislays the dialogue.
 
-  @param   Project   as an IOTAProject
-  @param   GlobalOps as a TGlobalOptions
+  @param   Project   as an IOTAProject as a constant
+  @param   GlobalOps as a TITHGlobalOptions as a constant
 
 **)
-Class Procedure TfrmZIPDialogue.Execute(Project: IOTAProject; GlobalOps: TGlobalOptions);
+Class Procedure TfrmITHZIPDialogue.Execute(Const Project: IOTAProject; Const GlobalOps: TITHGlobalOptions);
+
+ResourceString
+  strZIPOptionsFor = 'ZIP Options for %s';
+
+Var
+  frm: TfrmITHZIPDialogue;
 
 Begin
-  With TfrmZIPDialogue.Create(Nil) Do
-    Try
-      FProject := Project;
-      InitialiseOptions(GlobalOps);
-      cbxEnabledZippingClick(Nil);
-      edtZipEXEExit(Nil);
-      Caption := Format('ZIP Options for %s', [GetProjectName(Project)]);
-      If ShowModal = mrOK Then
-        SaveOptions(GlobalOps);
-    Finally
-      Free;
-    End;
+  frm := TfrmITHZIPDialogue.Create(Nil);
+  Try
+    frm.FProject := Project;
+    frm.InitialiseOptions(GlobalOps);
+    frm.cbxEnabledZippingClick(Nil);
+    frm.edtZipEXEExit(Nil);
+    frm.Caption := Format(strZIPOptionsFor, [GetProjectName(Project)]);
+    If frm.ShowModal = mrOK Then
+      frm.SaveOptions(GlobalOps);
+  Finally
+    frm.Free;
+  End;
 End;
 
 (**
@@ -334,32 +360,36 @@ End;
   @precon  None.
   @postcon Initialises the project options in the dialogue.
 
-  @param   GlobalOps as a TGlobalOptions
+  @param   GlobalOps as a TITHGlobalOptions as a constant
 
 **)
-Procedure TfrmZIPDialogue.InitialiseOptions(GlobalOps: TGlobalOptions);
+Procedure TfrmITHZIPDialogue.InitialiseOptions(Const GlobalOps: TITHGlobalOptions);
+
+Var
+  iniFile: TMemIniFile;
+  GO: TITHProjectOptions;
 
 Begin
-  With TMemIniFile.Create(GlobalOps.INIFileName) Do
-    Try
-      Top    := ReadInteger('ZIP Dlg', 'Top', (Screen.Height - Height) Div 2);
-      Left   := ReadInteger('ZIP Dlg', 'Left', (Screen.Width -  Width) Div 2);
-      Height := ReadInteger('ZIP Dlg', 'Height', Height);
-      Width  := ReadInteger('ZIP Dlg', 'Width', Width);
-    Finally
-      Free;
-    End;
-  FFileName                 := GlobalOps.ZipEXE;
-  With GlobalOps.ProjectOptions(FProject) Do
-    Try
-      cbxEnabledZipping.Checked := EnableZipping;
-      edtZipName.Text           := ZipName;
-      edtBasePath.Text          := BasePath;
-      mmoExclusionPatterns.Text := ExcPatterns;
-      lbAdditionalWildcards.Items.Assign(AddZipFiles);
-    Finally
-      Free;
-    End;
+  iniFile := TMemIniFile.Create(GlobalOps.INIFileName);
+  Try
+    Top    := iniFile.ReadInteger(strZIPDlgSection, strTopKey, (Screen.Height - Height) Div 2);
+    Left   := iniFile.ReadInteger(strZIPDlgSection, strLeftLey, (Screen.Width -  Width) Div 2);
+    Height := iniFile.ReadInteger(strZIPDlgSection, strHeightKey, Height);
+    Width  := iniFile.ReadInteger(strZIPDlgSection, strWidthKey, Width);
+  Finally
+    iniFile.Free;
+  End;
+  FFileName := GlobalOps.ZipEXE;
+  GO := GlobalOps.ProjectOptions(FProject);
+  Try
+    cbxEnabledZipping.Checked := GO.EnableZipping;
+    edtZipName.Text           := GO.ZipName;
+    edtBasePath.Text          := GO.BasePath;
+    mmoExclusionPatterns.Text := GO.ExcPatterns;
+    lbAdditionalWildcards.Items.Assign(GO.AddZipFiles);
+  Finally
+    GO.Free;
+  End;
 End;
 
 (**
@@ -369,32 +399,36 @@ End;
   @precon  None.
   @postcon Saves the project options to the ini file.
 
-  @param   GlobalOps as a TGlobalOptions
+  @param   GlobalOps as a TITHGlobalOptions as a constant
 
 **)
-Procedure TfrmZIPDialogue.SaveOptions(GlobalOps: TGlobalOptions);
+Procedure TfrmITHZIPDialogue.SaveOptions(Const GlobalOps: TITHGlobalOptions);
+
+Var
+  iniFile: TMemIniFile;
+  GO: TITHProjectOptions;
 
 Begin
-  With TMemIniFile.Create(GlobalOps.INIFileName) Do
-    Try
-      WriteInteger('ZIP Dlg', 'Top', Top);
-      WriteInteger('ZIP Dlg', 'Left', Left);
-      WriteInteger('ZIP Dlg', 'Height', Height);
-      WriteInteger('ZIP Dlg', 'Width', Width);
-      UpdateFile;
-    Finally
-      Free;
-    End;
-  With GlobalOps.ProjectOptions(FProject) Do
-    Try
-      EnableZipping := cbxEnabledZipping.Checked;
-      ZipName := edtZipName.Text;
-      BasePath := edtBasePath.Text;
-      ExcPatterns := mmoExclusionPatterns.Text;
-      AddZipFiles.Assign(lbAdditionalWildcards.Items);
-    Finally
-      Free;
-    End;
+  iniFile := TMemIniFile.Create(GlobalOps.INIFileName);
+  Try
+    iniFile.WriteInteger(strZIPDlgSection, strTopKey, Top);
+    iniFile.WriteInteger(strZIPDlgSection, strLeftLey, Left);
+    iniFile.WriteInteger(strZIPDlgSection, strHeightKey, Height);
+    iniFile.WriteInteger(strZIPDlgSection, strWidthKey, Width);
+    iniFile.UpdateFile;
+  Finally
+    iniFile.Free;
+  End;
+  GO := GlobalOps.ProjectOptions(FProject);
+  Try
+    GO.EnableZipping := cbxEnabledZipping.Checked;
+    GO.ZipName := edtZipName.Text;
+    GO.BasePath := edtBasePath.Text;
+    GO.ExcPatterns := mmoExclusionPatterns.Text;
+    GO.AddZipFiles.Assign(lbAdditionalWildcards.Items);
+  Finally
+    GO.Free;
+  End;
 End;
 
 End.

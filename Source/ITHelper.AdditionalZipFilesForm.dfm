@@ -2,7 +2,7 @@ object frmAdditionalZipFiles: TfrmAdditionalZipFiles
   Left = 0
   Top = 0
   Caption = 'Additional Zip Files'
-  ClientHeight = 82
+  ClientHeight = 85
   ClientWidth = 624
   Color = clBtnFace
   Constraints.MaxHeight = 120
@@ -17,7 +17,7 @@ object frmAdditionalZipFiles: TfrmAdditionalZipFiles
   Position = poScreenCenter
   DesignSize = (
     624
-    82)
+    85)
   PixelsPerInch = 96
   TextHeight = 13
   object lblWildcard: TLabel

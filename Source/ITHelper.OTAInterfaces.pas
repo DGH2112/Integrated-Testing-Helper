@@ -5,10 +5,10 @@
 
   @Version 1.0
   @Author  David Hoyle
-  @Date    10 Dec 2017
+  @Date    30 Dec 2017
 
 **)
-Unit ITHInitialiseOTAInterfaces;
+Unit ITHelper.OTAInterfaces;
 
 Interface
 
@@ -25,8 +25,8 @@ Exports
 Implementation
 
 Uses
-  TestingHelperWizard,
-  IDENotifierInterface;
+  ITHelper.Wizard,
+  ITHelper.IDENotifierInterface;
 
 {$INCLUDE 'CompilerDefinitions.inc'}
 
@@ -70,7 +70,7 @@ Begin
   If WizardType = wtPackageWizard Then
     iWizardIndex := (BorlandIDEServices As IOTAWizardServices).AddWizard(Result);
   iIDENotifierIndex := (BorlandIDEServices As IOTAServices).AddNotifier(
-    TTestingHelperIDENotifier.Create(Result.GlobalOps));
+    TITHelperIDENotifier.Create(Result.GlobalOps));
 End;
 
 (**
@@ -81,7 +81,7 @@ End;
   @precon  None.
   @postcon Initialises the wizard.
 
-  @nometric MissingCONSTInParam
+  @nocheck MissingCONSTInParam
   @nohints
 
   @param   BorlandIDEServices as an IBorlandIDEServices as a constant

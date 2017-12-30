@@ -1,4 +1,4 @@
-object frmProjectOptionsDialogue: TfrmProjectOptionsDialogue
+object frmITHProjectOptionsDialogue: TfrmITHProjectOptionsDialogue
   Left = 0
   Top = 0
   BorderIcons = []

@@ -4,7 +4,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    10 Dec 2017
+  @Date    30 Dec 2017
   
 **)
 Unit ITHelper.SplashScreen;
@@ -47,6 +47,8 @@ Var
   bmSplashScreen : HBITMAP;
   iMajor, iMinor, iBugFix, iBuild : Integer;
   SS : IOTASplashScreenServices;
+  strModuleName: String;
+  iSize: Cardinal;
 
 Begin
   {$IFDEF D2007}
@@ -54,7 +56,10 @@ Begin
   {$ELSE}
   bmSplashScreen := LoadBitmap(hInstance, strITHelperSplashScreen48x48);
   {$ENDIF}
-  BuildNumber(iMajor, iMinor, iBugFix, iBuild);
+  SetLength(strModuleName, MAX_PATH);
+  iSize := GetModuleFileName(hInstance, PChar(strModuleName), MAX_PATH);
+  SetLength(strModuleName, iSize);
+  BuildNumber(strModuleName, iMajor, iMinor, iBugFix, iBuild);
   If Supports(SplashScreenServices, IOTASplashScreenServices, SS) Then
     Begin
       SS.AddPluginBitmap(

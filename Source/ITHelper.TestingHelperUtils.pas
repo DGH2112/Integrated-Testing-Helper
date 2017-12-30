@@ -4,10 +4,10 @@
 
   @Version 1.0
   @Author  David Hoyle
-  @Date    08 Jul 2012
+  @Date    30 Dec 2017
 
 **)
-unit TestingHelperUtils;
+unit ITHelper.TestingHelperUtils;
 
 interface
 
@@ -72,7 +72,7 @@ Type
 
   (** An enumerate to defien which message should be cleared from the IDE
       message window. **)
-  TClearMessage = (cmCompiler, cmSearch, cmTool);
+  TClearMessage = (cmCompiler, cmSearch, cmTool, cmGroup);
   (** A set of the above message types. **)
   TClearMessages = Set of TClearMessage;
 
@@ -143,7 +143,7 @@ Uses
 
 ResourceString
   (** This is a resourcestring for the message tab name. **)
-  strITHelperGroup = 'ITHelper';
+  strITHelperGroup = 'ITHelper Messages';
 
 Var
   (** A private variable to is used to hold action reference so that they
@@ -435,13 +435,30 @@ End;
 **)
 Procedure ClearMessages(Msg : TClearMessages);
 
+Var
+  MS : IOTAMessageServices;
+  Group : IOTAMessageGroup;
+  
 Begin
-  If cmCompiler In Msg Then
-    (BorlandIDEServices As IOTAMessageServices).ClearCompilerMessages;
-  If cmSearch In Msg Then
-    (BorlandIDEServices As IOTAMessageServices).ClearSearchMessages;
-  If cmTool In Msg Then
-    (BorlandIDEServices As IOTAMessageServices).ClearToolMessages;
+  If Supports(BorlandIDEServices, IOTAMessageServices, MS) Then
+    Begin
+      //: @bug Does not clear ITHelper custom messages from its own message group.
+      If cmCompiler In Msg Then
+        MS.ClearCompilerMessages;
+      If cmSearch In Msg Then
+        MS.ClearSearchMessages;
+      If cmTool In Msg Then
+        MS.ClearToolMessages;
+      If cmGroup In Msg Then
+        Begin
+          Group := MS.GetGroup(strITHelperGroup);
+          If Assigned(Group) Then
+            Begin
+              MS.ClearMessageGroup(Group);
+              MS.ClearToolMessages(Group);
+            End;
+        End;
+    End;
 End;
 
 {$IFDEF D0006}
@@ -459,13 +476,14 @@ End;
 Procedure ShowMessages(strGroupName : String = '');
 
 Var
+  MS : IOTAMessageServices;
   G : IOTAMessageGroup;
 
 Begin
-  With (BorlandIDEServices As IOTAMessageServices) Do
+  If Supports(BorlandIDEServices, IOTAMessageServices, MS) Then
     Begin
-      G := GetGroup(strGroupName);
-      ShowMessageView(G);
+      G := MS.GetGroup(strGroupName);
+      MS.ShowMessageView(G);
     End;
 End;
 {$ENDIF}
@@ -678,11 +696,6 @@ Function AddMsg(strText: String; boolGroup, boolAutoScroll: Boolean;
   strFontName: String; iForeColour: TColor; fsStyle: TFontStyles;
   iBackColour: TColor = clWindow; ptrParent: Pointer = Nil): Pointer;
 
-{$IFDEF D0006}
-Const
-  strMessageGroupName = 'My Custom Messages';
-{$ENDIF}
-
 Var
   M: TCustomMessage;
   {$IFDEF D0006}
@@ -699,7 +712,7 @@ Begin
           {$IFDEF D0006}
           G := Nil;
           If boolGroup Then
-            G := AddMessageGroup(strMessageGroupName)
+            G := AddMessageGroup(strITHelperGroup)
           Else
             G := GetMessageGroup(0);
           {$IFDEF D2005}

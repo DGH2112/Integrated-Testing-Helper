@@ -8,7 +8,7 @@
   @Author  David Hoyle
 
 **)
-unit AdditionalZipFilesForm;
+unit ITHelper.AdditionalZipFilesForm;
 
 interface
 
@@ -50,7 +50,7 @@ implementation
 
 Uses
   FileCtrl,
-  TestingHelperUtils;
+  ITHelper.TestingHelperUtils;
 
 (**
 

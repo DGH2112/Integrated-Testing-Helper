@@ -1,10 +1,10 @@
-object frmGlobalOptionsDialogue: TfrmGlobalOptionsDialogue
+object frmITHGlobalOptionsDialogue: TfrmITHGlobalOptionsDialogue
   Left = 0
   Top = 0
   BorderIcons = []
   BorderStyle = bsDialog
   Caption = 'Global Options'
-  ClientHeight = 393
+  ClientHeight = 396
   ClientWidth = 519
   Color = clBtnFace
   Constraints.MinHeight = 421
@@ -18,7 +18,7 @@ object frmGlobalOptionsDialogue: TfrmGlobalOptionsDialogue
   Position = poScreenCenter
   DesignSize = (
     519
-    393)
+    396)
   PixelsPerInch = 96
   TextHeight = 13
   object lblClearMessagesAfter: TLabel

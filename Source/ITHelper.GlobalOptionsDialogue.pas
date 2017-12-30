@@ -5,10 +5,10 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    08 Jul 2012
+  @Date    30 Dec 2017
 
 **)
-Unit GlobalOptionsDialogue;
+Unit ITHelper.GlobalOptionsDialogue;
 
 Interface
 
@@ -25,11 +25,11 @@ Uses
   Buttons,
   ComCtrls,
   StdCtrls,
-  GlobalOptions;
+  ITHelper.GlobalOptions;
 
 Type
   (** A class which represents a form **)
-  TfrmGlobalOptionsDialogue = Class(TForm)
+  TfrmITHGlobalOptionsDialogue = Class(TForm)
     lblZIPEXE: TLabel;
     lblZipParams: TLabel;
     chkGroupMessages: TCheckBox;
@@ -56,12 +56,12 @@ Type
     procedure btnHelpClick(Sender: TObject);
   Private
     { Private declarations }
-    FGlobalOps: TGlobalOptions;
-    Procedure InitialiseOptions(GlobalOps: TGlobalOptions);
-    Procedure SaveOptions(GlobalOps: TGlobalOptions);
+    FGlobalOps: TITHGlobalOptions;
+    Procedure InitialiseOptions(Const GlobalOps: TITHGlobalOptions);
+    Procedure SaveOptions(Const GlobalOps: TITHGlobalOptions);
   Public
     { Public declarations }
-    Class Procedure Execute(GlobalOps: TGlobalOptions);
+    Class Procedure Execute(Const GlobalOps: TITHGlobalOptions);
   End;
 
 Implementation
@@ -71,7 +71,7 @@ Implementation
 Uses
   IniFiles,
   ActnList,
-  TestingHelperUtils,
+  ITHelper.TestingHelperUtils,
   Menus;
 
 { TfrmGlobalOptionsDialogue }
@@ -86,7 +86,7 @@ Uses
   @param   Sender as a TObject
 
 **)
-procedure TfrmGlobalOptionsDialogue.btnAssignClick(Sender: TObject);
+procedure TfrmITHGlobalOptionsDialogue.btnAssignClick(Sender: TObject);
 
 begin
   If lvShortcuts.ItemIndex >  -1 Then
@@ -104,7 +104,7 @@ end;
   @param   Sender as a TObject
 
 **)
-Procedure TfrmGlobalOptionsDialogue.btnBrowseZipEXEClick(Sender: TObject);
+Procedure TfrmITHGlobalOptionsDialogue.btnBrowseZipEXEClick(Sender: TObject);
 
 Begin
   dlgOpenEXE.InitialDir := ExtractFilePath(edtZipEXE.Text);
@@ -123,10 +123,13 @@ End;
   @param   Sender as a TObject
 
 **)
-Procedure TfrmGlobalOptionsDialogue.btnHelpClick(Sender: TObject);
+Procedure TfrmITHGlobalOptionsDialogue.btnHelpClick(Sender: TObject);
+
+Const
+  strGlobalOptions = 'GlobalOptions';
 
 Begin
-  HTMLHelp(0, PChar(ITHHTMLHelpFile('GlobalOptions')), HH_DISPLAY_TOPIC, 0);
+  HTMLHelp(0, PChar(ITHHTMLHelpFile(strGlobalOptions)), HH_DISPLAY_TOPIC, 0);
 End;
 
 (**
@@ -136,21 +139,24 @@ End;
   @precon  GlobalOps must be a valid instance.
   @postcon Displays the dialogue
 
-  @param   GlobalOps as a TGlobalOptions
+  @param   GlobalOps as a TITHGlobalOptions as a constant
 
 **)
-Class Procedure TfrmGlobalOptionsDialogue.Execute(GlobalOps: TGlobalOptions);
+Class Procedure TfrmITHGlobalOptionsDialogue.Execute(Const GlobalOps: TITHGlobalOptions);
+
+Var
+  frm: TfrmITHGlobalOptionsDialogue;
 
 Begin
-  With TfrmGlobalOptionsDialogue.Create(Nil) Do
-    Try
-      FGlobalOps := GlobalOps;
-      InitialiseOptions(GlobalOps);
-      If ShowModal = mrOK Then
-        SaveOptions(GlobalOps);
-    Finally
-      Free;
-    End;
+  frm := TfrmITHGlobalOptionsDialogue.Create(Nil);
+  Try
+    frm.FGlobalOps := GlobalOps;
+    frm.InitialiseOptions(GlobalOps);
+    If frm.ShowModal = mrOK Then
+      frm.SaveOptions(GlobalOps);
+  Finally
+    frm.Free;
+  End;
 End;
 
 (**
@@ -160,10 +166,10 @@ End;
   @precon  GlobalOps must be a valid instance.
   @postcon Initialises the project options in the dialogue.
 
-  @param   GlobalOps as a TGlobalOptions
+  @param   GlobalOps as a TITHGlobalOptions as a constant
 
 **)
-Procedure TfrmGlobalOptionsDialogue.InitialiseOptions(GlobalOps: TGlobalOptions);
+Procedure TfrmITHGlobalOptionsDialogue.InitialiseOptions(Const GlobalOps: TITHGlobalOptions);
 
 Var
   i: Integer;
@@ -200,7 +206,7 @@ End;
   @param   Selected as a Boolean
 
 **)
-procedure TfrmGlobalOptionsDialogue.lvShortcutsSelectItem(Sender: TObject;
+procedure TfrmITHGlobalOptionsDialogue.lvShortcutsSelectItem(Sender: TObject;
   Item: TListItem; Selected: Boolean);
 
 begin
@@ -215,10 +221,10 @@ end;
   @precon  GlobalOps must be a valid instance.
   @postcon Saves the project options to the ini file.
 
-  @param   GlobalOps as a TGlobalOptions
+  @param   GlobalOps as a TITHGlobalOptions as a constant
 
 **)
-Procedure TfrmGlobalOptionsDialogue.SaveOptions(GlobalOps: TGlobalOptions);
+Procedure TfrmITHGlobalOptionsDialogue.SaveOptions(Const GlobalOps: TITHGlobalOptions);
 
 Var
   i: Integer;

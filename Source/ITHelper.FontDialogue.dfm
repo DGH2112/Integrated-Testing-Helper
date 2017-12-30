@@ -1,4 +1,4 @@
-object frmFontDialogue: TfrmFontDialogue
+object frmITHFontDialogue: TfrmITHFontDialogue
   Left = 0
   Top = 0
   BorderIcons = []

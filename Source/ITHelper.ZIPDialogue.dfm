@@ -1,4 +1,4 @@
-object frmZIPDialogue: TfrmZIPDialogue
+object frmITHZIPDialogue: TfrmITHZIPDialogue
   Left = 0
   Top = 0
   BorderIcons = []

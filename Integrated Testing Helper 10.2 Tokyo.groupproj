@@ -7,7 +7,7 @@
             <Dependencies/>
         </Projects>
         <Projects Include="DLL\ITHelperXE102.dproj">
-            <Dependencies/>
+            <Dependencies>Test\ITHelperTests.dproj</Dependencies>
         </Projects>
     </ItemGroup>
     <ProjectExtensions>
@@ -26,13 +26,13 @@
     <Target Name="ITHelperTests:Make">
         <MSBuild Projects="Test\ITHelperTests.dproj" Targets="Make"/>
     </Target>
-    <Target Name="ITHelperXE102">
+    <Target Name="ITHelperXE102" DependsOnTargets="ITHelperTests">
         <MSBuild Projects="DLL\ITHelperXE102.dproj"/>
     </Target>
-    <Target Name="ITHelperXE102:Clean">
+    <Target Name="ITHelperXE102:Clean" DependsOnTargets="ITHelperTests:Clean">
         <MSBuild Projects="DLL\ITHelperXE102.dproj" Targets="Clean"/>
     </Target>
-    <Target Name="ITHelperXE102:Make">
+    <Target Name="ITHelperXE102:Make" DependsOnTargets="ITHelperTests:Make">
         <MSBuild Projects="DLL\ITHelperXE102.dproj" Targets="Make"/>
     </Target>
     <Target Name="Build">

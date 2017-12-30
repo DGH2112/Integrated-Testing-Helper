@@ -6,10 +6,10 @@
 
   @Version 1.0
   @Author  David Hoyle
-  @Date    08 Jul 2012
+  @Date    30 Dec 2017
 
 **)
-Unit ConfigurationForm;
+Unit ITHelper.ConfigurationForm;
 
 Interface
 
@@ -28,17 +28,17 @@ Uses
   ComCtrls,
   ToolsAPI,
   ImgList,
-  dghlibrary,
-  ExternalProcessInfo,
+  ITHelper.ExternalProcessInfo,
   ExtCtrls,
-  GlobalOptions;
+  ITHelper.GlobalOptions,
+  System.ImageList;
 
 Type
   (** An enumerate to define which set of data the dialogue is to work with. **)
-  TDlgType = (dtBefore, dtAfter);
+  TITHDlgType = (dtBefore, dtAfter);
 
   (** A class to represent the editing interface. **)
-  TfrmConfigure = Class(TForm)
+  TfrmITHConfigureDlg = Class(TForm)
     lblCompile: TLabel;
     btnAdd: TBitBtn;
     btnEdit: TBitBtn;
@@ -65,23 +65,24 @@ Type
     Procedure lvCompileSelectItem(Sender: TObject; Item: TListItem;
       Selected: Boolean);
     procedure btnHelpClick(Sender: TObject);
-  Private
+  Strict Private
     { Private declarations }
-    FGlobalOps: TGlobalOptions;
+    FGlobalOps: TITHGlobalOptions;
     FProject  : IOTAProject;
-    FDlgType  : TDlgType;
-    Procedure SwapItems(Item1, Item2: TListItem);
-    Procedure AddListItem(Item: TListItem; Process: TProcessInfo);
-    Procedure AddProcesses(Processes: TProcessCollection; strSection: String;
-      ListView: TListView; Project: IOTAProject);
-    Procedure SaveProcesses(Processes: TProcessCollection; ListView: TListView;
-      strSection: String; Project: IOTAProject);
-    Procedure InitialiseOptions(Project: IOTAProject);
-    Procedure SaveOptions(Project: IOTAProject);
+    FDlgType  : TITHDlgType;
+  Strict Protected
+    Procedure SwapItems(Const Item1, Item2: TListItem);
+    Procedure AddListItem(Const Item: TListItem; Const Process: TITHProcessInfo);
+    Procedure AddProcesses(Const Processes: TITHProcessCollection; Const strSection: String;
+      Const ListView: TListView; Const Project: IOTAProject);
+    Procedure SaveProcesses(Const Processes: TITHProcessCollection; Const ListView: TListView;
+      Const strSection: String; Const Project: IOTAProject);
+    Procedure InitialiseOptions(Const Project: IOTAProject);
+    Procedure SaveOptions(Const Project: IOTAProject);
   Public
     { Public declarations }
-    Class Function Execute(Project: IOTAProject; GlobalOps: TGlobalOptions;
-      DlgType : TDlgType): Boolean;
+    Class Function Execute(Const Project: IOTAProject; Const GlobalOps: TITHGlobalOptions;
+      Const DlgType : TITHDlgType): Boolean;
   End;
 
 Implementation
@@ -90,14 +91,70 @@ Implementation
 
 Uses
   IniFiles,
-  ProgrammeInfoForm,
-  TestingHelperUtils,
+  ITHelper.ProgrammeInfoForm,
+  ITHelper.TestingHelperUtils,
   FileCtrl;
 
 Const
   (** A constant array of string representing the data type the dialogue is to work
       with. **)
-  DlgTypes : Array[Low(TDlgType)..High(TDlgType)] of String = ('Before', 'After');
+  DlgTypes : Array[Low(TITHDlgType)..High(TITHDlgType)] of String = ('Before', 'After');
+
+(**
+
+  This procedure configures the item in the list view.
+
+  @precon  Item must be a valid.
+  @postcon Configures the item in the list view.
+
+  @param   Item    as a TListItem as a constant
+  @param   Process as a TITHProcessInfo as a constant
+
+**)
+Procedure TfrmITHConfigureDlg.AddListItem(Const Item: TListItem; Const Process: TITHProcessInfo);
+
+Begin
+  Item.Checked := Process.FEnabled;
+  Item.Caption := Process.FTitle;
+  Item.SubItems.Add(Process.FEXE);
+  Item.SubItems.Add(Process.FParams);
+  Item.SubItems.Add(Process.FDir);
+End;
+
+(**
+
+  This procedure adds processes to the passed list view.
+
+  @precon  Processes and ListView must be valid instances.
+  @postcon Adds processes to the passed list view.
+
+  @param   Processes  as a TITHProcessCollection as a constant
+  @param   strSection as a String as a constant
+  @param   ListView   as a TListView as a constant
+  @param   Project    as an IOTAProject as a constant
+
+**)
+Procedure TfrmITHConfigureDlg.AddProcesses(Const Processes: TITHProcessCollection;
+  Const strSection: String; Const ListView: TListView; Const Project: IOTAProject);
+
+Var
+  i      : Integer;
+  Item   : TListItem;
+  ProjectOps: TITHProjectOptions;
+
+Begin
+  ProjectOps := FGlobalOps.ProjectOptions(Project);
+  Try
+    Processes.LoadFromINI(ProjectOps.INIFile, strSection);
+    For i := 0 To Processes.Count - 1 Do
+      Begin
+        Item := ListView.Items.Add;
+        AddListItem(Item, Processes[i]);
+      End;
+  Finally
+    ProjectOps.Free;
+  End;
+End;
 
 (**
 
@@ -109,7 +166,7 @@ Const
   @param   Sender as a TObject
 
 **)
-Procedure TfrmConfigure.btnAddClick(Sender: TObject);
+Procedure TfrmITHConfigureDlg.btnAddClick(Sender: TObject);
 
 Var
   strTitle, strProgramme, strParameters, strWorkingDirectory: String;
@@ -140,7 +197,7 @@ End;
   @param   Sender as a TObject
 
 **)
-Procedure TfrmConfigure.btnCopyClick(Sender: TObject);
+Procedure TfrmITHConfigureDlg.btnCopyClick(Sender: TObject);
 
 Var
   iIndex: Integer;
@@ -169,56 +226,6 @@ End;
 
 (**
 
-  This is an on click event handler for the Down Before button.
-
-  @precon  None.
-  @postcon Moves the selected item down the Before Compile list view.
-
-  @param   Sender as a TObject
-
-**)
-Procedure TfrmConfigure.btnDownClick(Sender: TObject);
-
-Var
-  iIndex: Integer;
-
-Begin
-  iIndex := lvCompile.ItemIndex;
-  If (iIndex > -1) And (iIndex < lvCompile.Items.Count - 1) Then
-    Begin
-      With lvCompile Do
-        SwapItems(Items[iIndex], Items[iIndex + 1]);
-      lvCompile.ItemIndex := iIndex + 1;
-    End;
-End;
-
-(**
-
-  This is an on click event handler for the Up Before button.
-
-  @precon  None.
-  @postcon Moves the selected item up the Before Compile List View.
-
-  @param   Sender as a TObject
-
-**)
-Procedure TfrmConfigure.btnUpClick(Sender: TObject);
-
-Var
-  iIndex: Integer;
-
-Begin
-  iIndex := lvCompile.ItemIndex;
-  If iIndex > 0 Then
-    Begin
-      With lvCompile Do
-        SwapItems(Items[iIndex], Items[iIndex - 1]);
-      lvCompile.ItemIndex := iIndex - 1;
-    End;
-End;
-
-(**
-
   This is an on click event handler for the Delete Before button.
 
   @precon  None.
@@ -227,7 +234,7 @@ End;
   @param   Sender as a TObject
 
 **)
-Procedure TfrmConfigure.btnDeleteClick(Sender: TObject);
+Procedure TfrmITHConfigureDlg.btnDeleteClick(Sender: TObject);
 
 Var
   iIndex: Integer;
@@ -240,6 +247,30 @@ End;
 
 (**
 
+  This is an on click event handler for the Down Before button.
+
+  @precon  None.
+  @postcon Moves the selected item down the Before Compile list view.
+
+  @param   Sender as a TObject
+
+**)
+Procedure TfrmITHConfigureDlg.btnDownClick(Sender: TObject);
+
+Var
+  iIndex: Integer;
+
+Begin
+  iIndex := lvCompile.ItemIndex;
+  If (iIndex > -1) And (iIndex < lvCompile.Items.Count - 1) Then
+    Begin
+      SwapItems(lvCompile.Items[iIndex], lvCompile.Items[iIndex + 1]);
+      lvCompile.ItemIndex := iIndex + 1;
+    End;
+End;
+
+(**
+
   This is an on click event handler for the Edit Before button.
 
   @precon  None.
@@ -248,7 +279,7 @@ End;
   @param   Sender as a TObject
 
 **)
-Procedure TfrmConfigure.btnEditClick(Sender: TObject);
+Procedure TfrmITHConfigureDlg.btnEditClick(Sender: TObject);
 
 Var
   iIndex: Integer;
@@ -287,10 +318,34 @@ End;
   @param   Sender as a TObject
 
 **)
-Procedure TfrmConfigure.btnHelpClick(Sender: TObject);
+Procedure TfrmITHConfigureDlg.btnHelpClick(Sender: TObject);
 
 Begin
   HTMLHelp(0, PChar(ITHHTMLHelpFile('CompilationTools')), HH_DISPLAY_TOPIC, 0);
+End;
+
+(**
+
+  This is an on click event handler for the Up Before button.
+
+  @precon  None.
+  @postcon Moves the selected item up the Before Compile List View.
+
+  @param   Sender as a TObject
+
+**)
+Procedure TfrmITHConfigureDlg.btnUpClick(Sender: TObject);
+
+Var
+  iIndex: Integer;
+
+Begin
+  iIndex := lvCompile.ItemIndex;
+  If iIndex > 0 Then
+    Begin
+      SwapItems(lvCompile.Items[iIndex], lvCompile.Items[iIndex - 1]);
+      lvCompile.ItemIndex := iIndex - 1;
+    End;
 End;
 
 (**
@@ -300,55 +355,56 @@ End;
   @precon  None.
   @postcon The classes main interface method for invoking the dialogue.
 
-  @param   Project   as an IOTAProject
-  @param   GlobalOps as a TGlobalOptions
-  @param   DlgType   as a TDlgType
+  @param   Project   as an IOTAProject as a constant
+  @param   GlobalOps as a TITHGlobalOptions as a constant
+  @param   DlgType   as a TITHDlgType as a constant
   @return  a Boolean
 
 **)
-Class Function TfrmConfigure.Execute(Project: IOTAProject;
-  GlobalOps: TGlobalOptions; DlgType : TDlgType): Boolean;
+Class Function TfrmITHConfigureDlg.Execute(Const Project: IOTAProject;
+  Const GlobalOps: TITHGlobalOptions; Const DlgType : TITHDlgType): Boolean;
 
 Const
-  strSection : Array[Low(TDlgType)..High(TDlgType)] Of String = (
+  strSection : Array[Low(TITHDlgType)..High(TITHDlgType)] Of String = (
     'Pre-Compilation', 'Post-Compilation');
 
 Var
-  Processes: TProcessCollection;
+  Processes: TITHProcessCollection;
+  frm: TfrmITHConfigureDlg;
 
 Begin
   Result := False;
-  With TfrmConfigure.Create(Nil) Do
+  frm := TfrmITHConfigureDlg.Create(Nil);
+  Try
+    frm.FProject   := Project;
+    frm.FGlobalOps := GlobalOps;
+    frm.FDlgType := DlgType;
+    frm.Caption    := Format('Programmes to execute %s compilation: %s', [DlgTypes[DlgType],
+      GetProjectName(Project)]);
+    frm.lblCompile.Caption := Format(frm.lblCompile.Caption, [DlgTypes[DlgType]]);
+    frm.chkWarn.Caption := Format(frm.chkWarn.Caption, [DlgTypes[DlgType]]);
+    frm.InitialiseOptions(Project);
+    Processes := TITHProcessCollection.Create;
     Try
-      FProject   := Project;
-      FGlobalOps := GlobalOps;
-      FDlgType := DlgType;
-      Caption    := Format('Programmes to execute %s compilation: %s', [DlgTypes[DlgType],
-        GetProjectName(Project)]);
-      lblCompile.Caption := Format(lblCompile.Caption, [DlgTypes[DlgType]]);
-      chkWarn.Caption := Format(chkWarn.Caption, [DlgTypes[DlgType]]);
-      InitialiseOptions(Project);
-      Processes := TProcessCollection.Create;
-      Try
-        AddProcesses(Processes, strSection[DlgType], lvCompile, Project);
-      Finally
-        Processes.Free;
-      End;
-      lvCompileSelectItem(Nil, Nil, False);
-      If ShowModal = mrOK Then
-        Begin
-          SaveOptions(Project);
-          Processes := TProcessCollection.Create;
-          Try
-            SaveProcesses(Processes, lvCompile, strSection[DlgType], Project);
-          Finally
-            Processes.Free;
-          End;
-          Result                     := True;
-        End;
+      frm.AddProcesses(Processes, strSection[DlgType], frm.lvCompile, Project);
     Finally
-      Free;
+      Processes.Free;
     End;
+    frm.lvCompileSelectItem(Nil, Nil, False);
+    If frm.ShowModal = mrOK Then
+      Begin
+        frm.SaveOptions(Project);
+        Processes := TITHProcessCollection.Create;
+        Try
+          frm.SaveProcesses(Processes, frm.lvCompile, strSection[DlgType], Project);
+        Finally
+          Processes.Free;
+        End;
+        Result := True;
+      End;
+  Finally
+    frm.Free;
+  End;
 End;
 
 (**
@@ -358,147 +414,34 @@ End;
   @precon  None.
   @postcon Initialises the project options in the dialogue.
 
-  @param   Project as an IOTAProject
+  @param   Project as an IOTAProject as a constant
 
 **)
-Procedure TfrmConfigure.InitialiseOptions(Project: IOTAProject);
-
-Begin
-  With TMemIniFile.Create(FGlobalOps.INIFileName) Do
-    Try
-      Top    := ReadInteger(DlgTypes[FDlgType] + ' Dlg', 'Top', (Screen.Height - Height) Div 2);
-      Left   := ReadInteger(DlgTypes[FDlgType] + ' Dlg', 'Left', (Screen.Width - Width) Div 2);
-      Height := ReadInteger(DlgTypes[FDlgType] + ' Dlg', 'Height', Height);
-      Width  := ReadInteger(DlgTypes[FDlgType] + ' Dlg', 'Width', Width);
-    Finally
-      Free;
-    End;
-  With FGlobalOps.ProjectOptions(Project) Do
-    Try
-      If FDlgType = dtBefore Then
-        chkWarn.Checked := WarnBefore
-      Else
-        chkWarn.Checked := WarnAfter;
-    Finally
-      Free;
-    End;
-End;
-
-(**
-
-  This procedure configures the item in the list view.
-
-  @precon  Item must be a valid.
-  @postcon Configures the item in the list view.
-
-  @param   Item    as a TListItem
-  @param   Process as a TProcessInfo
-
-**)
-Procedure TfrmConfigure.AddListItem(Item: TListItem; Process: TProcessInfo);
-
-Begin
-  Item.Checked := Process.boolEnabled;
-  Item.Caption := Process.strTitle;
-  Item.SubItems.Add(Process.strEXE);
-  Item.SubItems.Add(Process.strParams);
-  Item.SubItems.Add(Process.strDir);
-End;
-
-(**
-
-  This procedure adds processes to the passed list view.
-
-  @precon  Processes and ListView must be valid instances.
-  @postcon Adds processes to the passed list view.
-
-  @param   Processes  as a TProcessCollection
-  @param   strSection as a String
-  @param   ListView   as a TListView
-  @param   Project    as an IOTAProject
-
-**)
-Procedure TfrmConfigure.AddProcesses(Processes: TProcessCollection; strSection: String;
-  ListView: TListView; Project: IOTAProject);
+Procedure TfrmITHConfigureDlg.InitialiseOptions(Const Project: IOTAProject);
 
 Var
-  i      : Integer;
-  Item   : TListItem;
-  ProjectOps: TProjectOptions;
+  iniFile: TMemIniFile;
+  PO: TITHProjectOptions;
 
 Begin
-  ProjectOps := FGlobalOps.ProjectOptions(Project);
+  iniFile :=TMemIniFile.Create(FGlobalOps.INIFileName);
   Try
-    Processes.LoadFromINI(ProjectOps.INIFile, strSection);
-    For i := 0 To Processes.Count - 1 Do
-      Begin
-        Item := ListView.Items.Add;
-        AddListItem(Item, Processes[i]);
-      End;
+    Top    := iniFile.ReadInteger(DlgTypes[FDlgType] + ' Dlg', 'Top', (Screen.Height - Height) Div 2);
+    Left   := iniFile.ReadInteger(DlgTypes[FDlgType] + ' Dlg', 'Left', (Screen.Width - Width) Div 2);
+    Height := iniFile.ReadInteger(DlgTypes[FDlgType] + ' Dlg', 'Height', Height);
+    Width  := iniFile.ReadInteger(DlgTypes[FDlgType] + ' Dlg', 'Width', Width);
   Finally
-    ProjectOps.Free;
+    iniFile.Free;
   End;
-End;
-
-(**
-
-  This method saves the project options to the ini file.
-
-  @precon  None.
-  @postcon Saves the project options to the ini file.
-
-  @param   Project as an IOTAProject
-
-**)
-Procedure TfrmConfigure.SaveOptions(Project: IOTAProject);
-
-Begin
-  With TMemIniFile.Create(FGlobalOps.INIFileName) Do
-    Try
-      WriteInteger(DlgTypes[FDlgType] + ' Dlg', 'Top', Top);
-      WriteInteger(DlgTypes[FDlgType] + ' Dlg', 'Left', Left);
-      WriteInteger(DlgTypes[FDlgType] + ' Dlg', 'Height', Height);
-      WriteInteger(DlgTypes[FDlgType] + ' Dlg', 'Width', Width);
-      UpdateFile;
-    Finally
-      Free;
-    End;
-  With FGlobalOps.ProjectOptions(Project) Do
-    Try
-      If FDlgType = dtBefore Then
-        WarnBefore := chkWarn.Checked
-      Else
-        WarnAfter := chkWarn.Checked;
-    Finally
-      Free;
-    End;
-End;
-
-(**
-
-  This procedure saves the list view items to an INI file.
-
-  @precon  Processes and ListView must be valid instances.
-  @postcon Saves the list view items to an INI file.
-
-  @param   Processes  as a TProcessCollection
-  @param   ListView   as a TListView
-  @param   strSection as a String
-  @param   Project    as an IOTAProject
-
-**)
-Procedure TfrmConfigure.SaveProcesses(Processes: TProcessCollection; ListView: TListView;
-  strSection: String; Project: IOTAProject);
-
-Var
-  i: Integer;
-
-Begin
-  With ListView Do
-    For i := 0 To Items.Count - 1 Do
-      Processes.AddProcessInfo(Items[i].Checked, Items[i].SubItems[0],
-        Items[i].SubItems[1], Items[i].SubItems[2], Items[i].Caption);
-  Processes.SaveToINI(FGlobalOps.ProjectOptions(Project).INIFile, strSection);
+  PO := FGlobalOps.ProjectOptions(Project);
+  Try
+    If FDlgType = dtBefore Then
+      chkWarn.Checked := PO.WarnBefore
+    Else
+      chkWarn.Checked := PO.WarnAfter;
+  Finally
+    PO.Free;
+  End;
 End;
 
 (**
@@ -511,7 +454,8 @@ End;
   @param   Sender as a TObject
 
 **)
-Procedure TfrmConfigure.lvCompileDblClick(Sender: TObject);
+Procedure TfrmITHConfigureDlg.lvCompileDblClick(Sender: TObject);
+
 Begin
   btnEditClick(Sender);
 End;
@@ -530,8 +474,9 @@ End;
   @param   Selected as a Boolean
 
 **)
-Procedure TfrmConfigure.lvCompileSelectItem(Sender: TObject; Item: TListItem;
+Procedure TfrmITHConfigureDlg.lvCompileSelectItem(Sender: TObject; Item: TListItem;
   Selected: Boolean);
+
 Begin
   btnAdd.Enabled    := True;
   btnEdit.Enabled   := lvCompile.Selected <> Nil;
@@ -539,33 +484,6 @@ Begin
   btnUp.Enabled     := (lvCompile.Selected <> Nil) And (lvCompile.ItemIndex > 0);
   btnDown.Enabled := (lvCompile.Selected <> Nil) And (lvCompile.ItemIndex < lvCompile.Items.Count - 1);
   btnCopy.Enabled := lvCompile.Selected <> Nil;
-End;
-
-(**
-
-  This is an on resize event handler for both list view controls.
-
-  @precon  None.
-  @postcon Ensures the columns of the list views are wide enough to display in
-           the dialogue.
-
-  @param   Sender as a TObject
-
-**)
-Procedure TfrmConfigure.lvResize(Sender: TObject);
-
-Var
-  i: Integer;
-
-Begin
-  With Sender As TListView Do
-    Begin
-      i                := ClientWidth;
-      Columns[0].Width := Trunc(i * 0.15);
-      Columns[1].Width := Trunc(i * 0.35);
-      Columns[2].Width := Trunc(i * 0.2);
-      Columns[3].Width := Trunc(i * 0.3);
-    End;
 End;
 
 (**
@@ -581,7 +499,7 @@ End;
   @param   DefaultDraw as a Boolean as a reference
 
 **)
-Procedure TfrmConfigure.lvFileListCustomDrawItem(Sender: TCustomListView; Item: TListItem;
+Procedure TfrmITHConfigureDlg.lvFileListCustomDrawItem(Sender: TCustomListView; Item: TListItem;
   State: TCustomDrawState; Var DefaultDraw: Boolean);
 
 Var
@@ -597,11 +515,11 @@ Var
     @precon  iIndex must be a valid SubItem index..
     @postcon Returns display rectangle for the given indexed sub item.
 
-    @param   iIndex as an Integer
+    @param   iIndex as an Integer as a constant
     @return  a TRect
 
   **)
-  Function GetSubItemRect(iIndex: Integer): TRect;
+  Function GetSubItemRect(Const iIndex: Integer): TRect;
 
   Var
     j: Integer;
@@ -667,16 +585,106 @@ End;
 
 (**
 
+  This is an on resize event handler for both list view controls.
+
+  @precon  None.
+  @postcon Ensures the columns of the list views are wide enough to display in
+           the dialogue.
+
+  @param   Sender as a TObject
+
+**)
+Procedure TfrmITHConfigureDlg.lvResize(Sender: TObject);
+
+Var
+  i: Integer;
+  LV: TListView;
+
+Begin
+  LV := Sender As TListView;
+  i                := LV.ClientWidth;
+  LV.Columns[0].Width := Trunc(i * 0.15);
+  LV.Columns[1].Width := Trunc(i * 0.35);
+  LV.Columns[2].Width := Trunc(i * 0.2);
+  LV.Columns[3].Width := Trunc(i * 0.3);
+End;
+
+(**
+
+  This method saves the project options to the ini file.
+
+  @precon  None.
+  @postcon Saves the project options to the ini file.
+
+  @param   Project as an IOTAProject as a constant
+
+**)
+Procedure TfrmITHConfigureDlg.SaveOptions(Const Project: IOTAProject);
+
+Var
+  iniFile: TMemIniFile;
+  PO: TITHProjectOptions;
+
+Begin
+  iniFile := TMemIniFile.Create(FGlobalOps.INIFileName);
+  Try
+    iniFile.WriteInteger(DlgTypes[FDlgType] + ' Dlg', 'Top', Top);
+    iniFile.WriteInteger(DlgTypes[FDlgType] + ' Dlg', 'Left', Left);
+    iniFile.WriteInteger(DlgTypes[FDlgType] + ' Dlg', 'Height', Height);
+    iniFile.WriteInteger(DlgTypes[FDlgType] + ' Dlg', 'Width', Width);
+    iniFile.UpdateFile;
+  Finally
+    iniFile.Free;
+  End;
+  PO := FGlobalOps.ProjectOptions(Project);
+  Try
+    If FDlgType = dtBefore Then
+      PO.WarnBefore := chkWarn.Checked
+    Else
+      PO.WarnAfter := chkWarn.Checked;
+  Finally
+    PO.Free;
+  End;
+End;
+
+(**
+
+  This procedure saves the list view items to an INI file.
+
+  @precon  Processes and ListView must be valid instances.
+  @postcon Saves the list view items to an INI file.
+
+  @param   Processes  as a TITHProcessCollection as a constant
+  @param   ListView   as a TListView as a constant
+  @param   strSection as a String as a constant
+  @param   Project    as an IOTAProject as a constant
+
+**)
+Procedure TfrmITHConfigureDlg.SaveProcesses(Const Processes: TITHProcessCollection;
+  Const ListView: TListView; Const strSection: String; Const Project: IOTAProject);
+
+Var
+  i: Integer;
+
+Begin
+  For i := 0 To ListView.Items.Count - 1 Do
+    Processes.AddProcessInfo(ListView.Items[i].Checked, ListView.Items[i].SubItems[0],
+      ListView.Items[i].SubItems[1], ListView.Items[i].SubItems[2], ListView.Items[i].Caption);
+  Processes.SaveToINI(FGlobalOps.ProjectOptions(Project).INIFile, strSection);
+End;
+
+(**
+
   This method swaps the information in the 2 list view items.
 
   @precon  None.
   @postcon Swaps the information in the 2 list view items.
 
-  @param   Item1 as a TListItem
-  @param   Item2 as a TListItem
+  @param   Item1 as a TListItem as a constant
+  @param   Item2 as a TListItem as a constant
 
 **)
-Procedure TfrmConfigure.SwapItems(Item1, Item2: TListItem);
+Procedure TfrmITHConfigureDlg.SwapItems(Const Item1, Item2: TListItem);
 
 Var
   strTitle, strEXE, strParam, strDir: String;

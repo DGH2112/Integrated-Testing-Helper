@@ -4,10 +4,16 @@
   implement an IDE wizard.
 
   @Author  David Hoyle
-  @Date    12 Dec 2017
+  @Date    30 Dec 2017
   @Version 2.0
 
-  @nometric EmptyBEGINEND
+  @nocheck EmptyBEGINEND
+
+  @todo    Change ALL (BorlandIDEServices As Xxxx) for Supports()
+  @todo    Create a wrapper for the ziplibrary and use that instead of an external zip programme.
+  @todo    Put the prject options back into a single tabbed dialogue (remember NOT to use listviews
+           to store information).
+  @todo    Put global options into the IDEs Options dialogue.
 
 **)
 Library ITHelperXE102;
@@ -30,28 +36,27 @@ uses
   ShareMem,
   SysUtils,
   Classes,
-  TestingHelperWizard in '..\Source\TestingHelperWizard.pas',
-  ConfigurationForm in '..\Source\ConfigurationForm.pas' {frmConfigure},
-  TestingHelperUtils in '..\Source\TestingHelperUtils.pas',
-  ProcessingForm in '..\Source\ProcessingForm.pas' {frmProcessing},
-  AdditionalZipFilesForm in '..\Source\AdditionalZipFilesForm.pas' {Form1},
-  ProgrammeInfoForm in '..\..\..\Library\ProgrammeInfoForm.pas' {frmProgrammeInfo},
-  dghlibrary in '..\..\..\Library\dghlibrary.pas',
-  ExternalProcessInfo in '..\..\..\Library\ExternalProcessInfo.pas',
-  EnabledOptions in '..\Source\EnabledOptions.pas' {frmEnabledOptions},
-  ITHInitialiseOTAInterfaces in '..\Source\ITHInitialiseOTAInterfaces.pas',
+  ITHelper.Wizard in '..\Source\ITHelper.Wizard.pas',
+  ITHelper.ConfigurationForm in '..\Source\ITHelper.ConfigurationForm.pas' {frmITHConfigureDlg},
+  ITHelper.TestingHelperUtils in '..\Source\ITHelper.TestingHelperUtils.pas',
+  ITHelper.AdditionalZipFilesForm in '..\Source\ITHelper.AdditionalZipFilesForm.pas' {Form1},
+  ITHelper.EnabledOptions in '..\Source\ITHelper.EnabledOptions.pas' {frmEnabledOptions},
+  ITHelper.OTAInterfaces in '..\Source\ITHelper.OTAInterfaces.pas',
   ITHelper.ProjectManagerMenuInterface in '..\Source\ITHelper.ProjectManagerMenuInterface.pas',
-  IDENotifierInterface in '..\Source\IDENotifierInterface.pas',
-  GlobalOptions in '..\Source\GlobalOptions.pas',
-  FontDialogue in '..\Source\FontDialogue.pas' {frmFontDialogue},
-  ZIPDialogue in '..\Source\ZIPDialogue.pas' {frmZIPDialogue},
-  GlobalOptionsDialogue in '..\Source\GlobalOptionsDialogue.pas' {frmGlobalOptionsDialogue},
-  ProjectOptionsDialogue in '..\Source\ProjectOptionsDialogue.pas' {frmProjectOptionsDialogue},
+  ITHelper.IDENotifierInterface in '..\Source\ITHelper.IDENotifierInterface.pas',
+  ITHelper.GlobalOptions in '..\Source\ITHelper.GlobalOptions.pas',
+  ITHelper.FontDialogue in '..\Source\ITHelper.FontDialogue.pas' {frmITHFontDialogue},
+  ITHelper.ZIPDialogue in '..\Source\ITHelper.ZIPDialogue.pas' {frmITHZIPDialogue},
+  ITHelper.GlobalOptionsDialogue in '..\Source\ITHelper.GlobalOptionsDialogue.pas' {frmITHGlobalOptionsDialogue},
+  ITHelper.ProjectOptionsDialogue in '..\Source\ITHelper.ProjectOptionsDialogue.pas' {frmITHProjectOptionsDialogue},
   ITHelper.SplashScreen in '..\Source\ITHelper.SplashScreen.pas',
   ITHelper.CommonFunctions in '..\Source\ITHelper.CommonFunctions.pas',
   ITHelper.Constants in '..\Source\ITHelper.Constants.pas',
   ITHelper.ResourceStrings in '..\Source\ITHelper.ResourceStrings.pas',
-  ITHelper.AboutBox in '..\Source\ITHelper.AboutBox.pas';
+  ITHelper.AboutBox in '..\Source\ITHelper.AboutBox.pas',
+  ITHelper.ExternalProcessInfo in '..\Source\ITHelper.ExternalProcessInfo.pas',
+  ITHelper.ProcessingForm in '..\Source\ITHelper.ProcessingForm.pas' {frmITHProcessing},
+  ITHelper.ProgrammeInfoForm in '..\Source\ITHelper.ProgrammeInfoForm.pas' {frmProgrammeInfo};
 
 {$R *.res}
 

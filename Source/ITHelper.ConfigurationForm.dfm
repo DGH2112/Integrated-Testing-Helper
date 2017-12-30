@@ -1,8 +1,8 @@
-object frmConfigure: TfrmConfigure
+object frmITHConfigureDlg: TfrmITHConfigureDlg
   Left = 392
   Top = 473
   Caption = 'Testing Helper Configuration Information'
-  ClientHeight = 372
+  ClientHeight = 375
   ClientWidth = 804
   Color = clBtnFace
   Constraints.MinHeight = 410
@@ -16,7 +16,7 @@ object frmConfigure: TfrmConfigure
   Position = poDesigned
   DesignSize = (
     804
-    372)
+    375)
   PixelsPerInch = 96
   TextHeight = 13
   object lblCompile: TLabel
@@ -260,7 +260,7 @@ object frmConfigure: TfrmConfigure
     Left = 73
     Top = 181
     Bitmap = {
-      494C010102000400B80010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010102000400D40010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000001000000001002000000000000010
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000

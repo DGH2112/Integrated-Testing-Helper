@@ -1,9 +1,9 @@
-object frmProcessing: TfrmProcessing
+object frmITHProcessing: TfrmITHProcessing
   Left = 585
   Top = 520
   BorderStyle = bsNone
   BorderWidth = 1
-  Caption = 'frmProcessing'
+  Caption = 'frmITHProcessing'
   ClientHeight = 51
   ClientWidth = 495
   Color = clBtnFace
