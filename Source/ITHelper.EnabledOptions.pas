@@ -5,7 +5,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    30 Dec 2017
+  @Date    03 Jan 2018
 
 **)
 Unit ITHelper.EnabledOptions;
@@ -30,7 +30,7 @@ Uses
 
 Type
   (** A form to represent the form interface. **)
-  TfrmEnabledOptions = Class(TForm)
+  TfrmITHEnabledOptions = Class(TForm)
     chkEnable: TCheckBox;
     gbxOptions: TGroupBox;
     btnOK: TBitBtn;
@@ -68,7 +68,7 @@ Uses
   @param   Sender as a TObject
 
 **)
-Procedure TfrmEnabledOptions.btnHelpClick(Sender: TObject);
+Procedure TfrmITHEnabledOptions.btnHelpClick(Sender: TObject);
 
 Const
   strEnabledOptions = 'EnabledOptions';
@@ -87,7 +87,7 @@ End;
   @param   Sender as a TObject
 
 **)
-Procedure TfrmEnabledOptions.EnabledClick(Sender: TObject);
+Procedure TfrmITHEnabledOptions.EnabledClick(Sender: TObject);
 
 Begin
   gbxOptions.Enabled     := chkEnable.Checked;
@@ -111,18 +111,18 @@ End;
   @return  a Boolean
 
 **)
-Class Function TfrmEnabledOptions.Execute(Const strProjectGroup: String;
+Class Function TfrmITHEnabledOptions.Execute(Const strProjectGroup: String;
   Var Options: TITHEnabledOptions): Boolean;
 
 Const
   strOptions = ' Options';
 
 var
-  frm: TfrmEnabledOptions;
+  frm: TfrmITHEnabledOptions;
 
 Begin
   Result := False;
-  frm := TfrmEnabledOptions.Create(Nil);
+  frm := TfrmITHEnabledOptions.Create(Nil);
   Try
     frm.Caption           := strProjectGroup + strOptions;
     frm.chkEnable.Checked := eoGroupEnabled In Options;

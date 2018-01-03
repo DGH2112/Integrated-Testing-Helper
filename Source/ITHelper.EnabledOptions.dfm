@@ -1,4 +1,4 @@
-object frmEnabledOptions: TfrmEnabledOptions
+object frmITHEnabledOptions: TfrmITHEnabledOptions
   Left = 740
   Top = 548
   BorderStyle = bsToolWindow
@@ -8,7 +8,7 @@ object frmEnabledOptions: TfrmEnabledOptions
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
-  Font.Height = -11
+  Font.Height = -13
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
@@ -17,7 +17,7 @@ object frmEnabledOptions: TfrmEnabledOptions
     337
     209)
   PixelsPerInch = 96
-  TextHeight = 13
+  TextHeight = 16
   object chkEnable: TCheckBox
     Left = 8
     Top = 8
