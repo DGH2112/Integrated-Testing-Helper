@@ -4,7 +4,7 @@
   external tools before and after the compilation of the current project.
 
   @Version 1.0
-  @Date    30 Dec 2017
+  @Date    03 Jan 2018
   @Author  David Hoyle
 
 **)
@@ -38,11 +38,21 @@ Type
     FTestingHelperMenu      : TMenuItem;
     FProjectMgrMenuIndex    : Integer;
     FProjectMgrMenuNotifier : IOTAProjectMenuItemCreatorNotifier;
-    //FHTMLHelpCookie    : THandle;
-    {$IFNDEF D2005}
-    FMenuTimer              : TTimer;
-    {$ENDIF}
+    FIDENotifierIndex       : Integer;
+    //FHTMLHelpCookie         : THandle;
   Strict Protected
+    // IOTAWizard
+    Procedure Execute;
+    Function  GetIDString: String;
+    Function  GetName: String;
+    Function  GetState: TWizardState;
+    // General Methods
+    Procedure CreateMenus;
+    Procedure ProjectOptions(Const Project: IOTAProject);
+    Procedure BeforeCompilation(Const Project: IOTAProject);
+    Procedure AfterCompilation(Const Project: IOTAProject);
+    Procedure ZIPOptions(Const Project: IOTAProject);
+    // Event Handler
     Procedure BeforeCompilationClick(Sender: TObject);
     Procedure AfterCompilationClick(Sender: TObject);
     Procedure ToggleEnabled(Sender: TObject);
@@ -55,30 +65,11 @@ Type
     Procedure UpdateEnabled(Sender: TObject);
     Procedure BeforeCompilationUpdate(Sender: TObject);
     Procedure AfterCompilationUpdate(Sender: TObject);
-    Procedure ProjectOptions(Const Project: IOTAProject);
-    Procedure BeforeCompilation(Const Project: IOTAProject);
-    Procedure AfterCompilation(Const Project: IOTAProject);
-    Procedure ZIPOptions(Const Project: IOTAProject);
     Procedure HelpClick(Sender : TObject);
-    {$IFNDEF D2005}
-    Procedure MenuTimerEvent(Sender: TObject);
-    {$ENDIF}
   Public
     Constructor Create;
     Destructor Destroy; Override;
-    Procedure Execute;
-    Function GetIDString: String;
-    Function GetName: String;
-    Function GetState: TWizardState;
     Procedure ConfigureOptions(Const Project: IOTAProject; Const Setting: TSetting);
-    (**
-      This property provides external code with access to the global options of the
-      application.
-      @precon  None.
-      @postcon Returns the global options.
-      @return  a TITHGlobalOptions
-    **)
-    Property GlobalOps: TITHGlobalOptions Read FGlobalOps;
   End;
 
 Implementation
@@ -101,7 +92,12 @@ Uses
   ITHelper.GlobalOptionsDialogue,
   ITHelper.ProjectOptionsDialogue, 
   ITHelper.SplashScreen, 
-  ITHelper.AboutBox;
+  ITHelper.AboutBox, 
+  ITHelper.IDENotifierInterface;
+
+Const
+  (** A constant to define the failed state of a wizard / notifier interface. **)
+  iWizardFailState = -1;
 
 (**
 
@@ -292,6 +288,7 @@ Var
   PM : IOTAProjectManager;
 
 Begin
+  FIDENotifierIndex := iWizardFailState;
   InstallSplashScreen;
   FAboutBoxIndex := AddAboutBoxEntry;
   FProjectMgrMenuNotifier := TITHProjectManagerMenu.Create(Self);
@@ -301,35 +298,37 @@ Begin
     {$ELSE}
     FProjectMgrMenuIndex := PM.AddMenuItemCreatorNotifier(FProjectMgrMenuNotifier);
     {$ENDIF}
-  FTestingHelperMenu := CreateMenuItem('ITHTestingHelper', '&Testing Helper', 'Tools',
-    Nil, Nil, True, False, '');
-  CreateMenuItem('ITHEnabled', 'Oops...', 'ITHTestingHelper', ToggleEnabled,
-    UpdateEnabled, False, True, 'Ctrl+Shift+Alt+F9', clFuchsia);
-  CreateMenuItem('ITHSeparator1', '', 'ITHTestingHelper', Nil, Nil, False, True, '');
-  CreateMenuItem('ITHGlobalOptions', '&Global Options...', 'ITHTestingHelper',
-    GlobalOptionDialogueClick, Nil, False, True, '', clFuchsia);
-  CreateMenuItem('ITHProjectOptions', '&Project Options...', 'ITHTestingHelper',
-    ProjectOptionsClick, ProjectOptionsUpdate, False, True, '', clFuchsia);
-  CreateMenuItem('ITHBeforeCompilation', '&Before Compilation Tools...',
-    'ITHTestingHelper', BeforeCompilationClick, BeforeCompilationUpdate, False, True, '',
-    clFuchsia);
-  CreateMenuItem('ITHAfterCompilation', '&After Compilation Tools...', 'ITHTestingHelper',
-    AfterCompilationClick, AfterCompilationUpdate, False, True, '', clFuchsia);
-  CreateMenuItem('ITHZIPDlg', '&ZIP Options...', 'ITHTestingHelper', ZIPDialogueClick,
-    ZIPDialogueUpdate, False, True, '', clFuchsia);
-  CreateMenuItem('ITHFontDlg', 'Message &Fonts...', 'ITHTestingHelper', FontDialogueClick,
-    Nil, False, True, '', clOlive);
-  CreateMenuItem('ITHSeparator2', '', 'ITHTestingHelper', Nil, Nil, False, True, '');
-  CreateMenuItem('ITHHelp', '&Help...', 'ITHTestingHelper', HelpClick, Nil, False,
-    True, '');
-  {$IFNDEF D2005} // Code to patch shortcuts into the menus in D7 and below.
-  FMenuTimer          := TTimer.Create(Nil);
-  FMenuTimer.OnTimer  := MenuTimerEvent;
-  FMenuTimer.Interval := 1000;
-  FMenuTimer.Enabled  := True;
-  {$ENDIF}
+  CreateMenus;
   FGlobalOps := TITHGlobalOptions.Create;
+  FIDENotifierIndex := (BorlandIDEServices As IOTAServices).AddNotifier(
+    TITHelperIDENotifier.Create(FGlobalOps));
   //FHTMLHelpCookie := HTMLHelp(Application.Handle, Nil, HH_INITIALIZE, 0);
+End;
+
+(**
+
+  This method creates the Integrated Testing Helper IDE menus.
+
+  @precon  None.
+  @postcon The menus are created.
+
+  @nocheck HardCodedString
+
+**)
+Procedure TITHWizard.CreateMenus;
+
+Begin
+  FTestingHelperMenu := CreateMenuItem('ITHTestingHelper', '&Testing Helper', 'Tools', Nil, Nil, True, False, '');
+  CreateMenuItem('ITHEnabled', 'Oops...', 'ITHTestingHelper', ToggleEnabled, UpdateEnabled, False, True, 'Ctrl+Shift+Alt+F9', clFuchsia);
+  CreateMenuItem('ITHSeparator1', '', 'ITHTestingHelper', Nil, Nil, False, True, '');
+  CreateMenuItem('ITHGlobalOptions', '&Global Options...', 'ITHTestingHelper', GlobalOptionDialogueClick, Nil, False, True, '', clFuchsia);
+  CreateMenuItem('ITHProjectOptions', '&Project Options...', 'ITHTestingHelper', ProjectOptionsClick, ProjectOptionsUpdate, False, True, '', clFuchsia);
+  CreateMenuItem('ITHBeforeCompilation', '&Before Compilation Tools...', 'ITHTestingHelper', BeforeCompilationClick, BeforeCompilationUpdate, False, True, '', clFuchsia);
+  CreateMenuItem('ITHAfterCompilation', '&After Compilation Tools...', 'ITHTestingHelper', AfterCompilationClick, AfterCompilationUpdate, False, True, '', clFuchsia);
+  CreateMenuItem('ITHZIPDlg', '&ZIP Options...', 'ITHTestingHelper', ZIPDialogueClick, ZIPDialogueUpdate, False, True, '', clFuchsia);
+  CreateMenuItem('ITHFontDlg', 'Message &Fonts...', 'ITHTestingHelper', FontDialogueClick, Nil, False, True, '', clOlive);
+  CreateMenuItem('ITHSeparator2', '', 'ITHTestingHelper', Nil, Nil, False, True, '');
+  CreateMenuItem('ITHHelp', '&Help...', 'ITHTestingHelper', HelpClick, Nil, False, True, '');
 End;
 
 (**
@@ -348,6 +347,8 @@ Var
 Begin
   HTMLHelp(0, Nil, HH_CLOSE_ALL, 0);
   //HTMLHelp(Application.Handle, Nil, HH_UNINITIALIZE, FHTMLHelpCookie);
+  If FIDENotifierIndex > iWizardFailState Then
+    (BorlandIDEServices As IOTAServices).RemoveNotifier(FIDENotifierIndex);
   {$IFNDEF D2005}
   FMenuTimer.Free;
   {$ENDIF}
@@ -412,8 +413,11 @@ End;
 **)
 Function TITHWizard.GetIDString: String;
 
+Const
+  strIDString = 'Seasons.Fall.Music.Integrated.Testing.Helper';
+
 Begin
-  Result := 'TestingHelper';
+  Result := strIDString;
 End;
 
 (**
@@ -429,7 +433,8 @@ End;
 Function TITHWizard.GetName: String;
 
 ResourceString
-  strName = 'Testing Helper - Support for running external tools before and after compilations.';
+  strName = 'Integrated Testing Helper - Support for running external tools before and after ' +
+    'compilations.';
 
 Begin
   Result := strName;
@@ -479,32 +484,12 @@ End;
 **)
 Procedure TITHWizard.HelpClick(Sender: TObject);
 
-Begin
-  HTMLHelp(0, PChar(ITHHTMLHelpFile('Welcome')), HH_DISPLAY_TOC, 0);
-End;
-
-{$IFNDEF D2005}
-(**
-
-  This is an on timer event handler for the menu timer.
-
-  @precon  None.
-  @postcon In Delphi 7 and below - it patches the shortcuts onto the menu items
-           as the Open Tools API "looses" the shortcuts.
-
-  @param   Sender as a TObject
-
-**)
-Procedure TTestingHelperWizard.MenuTimerEvent(Sender: TObject);
+Const
+  strHelpStartPage = 'Welcome';
 
 Begin
-  If Application.MainForm.Visible Then
-    Begin
-      PatchActionShortcuts(Sender);
-      FMenuTimer.Enabled := False;
-    End;
+  HTMLHelp(0, PChar(ITHHTMLHelpFile(strHelpStartPage)), HH_DISPLAY_TOC, 0);
 End;
-{$ENDIF}
 
 (**
 
@@ -604,7 +589,7 @@ Begin
   If PG <> Nil Then
     Begin
       Ops := FGlobalOps.ProjectGroupOps;
-      If TfrmEnabledOptions.Execute(strProjectGroup, Ops) Then
+      If TfrmITHEnabledOptions.Execute(strProjectGroup, Ops) Then
         FGlobalOps.ProjectGroupOps := Ops;
     End
   Else
