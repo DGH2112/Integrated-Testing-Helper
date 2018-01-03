@@ -11,7 +11,7 @@ object frmITHGlobalOptionsDialogue: TfrmITHGlobalOptionsDialogue
   Constraints.MinWidth = 525
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
-  Font.Height = -11
+  Font.Height = -13
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
@@ -20,47 +20,47 @@ object frmITHGlobalOptionsDialogue: TfrmITHGlobalOptionsDialogue
     519
     396)
   PixelsPerInch = 96
-  TextHeight = 13
+  TextHeight = 16
   object lblClearMessagesAfter: TLabel
     Left = 8
     Top = 134
-    Width = 224
-    Height = 13
+    Width = 270
+    Height = 16
     Caption = 'Clear Messages After Period of Time (seconds)'
   end
   object lblZIPEXE: TLabel
     Left = 8
     Top = 57
-    Width = 70
-    Height = 13
+    Width = 82
+    Height = 16
     Caption = '&Zip Executable'
   end
   object lblZipParams: TLabel
     Left = 8
     Top = 84
-    Width = 72
-    Height = 13
+    Width = 87
+    Height = 16
     Caption = '&Zip Parameters'
   end
   object lblShortcuts: TLabel
     Left = 8
     Top = 153
-    Width = 46
-    Height = 13
+    Width = 54
+    Height = 16
     Caption = 'Short&cuts'
     FocusControl = lvShortcuts
   end
   object edtClearMessages: TEdit
-    Left = 244
+    Left = 426
     Top = 131
     Width = 63
-    Height = 21
+    Height = 24
     ReadOnly = True
     TabOrder = 6
     Text = '0'
   end
   object udClearMessages: TUpDown
-    Left = 307
+    Left = 495
     Top = 131
     Width = 16
     Height = 21
@@ -110,7 +110,7 @@ object frmITHGlobalOptionsDialogue: TfrmITHGlobalOptionsDialogue
     Left = 103
     Top = 54
     Width = 368
-    Height = 21
+    Height = 24
     Anchors = [akLeft, akTop, akRight]
     TabOrder = 2
   end
@@ -118,7 +118,7 @@ object frmITHGlobalOptionsDialogue: TfrmITHGlobalOptionsDialogue
     Left = 103
     Top = 81
     Width = 408
-    Height = 21
+    Height = 24
     Anchors = [akLeft, akTop, akRight]
     TabOrder = 4
   end
@@ -146,7 +146,7 @@ object frmITHGlobalOptionsDialogue: TfrmITHGlobalOptionsDialogue
     Left = 8
     Top = 332
     Width = 422
-    Height = 19
+    Height = 22
     Anchors = [akLeft, akRight, akBottom]
     Modifiers = []
     TabOrder = 9
