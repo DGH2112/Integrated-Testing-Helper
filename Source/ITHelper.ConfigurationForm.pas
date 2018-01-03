@@ -6,7 +6,7 @@
 
   @Version 1.0
   @Author  David Hoyle
-  @Date    30 Dec 2017
+  @Date    03 Jan 2018
 
 **)
 Unit ITHelper.ConfigurationForm;
@@ -171,12 +171,10 @@ Procedure TfrmITHConfigureDlg.btnAddClick(Sender: TObject);
 Var
   strTitle, strProgramme, strParameters, strWorkingDirectory: String;
   Item: TListItem;
-  Disabled: TStartingWindowState;
 
 Begin
-  Disabled := swsDisabled;
-  If TfrmProgrammeInfo.Execute(strTitle, strProgramme, strParameters, strWorkingDirectory,
-    FGlobalOps.INIFileName, Disabled) Then
+  If TfrmITHProgrammeInfo.Execute(strTitle, strProgramme, strParameters, strWorkingDirectory,
+    FGlobalOps.INIFileName) Then
     Begin
       Item         := lvCompile.Items.Add;
       Item.Caption := strTitle;
@@ -285,7 +283,6 @@ Var
   iIndex: Integer;
   strTitle, strProgramme, strParameters, strWorkingDirectory: String;
   Item    : TListItem;
-  Disabled: TStartingWindowState;
 
 Begin
   iIndex := lvCompile.ItemIndex;
@@ -296,9 +293,8 @@ Begin
       strProgramme        := Item.SubItems[0];
       strParameters       := Item.SubItems[1];
       strWorkingDirectory := Item.SubItems[2];
-      Disabled            := swsDisabled;
-      If TfrmProgrammeInfo.Execute(strTitle, strProgramme, strParameters,
-        strWorkingDirectory, FGlobalOps.INIFileName, Disabled) Then
+      If TfrmITHProgrammeInfo.Execute(strTitle, strProgramme, strParameters,
+        strWorkingDirectory, FGlobalOps.INIFileName) Then
         Begin
           Item.Caption     := strTitle;
           Item.SubItems[0] := strProgramme;

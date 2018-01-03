@@ -9,7 +9,7 @@ object frmITHConfigureDlg: TfrmITHConfigureDlg
   Constraints.MinWidth = 820
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
-  Font.Height = -11
+  Font.Height = -13
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
@@ -18,23 +18,17 @@ object frmITHConfigureDlg: TfrmITHConfigureDlg
     804
     375)
   PixelsPerInch = 96
-  TextHeight = 13
+  TextHeight = 16
   object lblCompile: TLabel
     Left = 8
     Top = 8
-    Width = 205
-    Height = 13
+    Width = 707
+    Height = 16
     Caption = 'Programmes to Run %s Compilation'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWindowText
-    Font.Height = -11
-    Font.Name = 'Tahoma'
-    Font.Style = [fsBold]
-    ParentFont = False
   end
   object btnOK: TBitBtn
     Left = 640
-    Top = 339
+    Top = 342
     Width = 75
     Height = 25
     Anchors = [akRight, akBottom]
@@ -44,7 +38,7 @@ object frmITHConfigureDlg: TfrmITHConfigureDlg
   end
   object btnCancel: TBitBtn
     Left = 721
-    Top = 339
+    Top = 343
     Width = 75
     Height = 25
     Anchors = [akRight, akBottom]
@@ -102,17 +96,11 @@ object frmITHConfigureDlg: TfrmITHConfigureDlg
   end
   object chkWarn: TCheckBox
     Left = 8
-    Top = 343
+    Top = 346
     Width = 246
     Height = 17
     Anchors = [akLeft, akBottom]
     Caption = 'Warn of missing %s Compilation tools.'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWindowText
-    Font.Height = -11
-    Font.Name = 'Tahoma'
-    Font.Style = []
-    ParentFont = False
     TabOrder = 7
   end
   object btnCopy: TBitBtn
@@ -247,7 +235,7 @@ object frmITHConfigureDlg: TfrmITHConfigureDlg
   end
   object btnHelp: TBitBtn
     Left = 559
-    Top = 339
+    Top = 342
     Width = 75
     Height = 25
     Anchors = [akRight, akBottom]
@@ -260,7 +248,7 @@ object frmITHConfigureDlg: TfrmITHConfigureDlg
     Left = 73
     Top = 181
     Bitmap = {
-      494C010102000400D40010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010102000400D80010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000001000000001002000000000000010
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
