@@ -5,7 +5,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    30 Dec 2017
+  @Date    03 Jan 2018
 
 **)
 Unit ITHelper.GlobalOptionsDialogue;
@@ -43,7 +43,6 @@ Type
     udClearMessages: TUpDown;
     btnOK: TBitBtn;
     btnCancel: TBitBtn;
-    btnCheckForUpdates: TBitBtn;
     dlgOpenEXE: TOpenDialog;
     lblShortcuts: TLabel;
     hkShortcut: THotKey;
@@ -51,9 +50,9 @@ Type
     lvShortcuts: TListView;
     btnHelp: TBitBtn;
     Procedure btnBrowseZipEXEClick(Sender: TObject);
-    procedure lvShortcutsSelectItem(Sender: TObject; Item: TListItem; Selected: Boolean);
-    procedure btnAssignClick(Sender: TObject);
-    procedure btnHelpClick(Sender: TObject);
+    Procedure lvShortcutsSelectItem(Sender: TObject; Item: TListItem; Selected: Boolean);
+    Procedure btnAssignClick(Sender: TObject);
+    Procedure btnHelpClick(Sender: TObject);
   Private
     { Private declarations }
     FGlobalOps: TITHGlobalOptions;

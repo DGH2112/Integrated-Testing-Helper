@@ -130,7 +130,7 @@ object frmITHGlobalOptionsDialogue: TfrmITHGlobalOptionsDialogue
     Anchors = [akRight, akBottom]
     Kind = bkOK
     NumGlyphs = 2
-    TabOrder = 13
+    TabOrder = 12
   end
   object btnCancel: TBitBtn
     Left = 436
@@ -140,25 +140,7 @@ object frmITHGlobalOptionsDialogue: TfrmITHGlobalOptionsDialogue
     Anchors = [akRight, akBottom]
     Kind = bkCancel
     NumGlyphs = 2
-    TabOrder = 14
-  end
-  object btnCheckForUpdates: TBitBtn
-    Left = 8
-    Top = 360
-    Width = 209
-    Height = 25
-    Anchors = [akLeft, akBottom]
-    Caption = 'Configure Check for Updates...'
-    Glyph.Data = {
-      F6000000424DF600000000000000760000002800000010000000100000000100
-      0400000000008000000000000000000000001000000000000000000000000000
-      8000008000000080800080000000800080008080000080808000C0C0C0000000
-      FF0000FF000000FFFF00FF000000FF00FF00FFFF0000FFFFFF00DDDDDDDDDDDD
-      DDDDDDDDDDDDDDDDDDDDDCDCDCDDCDCDDDDDDCDCDCDDCDCDDDCDDCCCDCDDCDCC
-      CDDDDCDC1CDDCDCDCDCDDCD9CCCCCCCCCDDDDDDD1DDDDDDDDDDDDDD91DDDDDA2
-      DDDDDDD91DDDDDAA2DDDDDDD91DDDAAAA2DDDDDDD91DDA2DAA2DDDDDD91DAADD
-      DAA2D91119DDADDDDDAADD999DDDDDDDDDDADDDDDDDDDDDDDDDD}
-    TabOrder = 8
+    TabOrder = 13
   end
   object hkShortcut: THotKey
     Left = 8
@@ -167,7 +149,7 @@ object frmITHGlobalOptionsDialogue: TfrmITHGlobalOptionsDialogue
     Height = 19
     Anchors = [akLeft, akRight, akBottom]
     Modifiers = []
-    TabOrder = 10
+    TabOrder = 9
   end
   object btnAssign: TBitBtn
     Left = 436
@@ -176,7 +158,7 @@ object frmITHGlobalOptionsDialogue: TfrmITHGlobalOptionsDialogue
     Height = 25
     Anchors = [akRight, akBottom]
     Caption = '&Assign'
-    TabOrder = 11
+    TabOrder = 10
     OnClick = btnAssignClick
   end
   object lvShortcuts: TListView
@@ -198,7 +180,7 @@ object frmITHGlobalOptionsDialogue: TfrmITHGlobalOptionsDialogue
     HideSelection = False
     ReadOnly = True
     RowSelect = True
-    TabOrder = 9
+    TabOrder = 8
     ViewStyle = vsReport
     OnSelectItem = lvShortcutsSelectItem
   end
@@ -210,7 +192,7 @@ object frmITHGlobalOptionsDialogue: TfrmITHGlobalOptionsDialogue
     Anchors = [akRight, akBottom]
     Kind = bkHelp
     NumGlyphs = 2
-    TabOrder = 12
+    TabOrder = 11
     OnClick = btnHelpClick
   end
   object dlgOpenEXE: TOpenDialog
