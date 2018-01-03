@@ -4,7 +4,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    30 Dec 2017
+  @Date    03 Jan 2018
   
 **)
 Unit ITHelper.SplashScreen;
@@ -38,9 +38,9 @@ Procedure InstallSplashScreen;
 
 Const
   {$IFDEF D2007}
-  strITHelperSplashScreen24x24 = 'ITHelperSplashScreen24x24';
+  strITHelperSplashScreen = 'ITHelperSplashScreen24x24';
   {$ELSE}
-  strITHelperSplashScreen48x48 = 'ITHelperSplashScreen48x48';
+  strITHelperSplashScreen = 'ITHelperSplashScreen48x48';
   {$ENDIF}
 
 Var
@@ -51,11 +51,7 @@ Var
   iSize: Cardinal;
 
 Begin
-  {$IFDEF D2007}
-  bmSplashScreen := LoadBitmap(hInstance, strITHelperSplashScreen24x24);
-  {$ELSE}
-  bmSplashScreen := LoadBitmap(hInstance, strITHelperSplashScreen48x48);
-  {$ENDIF}
+  bmSplashScreen := LoadBitmap(hInstance, strITHelperSplashScreen);
   SetLength(strModuleName, MAX_PATH);
   iSize := GetModuleFileName(hInstance, PChar(strModuleName), MAX_PATH);
   SetLength(strModuleName, iSize);
@@ -66,7 +62,7 @@ Begin
         Format(strSplashScreenName, [iMajor, iMinor, Copy(strRevisions, iBugFix + 1, 1),
           Application.Title]),
         bmSplashScreen,
-        False,
+        {$IFDEF DEBUG} True {$ELSE} False {$ENDIF},
         Format(strSplashScreenBuild, [iMajor, iMinor, iBugfix, iBuild]));
     End;
 End;

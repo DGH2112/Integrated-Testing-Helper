@@ -4,7 +4,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    10 Dec 2017
+  @Date    03 Jan 2018
   
 **)
 Unit ITHelper.AboutBox;
@@ -22,7 +22,8 @@ Uses
   Windows,
   Forms, 
   ITHelper.ResourceStrings, 
-  ITHelper.Constants;
+  ITHelper.Constants, 
+  ITHelper.CommonFunctions;
 
 (**
 
@@ -49,9 +50,15 @@ Var
   bmSplashScreen : HBITMAP;
   iMajor, iMinor, iBugFix, iBuild : Integer;
   ABS : IOTAAboutBoxServices;
+  strModuleName: String;
+  iSize: Cardinal;
 
 Begin
   Result := -1;
+  SetLength(strModuleName, MAX_PATH);
+  iSize := GetModuleFileName(hInstance, PChar(strModuleName), MAX_PATH);
+  SetLength(strModuleName, iSize);
+  BuildNumber(strModuleName, iMajor, iMinor, iBugFix, iBuild);
   bmSplashScreen := LoadBitmap(hInstance, strITHelperSplashScreen48x48);
   If Supports(BorlandIDEServices, IOTAAboutBoxServices, ABS) Then
     Begin
@@ -60,7 +67,7 @@ Begin
           Application.Title]),
         strPluginDescription,
         bmSplashScreen,
-        False,
+        {$IFDEF DEBUG} True {$ELSE} False {$ENDIF},
         Format(strSplashScreenBuild, [iMajor, iMinor, iBugfix, iBuild]),
         Format(strSKUBuild, [iMajor, iMinor, iBugfix, iBuild]));
     End;
