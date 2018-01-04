@@ -6,7 +6,7 @@
 
   @Version 1.0
   @Author  David Hoyle
-  @Date    03 Jan 2018
+  @Date    04 Jan 2018
 
 **)
 Unit ITHelper.ConfigurationForm;
@@ -28,10 +28,10 @@ Uses
   ComCtrls,
   ToolsAPI,
   ImgList,
-  ITHelper.ExternalProcessInfo,
   ExtCtrls,
-  ITHelper.GlobalOptions,
-  System.ImageList;
+  System.ImageList,
+  ITHelper.ExternalProcessInfo,
+  ITHelper.GlobalOptions;
 
 Type
   (** An enumerate to define which set of data the dialogue is to work with. **)
@@ -91,14 +91,68 @@ Implementation
 
 Uses
   IniFiles,
+  FileCtrl,
   ITHelper.ProgrammeInfoForm,
-  ITHelper.TestingHelperUtils,
-  FileCtrl;
+  ITHelper.TestingHelperUtils;
 
+Type
+  (** An enumerate to define the columns of the dialogue listview. @nohints **)
+  TITHColumn = (coTitle, coEXE, coParams, coDir);
+  (** A record helper for the above enumerate to translate the enumerate to a subimte or column reference
+      index. @nohints **)
+  TITHColumnHelper = Record Helper For TITHColumn
+    Function ColumnIndex : Integer;
+    Function SubItemIndex : Integer;
+  End;
+  
 Const
   (** A constant array of string representing the data type the dialogue is to work
       with. **)
   DlgTypes : Array[Low(TITHDlgType)..High(TITHDlgType)] of String = ('Before', 'After');
+  (** An INI Section Suffix for the dialogue settings. **)
+  strDlg = ' Dlg';
+  (** An INI Key name for the top position of the dialogue. **)
+  strTopKey = 'Top';
+  (** An INI Key name for the left position of the dialogue. **)
+  strLeftKey = 'Left';
+  (** An INI Key name for the height of the dialogue. **)
+  strHeightKey = 'Height';
+  (** An INI Key name for the width of the dialogue. **)
+  strWidthKey = 'Width';
+
+{ TITHColumnHelper }
+
+(**
+
+  This method returns the enumerate as a column index.
+
+  @precon  None.
+  @postcon Returns the enumerate as a column index.
+
+  @return  an Integer
+
+**)
+Function TITHColumnHelper.ColumnIndex: Integer;
+
+Begin
+  Result := Integer(Self);
+End;
+
+(**
+
+  This method returns the enumerate as a subitem index.
+
+  @precon  None.
+  @postcon Returns the enumerate as a subitem index.
+
+  @return  an Integer
+
+**)
+Function TITHColumnHelper.SubItemIndex: Integer;
+
+Begin
+  Result := Pred(Integer(Self));
+End;
 
 (**
 
@@ -200,25 +254,24 @@ Procedure TfrmITHConfigureDlg.btnCopyClick(Sender: TObject);
 Var
   iIndex: Integer;
   Item  : TListItem;
-  strTitle, strProgramme, strParameters, strWorkingDirectory: String;
-  boolEnabled: Boolean;
+  P : TITHProcessInfo;
 
 Begin
   iIndex := lvCompile.ItemIndex;
   If iIndex > -1 Then
     Begin
-      Item                := lvCompile.Items[iIndex];
-      strTitle            := Item.Caption;
-      strProgramme        := Item.SubItems[0];
-      strParameters       := Item.SubItems[1];
-      strWorkingDirectory := Item.SubItems[2];
-      boolEnabled         := Item.Checked;
-      Item                := lvCompile.Items.Add;
-      Item.Caption        := strTitle;
-      Item.SubItems.Add(strProgramme);
-      Item.SubItems.Add(strParameters);
-      Item.SubItems.Add(strWorkingDirectory);
-      Item.Checked := boolEnabled;
+      Item := lvCompile.Items[iIndex];
+      P.FTitle := Item.Caption;
+      P.FEXE := Item.SubItems[coEXE.SubItemIndex];
+      P.FParams := Item.SubItems[coParams.SubItemIndex];
+      P.FDir := Item.SubItems[coDir.SubItemIndex];
+      P.FEnabled := Item.Checked;
+      Item := lvCompile.Items.Add;
+      Item.Caption := P.FTitle;
+      Item.SubItems.Add(P.FEXE);
+      Item.SubItems.Add(P.FParams);
+      Item.SubItems.Add(P.FDir);
+      Item.Checked := P.FEnabled;
     End;
 End;
 
@@ -290,16 +343,16 @@ Begin
     Begin
       Item                := lvCompile.Items[iIndex];
       strTitle            := Item.Caption;
-      strProgramme        := Item.SubItems[0];
-      strParameters       := Item.SubItems[1];
-      strWorkingDirectory := Item.SubItems[2];
-      If TfrmITHProgrammeInfo.Execute(strTitle, strProgramme, strParameters,
-        strWorkingDirectory, FGlobalOps.INIFileName) Then
+      strProgramme        := Item.SubItems[coEXE.SubItemIndex];
+      strParameters       := Item.SubItems[coParams.SubItemIndex];
+      strWorkingDirectory := Item.SubItems[coDir.SubItemIndex];
+      If TfrmITHProgrammeInfo.Execute(strTitle, strProgramme, strParameters, strWorkingDirectory,
+        FGlobalOps.INIFileName) Then
         Begin
           Item.Caption     := strTitle;
-          Item.SubItems[0] := strProgramme;
-          Item.SubItems[1] := strParameters;
-          Item.SubItems[2] := strWorkingDirectory;
+          Item.SubItems[coEXE.SubItemIndex] := strProgramme;
+          Item.SubItems[coParams.SubItemIndex] := strParameters;
+          Item.SubItems[coDir.SubItemIndex] := strWorkingDirectory;
         End;
     End;
 End;
@@ -316,8 +369,11 @@ End;
 **)
 Procedure TfrmITHConfigureDlg.btnHelpClick(Sender: TObject);
 
+Const
+  strCompilationTools = 'CompilationTools';
+
 Begin
-  HTMLHelp(0, PChar(ITHHTMLHelpFile('CompilationTools')), HH_DISPLAY_TOPIC, 0);
+  HTMLHelp(0, PChar(ITHHTMLHelpFile(strCompilationTools)), HH_DISPLAY_TOPIC, 0);
 End;
 
 (**
@@ -364,6 +420,9 @@ Const
   strSection : Array[Low(TITHDlgType)..High(TITHDlgType)] Of String = (
     'Pre-Compilation', 'Post-Compilation');
 
+ResourceString
+  strProgrammesToExecuteCompilation = 'Programmes to execute %s compilation: %s';
+
 Var
   Processes: TITHProcessCollection;
   frm: TfrmITHConfigureDlg;
@@ -375,7 +434,7 @@ Begin
     frm.FProject   := Project;
     frm.FGlobalOps := GlobalOps;
     frm.FDlgType := DlgType;
-    frm.Caption    := Format('Programmes to execute %s compilation: %s', [DlgTypes[DlgType],
+    frm.Caption    := Format(strProgrammesToExecuteCompilation, [DlgTypes[DlgType],
       GetProjectName(Project)]);
     frm.lblCompile.Caption := Format(frm.lblCompile.Caption, [DlgTypes[DlgType]]);
     frm.chkWarn.Caption := Format(frm.chkWarn.Caption, [DlgTypes[DlgType]]);
@@ -422,10 +481,10 @@ Var
 Begin
   iniFile :=TMemIniFile.Create(FGlobalOps.INIFileName);
   Try
-    Top    := iniFile.ReadInteger(DlgTypes[FDlgType] + ' Dlg', 'Top', (Screen.Height - Height) Div 2);
-    Left   := iniFile.ReadInteger(DlgTypes[FDlgType] + ' Dlg', 'Left', (Screen.Width - Width) Div 2);
-    Height := iniFile.ReadInteger(DlgTypes[FDlgType] + ' Dlg', 'Height', Height);
-    Width  := iniFile.ReadInteger(DlgTypes[FDlgType] + ' Dlg', 'Width', Width);
+    Top    := iniFile.ReadInteger(DlgTypes[FDlgType] + strDlg, strTopKey, (Screen.Height - Height) Div 2);
+    Left   := iniFile.ReadInteger(DlgTypes[FDlgType] + strDlg, strLeftKey, (Screen.Width - Width) Div 2);
+    Height := iniFile.ReadInteger(DlgTypes[FDlgType] + strDlg, strHeightKey, Height);
+    Width  := iniFile.ReadInteger(DlgTypes[FDlgType] + strDlg, strWidthKey, Width);
   Finally
     iniFile.Free;
   End;
@@ -498,12 +557,13 @@ End;
 Procedure TfrmITHConfigureDlg.lvFileListCustomDrawItem(Sender: TCustomListView; Item: TListItem;
   State: TCustomDrawState; Var DefaultDraw: Boolean);
 
-Var
-  i       : Integer;
-  R, ItemR: TRect;
-  Buffer  : Array [0 .. 2048] Of Char;
-  Ops     : Integer;
+Const
+  iSmallPadding = 2;
+  iLargePadding = 6;
 
+Var
+  cstrBuffer : Array[0..MAX_PATH] Of Char;
+  
   (**
 
     This function returns display rectangle for the given indexed sub item.
@@ -527,11 +587,52 @@ Var
         Inc(Result.Left, Sender.Column[j].Width);
         Result.Right := Result.Left + Sender.Column[j + 1].Width;
       End;
-    Inc(Result.Top, 2);    // Padding / Margin
-    Inc(Result.Bottom, 2); // Padding / Margin
-    Inc(Result.Left, 6);   // Padding / Margin
-    Dec(Result.Right, 6);  // Padding / Margin
+    Inc(Result.Top, iSmallPadding); 
+    Inc(Result.Bottom, iSmallPadding);
+    Inc(Result.Left, iLargePadding);
+    Dec(Result.Right, iLargePadding);
   End;
+
+  (**
+
+    This method draws the sub items in the listview.
+
+    @precon  None.
+    @postcon The subitem is drawn in the listview.
+
+  **)
+  Procedure DrawSubItems;
+
+  Var
+    i : Integer;
+    R: TRect;
+    Ops : Integer;
+  
+  Begin
+    For i := Pred(Integer(coEXE)) To Pred(Integer(coDir)) Do
+      Begin
+        Case i Of
+          Pred(Integer(coEXE)), Pred(Integer(coDir)):
+            Ops := DT_LEFT Or DT_MODIFYSTRING Or DT_PATH_ELLIPSIS Or DT_NOPREFIX;
+          Pred(Integer(coParams)):
+            Ops := DT_LEFT Or DT_MODIFYSTRING Or DT_END_ELLIPSIS Or DT_NOPREFIX;
+        Else
+          Ops := DT_LEFT;
+        End;
+        R := GetSubItemRect(i);
+        Sender.Canvas.Brush.Color := clWindow;
+        If Item.Selected Then
+          Sender.Canvas.Brush.Color := clHighlight;
+        Sender.Canvas.Refresh;
+        StrPCopy(cstrBuffer, Item.SubItems[i]);
+        DrawText(Sender.Canvas.Handle, cstrBuffer, Length(Item.SubItems[i]), R, Ops);
+        R.Left := R.Right;
+      End;
+  End;
+  
+Var
+  R, ItemR: TRect;
+  Ops : Integer;
 
 Begin
   DefaultDraw := False;
@@ -550,33 +651,14 @@ Begin
   ilStatus.Draw(Sender.Canvas, R.Left, R.Top, Integer(Item.Checked), True);
   // Draw Caption
   R := Item.DisplayRect(drLabel);
-  Inc(R.Top, 2);    // Padding / Margin
-  Inc(R.Bottom, 2); // Padding / Margin
-  Inc(R.Left, 2);   // Padding / Margin
-  Dec(R.Right, 2);  // Padding / Margin
+  Inc(R.Top, iSmallPadding);
+  Inc(R.Bottom, iSmallPadding);
+  Inc(R.Left, iSmallPadding);
+  Dec(R.Right, iSmallPadding);
   Ops := DT_LEFT Or DT_MODIFYSTRING Or DT_END_ELLIPSIS Or DT_NOPREFIX;
-  StrPCopy(Buffer, Item.Caption);
-  DrawText(Sender.Canvas.Handle, Buffer, Length(Item.Caption), R, Ops);
-  // Draw Sub Items
-  For i := 0 To 2 Do
-    Begin
-      Case i Of
-        0, 2:
-          Ops := DT_LEFT Or DT_MODIFYSTRING Or DT_PATH_ELLIPSIS Or DT_NOPREFIX;
-        1:
-          Ops := DT_LEFT Or DT_MODIFYSTRING Or DT_END_ELLIPSIS Or DT_NOPREFIX;
-      Else
-        Ops := DT_LEFT;
-      End;
-      R := GetSubItemRect(i);
-      StrPCopy(Buffer, Item.SubItems[i]);
-      Sender.Canvas.Brush.Color := clWindow;
-      If Item.Selected Then
-        Sender.Canvas.Brush.Color := clHighlight;
-      Sender.Canvas.Refresh;
-      DrawText(Sender.Canvas.Handle, Buffer, Length(Item.SubItems[i]), R, Ops);
-      R.Left := R.Right;
-    End;
+  StrPCopy(cstrBuffer, Item.Caption);
+  DrawText(Sender.Canvas.Handle, cstrBuffer, Length(Item.Caption), R, Ops);
+  DrawSubItems;
 End;
 
 (**
@@ -592,17 +674,23 @@ End;
 **)
 Procedure TfrmITHConfigureDlg.lvResize(Sender: TObject);
 
+Const
+  dblTitlePctWidth = 0.15;
+  dblEXEPctWidth = 0.35;
+  dblParamsPctWidth = 0.20;
+  dblDirPctWidth = 0.30;
+
 Var
   i: Integer;
   LV: TListView;
 
 Begin
   LV := Sender As TListView;
-  i                := LV.ClientWidth;
-  LV.Columns[0].Width := Trunc(i * 0.15);
-  LV.Columns[1].Width := Trunc(i * 0.35);
-  LV.Columns[2].Width := Trunc(i * 0.2);
-  LV.Columns[3].Width := Trunc(i * 0.3);
+  i := LV.ClientWidth;
+  LV.Columns[coTitle.ColumnIndex].Width := Trunc(i * dblTitlePctWidth);
+  LV.Columns[coExe.ColumnIndex].Width := Trunc(i * dblEXEPctWidth);
+  LV.Columns[coParams.ColumnIndex].Width := Trunc(i * dblParamsPctWidth);
+  LV.Columns[coDir.ColumnIndex].Width := Trunc(i * dblDirPctWidth);
 End;
 
 (**
@@ -624,10 +712,10 @@ Var
 Begin
   iniFile := TMemIniFile.Create(FGlobalOps.INIFileName);
   Try
-    iniFile.WriteInteger(DlgTypes[FDlgType] + ' Dlg', 'Top', Top);
-    iniFile.WriteInteger(DlgTypes[FDlgType] + ' Dlg', 'Left', Left);
-    iniFile.WriteInteger(DlgTypes[FDlgType] + ' Dlg', 'Height', Height);
-    iniFile.WriteInteger(DlgTypes[FDlgType] + ' Dlg', 'Width', Width);
+    iniFile.WriteInteger(DlgTypes[FDlgType] + strDlg, strTopKey, Top);
+    iniFile.WriteInteger(DlgTypes[FDlgType] + strDlg, strLeftKey, Left);
+    iniFile.WriteInteger(DlgTypes[FDlgType] + strDlg, strHeightKey, Height);
+    iniFile.WriteInteger(DlgTypes[FDlgType] + strDlg, strWidthKey, Width);
     iniFile.UpdateFile;
   Finally
     iniFile.Free;
@@ -664,8 +752,12 @@ Var
 
 Begin
   For i := 0 To ListView.Items.Count - 1 Do
-    Processes.AddProcessInfo(ListView.Items[i].Checked, ListView.Items[i].SubItems[0],
-      ListView.Items[i].SubItems[1], ListView.Items[i].SubItems[2], ListView.Items[i].Caption);
+    Processes.AddProcessInfo(
+      ListView.Items[i].Checked,
+      ListView.Items[i].SubItems[coEXE.SubItemIndex],
+      ListView.Items[i].SubItems[coParams.SubItemIndex],
+      ListView.Items[i].SubItems[coDir.SubItemIndex],
+      ListView.Items[i].Caption);
   Processes.SaveToINI(FGlobalOps.ProjectOptions(Project).INIFile, strSection);
 End;
 
@@ -684,24 +776,24 @@ Procedure TfrmITHConfigureDlg.SwapItems(Const Item1, Item2: TListItem);
 
 Var
   strTitle, strEXE, strParam, strDir: String;
-  boolEnabled                       : Boolean;
+  boolEnabled: Boolean;
 
 Begin
-  strTitle          := Item1.Caption;
-  strEXE            := Item1.SubItems[0];
-  strParam          := Item1.SubItems[1];
-  strDir            := Item1.SubItems[2];
-  boolEnabled       := Item1.Checked;
-  Item1.Caption     := Item2.Caption;
-  Item1.SubItems[0] := Item2.SubItems[0];
-  Item1.SubItems[1] := Item2.SubItems[1];
-  Item1.SubItems[2] := Item2.SubItems[2];
-  Item1.Checked     := Item2.Checked;
-  Item2.Caption     := strTitle;
-  Item2.SubItems[0] := strEXE;
-  Item2.SubItems[1] := strParam;
-  Item2.SubItems[2] := strDir;
-  Item2.Checked     := boolEnabled;
+  strTitle := Item1.Caption;
+  strEXE := Item1.SubItems[coEXE.SubItemIndex];
+  strParam := Item1.SubItems[coParams.SubItemIndex];
+  strDir := Item1.SubItems[coDir.SubItemIndex];
+  boolEnabled := Item1.Checked;
+  Item1.Caption := Item2.Caption;
+  Item1.SubItems[coEXE.SubItemIndex] := Item2.SubItems[coEXE.SubItemIndex];
+  Item1.SubItems[coParams.SubItemIndex] := Item2.SubItems[coParams.SubItemIndex];
+  Item1.SubItems[coDir.SubItemIndex] := Item2.SubItems[coDir.SubItemIndex];
+  Item1.Checked := Item2.Checked;
+  Item2.Caption := strTitle;
+  Item2.SubItems[coEXE.SubItemIndex] := strEXE;
+  Item2.SubItems[coParams.SubItemIndex] := strParam;
+  Item2.SubItems[coDir.SubItemIndex] := strDir;
+  Item2.Checked := boolEnabled;
 End;
 
 End.
