@@ -4,15 +4,15 @@
   wildcards for additional files to be included in the zipping process.
 
   @Version 1.0
-  @Date    12 Jun 2012
+  @Date    04 Jan 2018
   @Author  David Hoyle
 
 **)
-unit ITHelper.AdditionalZipFilesForm;
+Unit ITHelper.AdditionalZipFilesForm;
 
-interface
+Interface
 
-uses
+Uses
   Windows,
   Messages,
   SysUtils,
@@ -26,27 +26,28 @@ uses
   StdCtrls,
   ToolsAPI;
 
-type
+Type
   (** This is a class to represents the form interface. **)
-  TfrmAdditionalZipFiles = class(TForm)
+  TfrmITHAdditionalZipFiles = Class(TForm)
     lblWildcard: TLabel;
     edtWildcard: TEdit;
     btnBrowse: TButton;
     btnOK: TBitBtn;
     btnCancel: TBitBtn;
-    procedure btnBrowseClick(Sender: TObject);
-    procedure btnOKClick(Sender: TObject);
-  private
+    Procedure btnBrowseClick(Sender: TObject);
+    Procedure btnOKClick(Sender: TObject);
+  Private
     { Private declarations }
-    FProject : IOTAProject;
-  public
+    FProject: IOTAProject;
+  Public
     { Public declarations }
-    Class Function Execute(Project : IOTAProject; var strWildcard : String) : Boolean;
-  end;
+    Class Function Execute(Const Project: IOTAProject; Var strWildcard: String): Boolean;
+  End;
 
-implementation
+Implementation
 
 {$R *.dfm}
+
 
 Uses
   FileCtrl,
@@ -62,17 +63,20 @@ Uses
   @param   Sender as a TObject
 
 **)
-procedure TfrmAdditionalZipFiles.btnBrowseClick(Sender: TObject);
+Procedure TfrmITHAdditionalZipFiles.btnBrowseClick(Sender: TObject);
+
+ResourceString
+  strZipFilePath = 'Zip File Path';
 
 Var
-  strDir : String;
+  strDir: String;
 
-begin
+Begin
   strDir := ExtractFilePath(edtWildcard.Text);
-  If SelectDirectory('Zip File Path', '', strDir{$IFDEF D2005},
+  If SelectDirectory(strZipFilePath, '', strDir{$IFDEF D2005},
     [sdNewFolder, sdShowShares, sdNewUI, sdValidateDir] {$ENDIF} ) Then
     edtWildcard.Text := strDir + '\' + ExtractFileName(edtWildcard.Text);
-end;
+End;
 
 (**
 
@@ -84,52 +88,56 @@ end;
   @param   Sender as a TObject
 
 **)
-procedure TfrmAdditionalZipFiles.btnOKClick(Sender: TObject);
+Procedure TfrmITHAdditionalZipFiles.btnOKClick(Sender: TObject);
+
+ResourceString
+  strDirectoryDoesNotExists = 'The directory "%s" does not exists.';
 
 Var
-  strDir : String;
+  strDir: String;
 
-begin
+Begin
   strDir := ExtractFilePath(edtWildcard.Text);
   If Not SysUtils.DirectoryExists(ExpandMacro(strDir, FProject)) Then
     Begin
       ModalResult := mrNone;
-      MessageDlg(Format('The directory "%s" does not exists.', [strDir]),
+      MessageDlg(Format(strDirectoryDoesNotExists, [strDir]),
         mtError, [mbOK], 0);
     End;
-end;
+End;
 
 (**
 
   This is the classes main interface method for invoking the dialogue.
 
   @precon  None.
-  @postcon Displays the dialogue. On confirmation the wildcard is passed back via the var
-           parameter.
+  @postcon Displays the dialogue. On confirmation the wildcard is passed back via the var parameter.
 
-  @param   Project     as an IOTAProject
+  @param   Project     as an IOTAProject as a constant
   @param   strWildcard as a String as a reference
   @return  a Boolean
 
 **)
-class function TfrmAdditionalZipFiles.Execute(Project : IOTAProject;
-  var strWildcard: String): Boolean;
+Class Function TfrmITHAdditionalZipFiles.Execute(Const Project: IOTAProject;
+  Var strWildcard: String): Boolean;
 
-begin
+Var
+  frm: TfrmITHAdditionalZipFiles;
+
+Begin
   Result := False;
-  With TfrmAdditionalZipFiles.Create(Nil) Do
-    Try
-      FProject := Project;
-      edtWildcard.Text := strWildcard;
-      If ShowModal = mrOK Then
-        Begin
-          strWildcard := edtWildcard.Text;
-          Result := True;
-        End;
-    Finally
-      Free;
-    End;
-end;
+  frm := TfrmITHAdditionalZipFiles.Create(Nil);
+  Try
+    frm.FProject := Project;
+    frm.edtWildcard.Text := strWildcard;
+    If frm.ShowModal = mrOK Then
+      Begin
+        strWildcard := frm.edtWildcard.Text;
+        Result := True;
+      End;
+  Finally
+    frm.Free;
+  End;
+End;
 
-end.
-
+End.

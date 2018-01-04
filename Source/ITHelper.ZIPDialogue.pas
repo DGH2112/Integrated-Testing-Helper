@@ -5,7 +5,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    30 Dec 2017
+  @Date    04 Jan 2018
 
 **)
 Unit ITHelper.ZIPDialogue;
@@ -61,7 +61,7 @@ Type
     Procedure InitialiseOptions(Const GlobalOps: TITHGlobalOptions);
     Procedure SaveOptions(Const GlobalOps: TITHGlobalOptions);
     procedure btnHelpClick(Sender: TObject);
-  Private
+  Strict Private
     { Private declarations }
     FProject : IOTAProject;
     FFileName: String;
@@ -112,7 +112,7 @@ Begin
   strWildcard := edtBasePath.Text;
   If strWildcard = '' Then
     strWildcard := ExtractFilePath(edtZipName.Text);
-  If TfrmAdditionalZipFiles.Execute(FProject, strWildcard) Then
+  If TfrmITHAdditionalZipFiles.Execute(FProject, strWildcard) Then
     lbAdditionalWildcards.Items.Add(strWildcard);
 End;
 
@@ -202,7 +202,7 @@ Begin
   If iIndex > -1 Then
     Begin
       strWildcard := lbAdditionalWildcards.Items[iIndex];
-      If TfrmAdditionalZipFiles.Execute(FProject, strWildcard) Then
+      If TfrmITHAdditionalZipFiles.Execute(FProject, strWildcard) Then
         lbAdditionalWildcards.Items[iIndex] := strWildcard;
     End;
 End;

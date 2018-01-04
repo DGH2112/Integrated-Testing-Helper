@@ -4,59 +4,53 @@ object frmITHZIPDialogue: TfrmITHZIPDialogue
   BorderIcons = []
   Caption = 'ZIP Options'
   ClientHeight = 336
-  ClientWidth = 632
+  ClientWidth = 667
   Color = clBtnFace
   Constraints.MinHeight = 370
   Constraints.MinWidth = 640
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
-  Font.Height = -11
+  Font.Height = -13
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
   Position = poDesigned
   DesignSize = (
-    632
+    667
     336)
   PixelsPerInch = 96
-  TextHeight = 13
+  TextHeight = 16
   object lblZipInfo: TLabel
     Left = 8
     Top = 271
-    Width = 540
+    Width = 575
     Height = 13
     Anchors = [akLeft, akRight, akBottom]
     AutoSize = False
     Caption = 
-      'In order for this to work you need WinZip'#39's command-line tools i' +
-      'nstall and on your path.'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clMaroon
-    Font.Height = -11
-    Font.Name = 'Tahoma'
-    Font.Style = [fsBold]
-    ParentFont = False
+      'In order for this to work you need a ZIP command-line tool insta' +
+      'lled and on your path.'
   end
   object lblZIPName: TLabel
     Left = 8
     Top = 37
-    Width = 107
-    Height = 13
+    Width = 128
+    Height = 16
     Caption = 'ZIP Path and Filename'
   end
   object lblAdditionalFiles: TLabel
     Left = 8
     Top = 110
-    Width = 71
-    Height = 13
+    Width = 86
+    Height = 16
     Caption = '&Additional Files'
     FocusControl = lbAdditionalWildcards
   end
   object lblFilePatternsToExclude: TLabel
     Left = 8
     Top = 201
-    Width = 115
-    Height = 13
+    Width = 137
+    Height = 16
     Anchors = [akLeft, akBottom]
     Caption = 'File Patterns To &Exclude'
     FocusControl = mmoExclusionPatterns
@@ -73,16 +67,15 @@ object frmITHZIPDialogue: TfrmITHZIPDialogue
   object lbAdditionalWildcards: TListBox
     Left = 8
     Top = 131
-    Width = 535
+    Width = 553
     Height = 64
     Anchors = [akLeft, akTop, akRight, akBottom]
-    ItemHeight = 13
     TabOrder = 1
   end
   object btnAddZip: TBitBtn
-    Left = 549
+    Left = 567
     Top = 131
-    Width = 75
+    Width = 92
     Height = 25
     Anchors = [akTop, akRight]
     Caption = '&Add'
@@ -104,9 +97,9 @@ object frmITHZIPDialogue: TfrmITHZIPDialogue
     OnClick = btnAddZipClick
   end
   object btnEditZip: TBitBtn
-    Left = 549
+    Left = 567
     Top = 162
-    Width = 75
+    Width = 92
     Height = 25
     Anchors = [akTop, akRight]
     Caption = '&Edit'
@@ -128,9 +121,9 @@ object frmITHZIPDialogue: TfrmITHZIPDialogue
     OnClick = btnEditZipClick
   end
   object btnDeleteZip: TBitBtn
-    Left = 549
+    Left = 567
     Top = 193
-    Width = 75
+    Width = 92
     Height = 25
     Anchors = [akTop, akRight]
     Caption = '&Delete'
@@ -154,15 +147,15 @@ object frmITHZIPDialogue: TfrmITHZIPDialogue
   object edtZipName: TEdit
     Left = 8
     Top = 56
-    Width = 535
-    Height = 21
+    Width = 553
+    Height = 24
     Anchors = [akLeft, akTop, akRight]
     TabOrder = 5
   end
   object btnBrowseZip: TButton
-    Left = 549
+    Left = 567
     Top = 52
-    Width = 75
+    Width = 92
     Height = 25
     Anchors = [akTop, akRight]
     Caption = 'Browse &File'
@@ -172,15 +165,15 @@ object frmITHZIPDialogue: TfrmITHZIPDialogue
   object edtBasePath: TEdit
     Left = 8
     Top = 83
-    Width = 535
-    Height = 21
+    Width = 553
+    Height = 24
     Anchors = [akLeft, akTop, akRight]
     TabOrder = 7
   end
   object btnBrowseBasePath: TButton
-    Left = 549
+    Left = 567
     Top = 83
-    Width = 75
+    Width = 92
     Height = 25
     Anchors = [akTop, akRight]
     Caption = 'Browse &Path'
@@ -190,13 +183,13 @@ object frmITHZIPDialogue: TfrmITHZIPDialogue
   object mmoExclusionPatterns: TMemo
     Left = 8
     Top = 220
-    Width = 535
+    Width = 553
     Height = 45
     Anchors = [akLeft, akRight, akBottom]
     TabOrder = 9
   end
   object btnOK: TBitBtn
-    Left = 468
+    Left = 503
     Top = 303
     Width = 75
     Height = 25
@@ -207,7 +200,7 @@ object frmITHZIPDialogue: TfrmITHZIPDialogue
     OnClick = btnOKClick
   end
   object btnCancel: TBitBtn
-    Left = 549
+    Left = 584
     Top = 303
     Width = 75
     Height = 25
@@ -217,7 +210,7 @@ object frmITHZIPDialogue: TfrmITHZIPDialogue
     TabOrder = 12
   end
   object btnHelp: TBitBtn
-    Left = 387
+    Left = 422
     Top = 303
     Width = 75
     Height = 25
@@ -232,7 +225,7 @@ object frmITHZIPDialogue: TfrmITHZIPDialogue
     Filter = 'ZIP Files (*.zip)|*.zip'
     Options = [ofHideReadOnly, ofPathMustExist, ofEnableSizing]
     Title = 'ZIP File'
-    Left = 87
-    Top = 239
+    Left = 175
+    Top = 151
   end
 end
