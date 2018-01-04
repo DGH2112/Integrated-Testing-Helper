@@ -4,7 +4,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    30 Dec 2017
+  @Date    04 Jan 2018
   
 **)
 Unit ITHelper.CommonFunctions;
@@ -71,10 +71,8 @@ Var
   VerValueSize: DWORD;
   VerValue: PVSFixedFileInfo;
   Dummy: DWORD;
-  //: @debug strBuffer : Array[0..MAX_PATH] Of Char;
 
 Begin
-  //: @debug GetModuleFileName(hInstance, strBuffer, MAX_PATH);
   VerInfoSize := GetFileVersionInfoSize(PChar(strFileName), Dummy);
   If VerInfoSize <> 0 Then
     Begin
@@ -211,6 +209,9 @@ Var
   Procedure ProcessOutput(Const slLines : TStringList; Const hRead : THandle;
     Const Purge : Boolean = False);
 
+  Const
+    iLFCRLen = 2;
+
   Var
     iTotalBytesInPipe : Cardinal;
     iBytesRead : Cardinal;
@@ -235,7 +236,11 @@ Var
         SetLength(strOutput, iTotalBytesInPipe);
         ReadFile(hRead, strOutput[1], iTotalBytesInPipe, iBytesRead, Nil);
         SetLength(strOutput, iBytesRead);
-        slLines.Text := Copy(slLines.Text, 1, Length(slLines.Text) - 2) + String(strOutput);
+        {$IFNDEF D2009}
+        slLines.Text := Copy(slLines.Text, 1, Length(slLines.Text) - iLFCRLen) + strOutput;
+        {$ELSE}
+        slLines.Text := Copy(slLines.Text, 1, Length(slLines.Text) - iLFCRLen) + UTF8ToString(strOutput);
+        {$ENDIF}
       End;
     // Use a string list to output each line except the last as it may not
     // be complete yet.
@@ -337,23 +342,24 @@ End;
 **)
 Function DGHFindOnPath(Var strEXEName : String; Const strDirs : String) : Boolean;
 
-Const
-  strPathEnvName = 'path';
+  (**
 
-Var
-  slPaths : TStringList;
-  iPath: Integer;
-  recSearch: TSearchRec;
-  iResult: Integer;
-  iLength: Integer;
-  strPath, strExPath : String;
-  iSize: Integer;
+    This procedure checks the paths for being empty (and deltees them) and ensures they termiante with
+    a backslash.
 
-Begin
-  Result := False;
-  slPaths := TStringList.Create;
-  Try
-    slPaths.Text := GetEnvironmentVariable(strPathEnvName);
+    @precon  None.
+    @postcon Empty paths are deleted and all end with a backslash.
+
+    @param   slPaths as a TStringList as a constant
+
+  **)
+  Procedure CheckPaths(Const slPaths : TStringList);
+
+  Var
+    iPath : Integer;
+    iLength: Integer;
+
+  Begin
     If strDirs <> '' Then
       slPaths.Text := strDirs + ';' + slPaths.Text;
     slPaths.Text := StringReplace(slPaths.Text, ';', #13#10, [rfReplaceAll]);
@@ -366,6 +372,54 @@ Begin
           If slPaths[iPath][iLength] <> '\' Then
             slPaths[iPath] := slPaths[iPath] + '\';
       End;
+  End;
+
+  (**
+
+    This method attempts to find the executable on the given path.
+
+    @precon  None.
+    @postcon Returns true if the EXE is found.
+
+    @param   strExPath as a String as a constant
+    @return  a Boolean
+
+  **)
+  Function FindPath(Const strExPath : String) : Boolean;
+
+  Var
+    recSearch: TSearchRec;
+    iResult: Integer;
+  
+  Begin
+    Result := False;
+    iResult := FindFirst(strExPath + strEXEName, faAnyFile, recSearch);
+    Try
+      If iResult = 0 Then
+        Begin
+          strEXEName := strExPath + strEXEName;
+          Result := True;
+        End;
+    Finally
+      SysUtils.FindClose(recSearch);
+    End;
+  End;
+
+Const
+  strPathEnvName = 'path';
+
+Var
+  slPaths : TStringList;
+  iPath: Integer;
+  strPath, strExPath : String;
+  iSize: Integer;
+
+Begin
+  Result := False;
+  slPaths := TStringList.Create;
+  Try
+    slPaths.Text := GetEnvironmentVariable(strPathEnvName);
+    CheckPaths(slPaths);
     strEXEName := ExtractFileName(strEXEName);
     For iPath := 0 To slPaths.Count - 1 Do
       Begin
@@ -373,17 +427,11 @@ Begin
         SetLength(strExPath, MAX_PATH);
         iSize := ExpandEnvironmentStrings(PChar(strPath), PChar(strExPath), MAX_PATH);
         SetLength(strExPath, Pred(iSize));
-        iResult := FindFirst(strExPath + strEXEName, faAnyFile, recSearch);
-        Try
-          If iResult = 0 Then
-            Begin
-              strEXEName := strExPath + strEXEName;
-              Result := True;
-              Break;
-            End;
-        Finally
-          SysUtils.FindClose(recSearch);
-        End;
+        If FindPath(strExPath) Then
+          Begin
+            Result := True;
+            Break;
+          End;
       End;
   Finally
     slPaths.Free;
@@ -533,15 +581,135 @@ Type
   TMatchType = (mtStart, mtEnd);
   TMatchTypes = Set Of TMatchType;
 
+  (**
+
+    This method checks the start, middle and end of the text against the pattern.
+
+    @precon  None.
+    @postcon Returns true of the text matches the pattern. 
+
+    @param   strLocalPattern as a String as a constant
+    @param   MatchTypes      as a TMatchTypes as a constant
+    @return  a Boolean
+
+  **)
+  Function CheckPattern(Const strLocalPattern : String; Const MatchTypes : TMatchTypes) : Boolean;
+
+    (**
+
+      This fucntion checks the end of the text against the given pattern stored in the string list.
+
+      @precon  sl must be a valid instance.
+      @postcon Returns true of the pattern does not matches the end of the text.
+
+      @param   sl         as a TStringList as a constant
+      @param   MatchTypes as a TMatchTypes as a constant
+      @return  a Boolean
+
+    **)
+    Function CheckEnd(Const sl : TStringList; Const MatchTypes : TMatchTypes) : Boolean;
+
+    Begin
+      Result := False;
+      If sl.Count > 0 Then
+        If mtEnd In MatchTypes Then
+          If CompareText(sl[sl.Count - 1], Copy(strText, Length(strText) -
+            Length(sl[sl.Count - 1]) + 1, Length(sl[sl.Count - 1]))) <> 0 Then
+            Result := True;
+    End;
+
+    (**
+
+      This method checks the inner part of the pattern against the text.
+
+      @precon  sl must be a valid instance.
+      @postcon Returns true if the pattern does not match the text.
+
+      @param   sl          as a TStringList as a constant
+      @param   MatchTypes  as a TMatchTypes as a constant
+      @param   iStartIndex as an Integer as a reference
+      @return  a Boolean
+
+    **)
+    Function CheckInBetween(Const sl : TStringList; Const MatchTypes : TMatchTypes;
+      Var iStartIndex : Integer) : Boolean;
+
+    Var
+      i : Integer;
+      iPos : Integer;
+    
+    Begin
+      Result := False;
+      For i := Integer(mtStart In MatchTypes) To sl.Count - 1 - Integer(mtEnd In MatchTypes) Do
+        Begin
+          iPos := Pos(sl[i], lowercase(strText));
+          If (iPos = 0) Or (iPos < iStartIndex) Then
+            Begin
+              Result := True;
+              Break;
+            End;;
+          Inc(iStartIndex, Length(sl[i]));
+        End;
+    End;
+
+    (**
+
+      This method checks the start of the tetx against the pattern.
+
+      @precon  sl must be a valid instance.
+      @postcon Returns true if the pattern does not match.
+
+      @param   sl          as a TStringList as a constant
+      @param   MatchTypes  as a TMatchTypes as a constant
+      @param   iStartIndex as an Integer as a reference
+      @return  a Boolean
+
+    **)
+    Function CheckStart(Const sl : TStringList; Const MatchTypes : TMatchTypes;
+      Var iStartIndex : Integer) : Boolean;
+
+    Begin
+      Result := False;
+      iStartIndex := 1;
+      If sl.Count > 0 Then
+        If mtStart In MatchTypes Then
+          If CompareText(sl[0], Copy(strText, 1, Length(sl[0]))) <> 0 Then
+            Begin
+              Result := True;
+              Exit;
+            End Else
+              Inc(iStartIndex, Length(sl[0]));
+    End;
+
+  Var
+    sl : TStringList;
+    astrParts : TDGHArrayOfString;
+    i: Integer;
+    iStartIndex : Integer;
+  
+  Begin
+    Result := False;
+    sl := TStringList.Create;
+    Try
+      astrParts := DGHSplit(strLocalPattern, '*');
+      For i := Low(astrParts) To High(astrParts) Do
+        sl.Add(astrParts[i]);
+      If CheckStart(sl, MatchTypes, iStartIndex) Then
+        Exit;
+      If CheckInBetween(sl, MatchTypes, iStartIndex) Then
+        Exit;
+      If CheckEnd(sl, MatchTypes) Then
+        Exit;
+      Result := True;
+    Finally
+      sl.Free;
+    End;
+  End;
+  
+
 Var
   MatchTypes : TMatchTypes;
-  sl : TStringList;
-  i: Integer;
-  //iTokenIndex : Integer;
-  iStartIndex : Integer;
-  iPos: Integer;
   strLocalPattern : String;
-  astrParts : TDGHArrayOfString;
 
 Begin
   strLocalPattern := strPattern;
@@ -563,41 +731,7 @@ Begin
       Include(MatchTypes, mtEnd)
     Else
       Delete(strLocalPattern, Length(strLocalPattern), 1);
-  sl := TStringList.Create;
-  Try
-//    For i := 1 To CharCount('*', strLocalPattern) + 1 Do
-//      sl.Add(lowercase(GetField(strLocalPattern, '*', i)));
-    astrParts := DGHSplit(strLocalPattern, '*');
-    For i := Low(astrParts) To High(astrParts) Do
-      sl.Add(astrParts[i]);
-    // Check start
-    //iTokenIndex := 1;
-    iStartIndex := 1;
-    If sl.Count > 0 Then
-      If mtStart In MatchTypes Then
-        If CompareText(sl[0], Copy(strText, 1, Length(sl[0]))) <> 0 Then
-          Exit
-        Else
-          Inc(iStartIndex, Length(sl[0]));
-    // Check in between
-    For i := Integer(mtStart In MatchTypes) To sl.Count - 1 - Integer(mtEnd In MatchTypes) Do
-      Begin
-        iPos := Pos(sl[i], lowercase(strText));
-        If (iPos = 0) Or (iPos < iStartIndex) Then
-          Exit;
-        //Inc(iTokenIndex, iPos);
-        Inc(iStartIndex, Length(sl[i]));
-      End;
-    // Check end
-    If sl.Count > 0 Then
-      If mtEnd In MatchTypes Then
-        If CompareText(sl[sl.Count - 1], Copy(strText, Length(strText) -
-          Length(sl[sl.Count - 1]) + 1, Length(sl[sl.Count - 1]))) <> 0 Then
-          Exit;
-    Result := True;
-  Finally
-    sl.Free;
-  End;
+  Result := CheckPattern(strLocalPattern, MatchTypes);
 End;
 
 (**
