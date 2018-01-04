@@ -523,7 +523,7 @@ Begin
                         TfrmITHProcessing.ShowProcessing
                           (Format('Pre-Compilation Tools Failed (%s).', [strProject]),
                           FGlobalOps.FontColour[ithfWarning], True);
-                        ShowHelperMessages;
+                        ShowHelperMessages(FGlobalOps.GroupMessages);
                       End
                     Else If iResult < 0 Then
                       If ProjectOps.WarnBefore Then
@@ -533,7 +533,7 @@ Begin
                             FGlobalOps.FontName[fnHeader],
                             FGlobalOps.FontColour[ithfWarning],
                             FGlobalOps.FontStyles[ithfWarning]);
-                          ShowHelperMessages;
+                          ShowHelperMessages(FGlobalOps.GroupMessages);
                         End;
                   End;
               If eoBuildVersionResource In Ops Then
@@ -685,7 +685,7 @@ Begin
           End;
         If iResult <> 0 Then
           FParentMsg.ForeColour := FGlobalOps.FontColour[ithfFailure];
-        ShowHelperMessages;
+        ShowHelperMessages(FGlobalOps.GroupMessages);
         If iResult > 0 Then
           Abort;
           AddMsg(Format('Resource %s.RC compiled for project %s.', [
@@ -1176,7 +1176,7 @@ Begin
                 FGlobalOps.FontColour[ithfWarning],
                 FGlobalOps.FontStyles[ithfWarning]);
           End;
-          ShowHelperMessages;
+          ShowHelperMessages(FGlobalOps.GroupMessages);
         End
       Else
         AddMsg(Format('The dependency "%s" was not found. (%s)',
@@ -1450,7 +1450,7 @@ Begin
                       Begin
                         TfrmITHProcessing.ShowProcessing(Format('ZIP Tool Failure (%s).',
                           [strProject]), FGlobalOps.FontColour[ithfFailure], True);
-                        ShowHelperMessages;
+                        ShowHelperMessages(FGlobalOps.GroupMessages);
                         Abort; // Stop IDE continuing if there was a problem.
                       End;
                   End;
@@ -1463,7 +1463,7 @@ Begin
                         TfrmITHProcessing.ShowProcessing
                           (Format('Post-Compilation Tools Failed (%s).', [strProject]),
                           FGlobalOps.FontColour[ithfWarning], True);
-                        ShowHelperMessages;
+                        ShowHelperMessages(FGlobalOps.GroupMessages);
                         Abort; // Stop IDE continuing if there was a problem.
                       End
                     Else If iResult < 0 Then
@@ -1474,7 +1474,7 @@ Begin
                             FGlobalOps.FontName[fnHeader],
                             FGlobalOps.FontColour[ithfWarning],
                             FGlobalOps.FontStyles[ithfWarning]);
-                          ShowHelperMessages;
+                          ShowHelperMessages(FGlobalOps.GroupMessages);
                         End;
                   End;
                 FLastSuccessfulCompile := GetTickCount;
@@ -1548,7 +1548,7 @@ Begin
               End;
             If Result <> 0 Then
               FParentMsg.ForeColour := FGlobalOps.FontColour[ithfFailure];
-            ShowHelperMessages;
+            ShowHelperMessages(FGlobalOps.GroupMessages);
             If Result > 0 Then
                 Break;
           End;
@@ -1627,7 +1627,7 @@ Begin
     Begin
       FLastSuccessfulCompile := 0;
       If FGlobalOps.SwitchToMessages Then
-        ShowHelperMessages;
+        ShowHelperMessages(FGlobalOps.GroupMessages);
     End;
 End;
 

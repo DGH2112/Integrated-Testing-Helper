@@ -38,11 +38,11 @@ Type
     FBackColour : TColor;
     FMessagePntr : Pointer;
   {$IFDEF D2005} Strict {$ENDIF} Protected
-    Procedure SetForeColour(iColour : TColor);
+    Procedure SetForeColour(Const iColour : TColor);
   Public
-    Constructor Create(strMsg : String; FontName : String;
-      ForeColour : TColor = clBlack; Style : TFontStyles = [];
-      BackColour : TColor = clWindow);
+    Constructor Create(Const strMsg : String; Const FontName : String;
+      Const ForeColour : TColor = clBlack; Const Style : TFontStyles = [];
+      Const BackColour : TColor = clWindow);
     (**
       This allows the colour of the font to be updated.
       @precon  None.
@@ -87,38 +87,38 @@ Type
   {$IFNDEF CONSOLE_TESTRUNNER}
   Function ProjectGroup: IOTAProjectGroup;
   Function ActiveProject : IOTAProject;
-  Function ProjectModule(Project : IOTAProject) : IOTAModule;
+  Function ProjectModule(Const Project : IOTAProject) : IOTAModule;
   Function ActiveSourceEditor : IOTASourceEditor;
-  Function SourceEditor(Module : IOTAMOdule) : IOTASourceEditor;
-  Function EditorAsString(SourceEditor : IOTASourceEditor) : String;
-  Procedure OutputText(Writer : IOTAEditWriter; iIndent : Integer; strText : String);
-  Function GetProjectName(Project : IOTAProject) : String;
-  Procedure OutputMessage(strText : String); Overload;
-  Procedure OutputMessage(strFileName, strText, strPrefix : String; iLine,
+  Function SourceEditor(Const Module : IOTAMOdule) : IOTASourceEditor;
+  Function EditorAsString(Const SourceEditor : IOTASourceEditor) : String;
+  Procedure OutputText(Const Writer : IOTAEditWriter; Const iIndent : Integer; Const strText : String);
+  Function GetProjectName(Const Project : IOTAProject) : String;
+  Procedure OutputMessage(Const strText : String); Overload;
+  Procedure OutputMessage(Const strFileName, strText, strPrefix : String; Const iLine,
     iCol : Integer); Overload;
-  Function ExpandMacro(strPath : String; Project : IOTAProject) : String;
+  Function ExpandMacro(Const strPath : String; Const Project : IOTAProject) : String;
   {$IFDEF D0006}
-  Procedure OutputMessage(strText : String; strGroupName : String); Overload;
+  Procedure OutputMessage(Const strText : String; Const strGroupName : String); Overload;
   {$ENDIF}
   {$IFDEF D0006}
-  Procedure ShowMessages(strGroupName : String = '');
+  Procedure ShowMessages(Const strGroupName : String = '');
   {$ENDIF}
-  Function AddMsg(strText: String; boolGroup, boolAutoScroll: Boolean;
-    strFontName: String; iForeColour: TColor; fsStyle: TFontStyles;
-    iBackColour: TColor = clWindow; ptrParent: Pointer = Nil): Pointer;
-  Function AddImageToIDE(strImageName : String; iMaskColour : TColor) : Integer;
-  Function CreateMenuItem(strName, strCaption, strParentMenu : String;
-    ClickProc, UpdateProc : TNotifyEvent; boolBefore, boolChildMenu : Boolean;
-    strShortCut : String; iMaskColour : TColor = clLime) : TMenuItem;
+  Function AddMsg(Const strText: String; Const boolGroup, boolAutoScroll: Boolean;
+    Const strFontName: String; Const iForeColour: TColor; Const fsStyle: TFontStyles;
+    Const iBackColour: TColor = clWindow; Const ptrParent: Pointer = Nil): Pointer;
+  Function AddImageToIDE(Const strImageName : String; Const iMaskColour : TColor) : Integer;
+  Function CreateMenuItem(Const strName, strCaption, strParentMenu : String;
+    Const ClickProc, UpdateProc : TNotifyEvent; Const boolBefore, boolChildMenu : Boolean;
+    Const strShortCut : String; Const iMaskColour : TColor = clLime) : TMenuItem;
   Procedure PatchActionShortcuts(Sender : TObject);
-  Procedure ClearMessages(Msg : TClearMessages);
-  Procedure ShowHelperMessages;
+  Procedure ClearMessages(Const Msg : TClearMessages);
+  Procedure ShowHelperMessages(Const boolITHGroup : Boolean);
   {$ENDIF}
-  Procedure BuildNumber(var VersionInfo : TVersionInfo);
-  Function GetProcInfo(strText : String; ProcInfoType : TProcInfoType) : String;
+  Procedure BuildNumber(Var VersionInfo : TVersionInfo);
+  Function GetProcInfo(Const strText : String; Const ProcInfoType : TProcInfoType) : String;
   Function ResolvePath(Const strFName, strPath : String) : String;
   Function Actions : TObjectList;
-  Function ITHHTMLHelpFile(strContext : String = '') : String;
+  Function ITHHTMLHelpFile(Const strContext : String = '') : String;
 
 {$IFNDEF D2005}
 Const
@@ -150,41 +150,45 @@ Var
       can be removed from the IDE. **)
   FOTAActions : TObjectList;
 
+Const
+  strBuild = 'Build';
+
 (**
 
-  This function returns either the EXE, Params or Working Directory of the
-  external tool information. strText should be 3 fields of information, EXE,
-  Params and Working Dir separated by pipes (|).
+  This function returns either the EXE, Params or Working Directory of the external tool information. 
+  strText should be 3 fields of information, EXE, Params and Working Dir separated by pipes (|).
 
   @precon  None.
-  @postcon Returns either the EXE, Params or Working Directory of the
-           external tool information.
+  @postcon Returns either the EXE, Params or Working Directory of the external tool information.
 
-  @param   strText      as a String
-  @param   ProcInfoType as a TProcInfoType
+  @param   strText      as a String as a constant
+  @param   ProcInfoType as a TProcInfoType as a constant
   @return  a String
 
 **)
-Function GetProcInfo(strText : String; ProcInfoType : TProcInfoType) : String;
+Function GetProcInfo(Const strText : String; Const ProcInfoType : TProcInfoType) : String;
 
 Var
   iPos : Integer;
+  strNewText : String;
 
 Begin
   Result := '';
-  iPos := Pos('|', strText);
+  strNewText := strText;
+  iPos := Pos('|', strNewText);
   If iPos > 0 Then
     Begin
-      Result := Copy(strText, 1, iPos - 1);
-      If ProcInfoType = pitEXE Then Exit;
-      Delete(strText, 1, iPos);
-      iPos := Pos('|', strText);
+      Result := Copy(strNewText, 1, iPos - 1);
+      If ProcInfoType = pitEXE Then
+        Exit;
+      Delete(strNewText, 1, iPos);
+      iPos := Pos('|', strNewText);
       If iPos > 0 Then
         Begin
-          Result := Copy(strText, 1, iPos - 1);
+          Result := Copy(strNewText, 1, iPos - 1);
           If ProcInfoType = pitParam Then Exit;
-          Delete(strText, 1, iPos);
-          Result := strText;
+          Delete(strNewText, 1, iPos);
+          Result := strNewText;
         End;
     End;
 End;
@@ -197,8 +201,10 @@ End;
   @precon  None.
   @postcon Displays the package`s message tab.
 
+  @param   boolITHGroup as a Boolean as a constant
+
 **)
-Procedure ShowHelperMessages;
+Procedure ShowHelperMessages(Const boolITHGroup : Boolean);
 
 Var
   G : IOTAMessageGroup;
@@ -206,7 +212,11 @@ Var
 Begin
   With (BorlandIDEServices As IOTAMessageServices) Do
     Begin
-      G := GetGroup(strITHelperGroup);
+      G := Nil;
+      If boolITHGroup Then
+        G := GetGroup(strITHelperGroup)
+      Else
+        G := GetGroup(strBuild);
       If Application.MainForm.Visible Then
         ShowMessageView(G);
     End;
@@ -219,11 +229,11 @@ End;
   @precon  Project must be a valid instance of a IOTAProject interface.
   @postcon Returns a project name with the DPRP or DPK extension.
 
-  @param   Project as an IOTAProject
+  @param   Project as an IOTAProject as a constant
   @return  a String
 
 **)
-Function GetProjectName(Project : IOTAProject) : String;
+Function GetProjectName(Const Project : IOTAProject) : String;
 
 Var
   i : Integer;
@@ -244,20 +254,18 @@ End;
 
 (**
 
-  This function returns the passed path / filename with any of the below macros expanded.
-
-  {$PROJPATH$}  The project path including the trailing backslash
-  {$PROJDRIVE$} The project drive including the colon.
+  This function returns the passed path / filename with any of the below macros expanded. {$PROJPATH$} 
+  The project path including the trailing backslash {$PROJDRIVE$} The project drive including the colon.
 
   @precon  Project must be a valid instance.
   @postcon Returns the passed path / filename with any macros expanded.
 
-  @param   strPath as a String
-  @param   Project as an IOTAProject
+  @param   strPath as a String as a constant
+  @param   Project as an IOTAProject as a constant
   @return  a String
 
 **)
-Function ExpandMacro(strPath : String; Project : IOTAProject) : String;
+Function ExpandMacro(Const strPath : String; Const Project : IOTAProject) : String;
 
 Begin
   Result := strPath;
@@ -366,7 +374,7 @@ End;
   @param   strText as a String
 
 **)
-Procedure OutputMessage(strText : String);
+Procedure OutputMessage(Const strText : String);
 
 Begin
   (BorlandIDEServices As IOTAMessageServices).AddTitleMessage(strText);
@@ -388,7 +396,7 @@ End;
   @param   iCol        as an Integer
 
 **)
-Procedure OutputMessage(strFileName, strText, strPrefix : String; iLine, iCol : Integer);
+Procedure OutputMessage(Const strFileName, strText, strPrefix : String; Const iLine, iCol : Integer);
 
 Begin
   (BorlandIDEServices As IOTAMessageServices).AddToolMessage(strFileName,
@@ -403,11 +411,11 @@ End;
   @precon  None.
   @postcon Outputs the given message to the named message group.
 
-  @param   strText      as a String
-  @param   strGroupName as a String
+  @param   strText      as a String as a constant
+  @param   strGroupName as a String as a constant
 
 **)
-Procedure OutputMessage(strText : String; strGroupName : String);
+Procedure OutputMessage(Const strText : String; Const strGroupName : String);
 
 Var
   Group : IOTAMessageGroup;
@@ -430,10 +438,10 @@ End;
   @precon  None.
   @postcon Clears the IDE message window of the given message types.
 
-  @param   Msg as a TClearMessages
+  @param   Msg as a TClearMessages as a constant
 
 **)
-Procedure ClearMessages(Msg : TClearMessages);
+Procedure ClearMessages(Const Msg : TClearMessages);
 
 Var
   MS : IOTAMessageServices;
@@ -464,16 +472,16 @@ End;
 {$IFDEF D0006}
 (**
 
-  This method displays the named message group in the IDE. If no group is
-  provided then the main message window is displayed.
+  This method displays the named message group in the IDE. If no group is provided then the main message 
+  window is displayed.
 
   @precon  None.
   @postcon Displays the named message group in the IDE.
 
-  @param   strGroupName as a String
+  @param   strGroupName as a String as a constant
 
 **)
-Procedure ShowMessages(strGroupName : String = '');
+Procedure ShowMessages(Const strGroupName : String = '');
 
 Var
   MS : IOTAMessageServices;
@@ -551,11 +559,11 @@ End;
   @precon  Project must be a valid instance.
   @postcon Returns the project module for the given project.
 
-  @param   Project as an IOTAProject
+  @param   Project as an IOTAProject as a constant
   @return  an IOTAModule
 
 **)
-Function ProjectModule(Project : IOTAProject) : IOTAModule;
+Function ProjectModule(Const Project : IOTAProject) : IOTAModule;
 
 Var
   AModuleServices: IOTAModuleServices;
@@ -608,11 +616,11 @@ End;
   @precon  Module must be a valid instance.
   @postcon Returns the source editor for the given module.
 
-  @param   Module as an IOTAMOdule
+  @param   Module as an IOTAMOdule as a constant
   @return  an IOTASourceEditor
 
 **)
-Function SourceEditor(Module : IOTAMOdule) : IOTASourceEditor;
+Function SourceEditor(Const Module : IOTAMOdule) : IOTASourceEditor;
 
 Var
   iFileCount : Integer;
@@ -633,18 +641,16 @@ End;
 
 (**
 
-  This method returns the editor code as a string from the given source editor
-  reference.
+  This method returns the editor code as a string from the given source editor reference.
 
   @precon  SourceEditor must be a valid instance.
-  @postcon returns the editor code as a string from the given source editor
-           reference.
+  @postcon returns the editor code as a string from the given source editor reference.
 
-  @param   SourceEditor as an IOTASourceEditor
+  @param   SourceEditor as an IOTASourceEditor as a constant
   @return  a String
 
 **)
-Function EditorAsString(SourceEditor : IOTASourceEditor) : String;
+Function EditorAsString(Const SourceEditor : IOTASourceEditor) : String;
 
 Const
   iBufferSize : Integer = 1024;
@@ -664,7 +670,7 @@ Begin
       SetLength(strBuffer, iBufferSize);
       iRead := Reader.GetText(iPosition, PAnsiChar(strBuffer), iBufferSize);
       SetLength(strBuffer, iRead);
-      Result := Result + String(strBuffer);
+      Result := Result + String(strBuffer); //: @bug Needs to be Unicode compliant!
       Inc(iPosition, iRead);
     Until iRead < iBufferSize;
   Finally
@@ -674,27 +680,25 @@ End;
 
 (**
 
-  This method adds a custom message to the IDE and returns a POINTER to that
-  message.
+  This method adds a custom message to the IDE and returns a POINTER to that message.
 
   @precon  ptrParent must be a POINTER to another message not a reference.
-  @postcon Adds a custom message to the IDE and returns a POINTER to that
-           message.
+  @postcon Adds a custom message to the IDE and returns a POINTER to that message.
 
-  @param   strText        as a String
-  @param   boolGroup      as a Boolean
-  @param   boolAutoScroll as a Boolean
-  @param   strFontName    as a String
-  @param   iForeColour    as a TColor
-  @param   fsStyle        as a TFontStyles
-  @param   iBackColour    as a TColor
-  @param   ptrParent      as a Pointer
+  @param   strText        as a String as a constant
+  @param   boolGroup      as a Boolean as a constant
+  @param   boolAutoScroll as a Boolean as a constant
+  @param   strFontName    as a String as a constant
+  @param   iForeColour    as a TColor as a constant
+  @param   fsStyle        as a TFontStyles as a constant
+  @param   iBackColour    as a TColor as a constant
+  @param   ptrParent      as a Pointer as a constant
   @return  a Pointer
 
 **)
-Function AddMsg(strText: String; boolGroup, boolAutoScroll: Boolean;
-  strFontName: String; iForeColour: TColor; fsStyle: TFontStyles;
-  iBackColour: TColor = clWindow; ptrParent: Pointer = Nil): Pointer;
+Function AddMsg(Const strText: String; Const boolGroup, boolAutoScroll: Boolean;
+  Const strFontName: String; Const iForeColour: TColor; Const fsStyle: TFontStyles;
+  Const iBackColour: TColor = clWindow; Const ptrParent: Pointer = Nil): Pointer;
 
 Var
   M: TCustomMessage;
@@ -744,12 +748,12 @@ End;
   @precon  Writer must be a valid instance.
   @postcon Outputs text to the given IOTAEditWriter interface.
 
-  @param   Writer  as an IOTAEditWriter
-  @param   iIndent as an Integer
-  @param   strText as a String
+  @param   Writer  as an IOTAEditWriter as a constant
+  @param   iIndent as an Integer as a constant
+  @param   strText as a String as a constant
 
 **)
-Procedure OutputText(Writer : IOTAEditWriter; iIndent : Integer; strText : String);
+Procedure OutputText(Const Writer : IOTAEditWriter; Const iIndent : Integer; Const strText : String);
 
 Begin
   {$IFNDEF D2009}
@@ -855,10 +859,10 @@ End;
   @precon  None.
   @postcon Sets the message fore colour.
 
-  @param   iColour as a TColor
+  @param   iColour as a TColor as a constant
 
 **)
-Procedure TCustomMessage.SetForeColour(iColour: TColor);
+Procedure TCustomMessage.SetForeColour(Const iColour: TColor);
 
 Begin
   If FForeColour <> iColour Then
@@ -888,19 +892,18 @@ End;
   This is the constructor for the TCustomMessage class.
 
   @precon  None.
-  @postcon Creates a custom message with fore and background colours and
-           font styles.
+  @postcon Creates a custom message with fore and background colours and font styles.
 
-  @param   strMsg     as a String
-  @param   FontName   as a String
-  @param   ForeColour as a TColor
-  @param   Style      as a TFontStyles
-  @param   BackColour as a TColor
+  @param   strMsg     as a String as a constant
+  @param   FontName   as a String as a constant
+  @param   ForeColour as a TColor as a constant
+  @param   Style      as a TFontStyles as a constant
+  @param   BackColour as a TColor as a constant
 
 **)
-Constructor TCustomMessage.Create(strMsg: String; FontName: String;
-  ForeColour: TColor = clBlack; Style: TFontStyles = [];
-  BackColour: TColor = clWindow);
+Constructor TCustomMessage.Create(Const strMsg: String; Const FontName: String;
+  Const ForeColour: TColor = clBlack; Const Style: TFontStyles = [];
+  Const BackColour: TColor = clWindow);
 
 Const
   strValidChars: Set Of AnsiChar = [#10, #13, #32 .. #128];
@@ -932,34 +935,24 @@ End;
 
 (**
 
-  Calculates the bounding rectangle.
-
-  CalcRect computes the bounding box required by the entire message. The message
-  view itself always displays messages in a single line of a fixed size. If the
-  user hovers the cursor over a long message, a tooltip displays the entire
-  message. CalcRect returns the size of the tooltip window.
-
-  The Canvas parameter is the canvas for drawing the message.
-
-  The MaxWidth parameter is the maximum allowed width of the bounding box
-  (e.g., the screen width).
-
-  The Wrap Parameter is true to word-wrap the message onto multiple lines. It is
-  false if the message must be kept to one line.
-
-  The Return value is the bounding rectangle required by the message.
+  Calculates the bounding rectangle. CalcRect computes the bounding box required by the entire message. 
+  The message view itself always displays messages in a single line of a fixed size. If the user hovers 
+  the cursor over a long message, a tooltip displays the entire message. CalcRect returns the size of the
+  tooltip window. The Canvas parameter is the canvas for drawing the message. The MaxWidth parameter is 
+  the maximum allowed width of the bounding box (e.g., the screen width). The Wrap Parameter is true to 
+  word-wrap the message onto multiple lines. It is false if the message must be kept to one line. The 
+  Return value is the bounding rectangle required by the message.
 
   @precon  None.
   @postcon We calculate the size of the message here.
 
-  @param   Canvas   as a TCanvas
-  @param   MaxWidth as an Integer
-  @param   Wrap     as a Boolean
+  @param   Canvas   as a TCanvas as a constant
+  @param   MaxWidth as an Integer as a constant
+  @param   Wrap     as a Boolean as a constant
   @return  a TRect
 
 **)
-Function TCustomMessage.CalcRect(Canvas: TCanvas; MaxWidth: Integer;
-  Wrap: Boolean): TRect;
+Function TCustomMessage.CalcRect(Canvas: TCanvas; MaxWidth: Integer; Wrap: Boolean): TRect;
 
 Begin
   Canvas.Font.Name := FFontName;
@@ -971,36 +964,26 @@ End;
 
 (**
 
-  Draws the message.
-
-  Draw draws the message in the message view window or in a tooltip window.
-
-  The Canvas parameter is the canvas on which to draw the message.
-
-  The Rect parameter is the bounding box for the message. If you draw outside
-  this rectangle, you might obscure other messages.
-
-  The Wrap Parameter is true to word-wrap the message on multiple lines or false
-  to keep the message on a single line. The message view window always uses a
-  single line for each message, but the tooltip (which the user sees by hovering
-  the cursor over the message) can be multiple lines.
-
-  The drawing objects (brush, pen, and font) are set up appropriately for
-  drawing messages that look like all the other messages in the message view. In
-  particular, the brush and font colors are set differently depending on whether
-  the message is selected. A custom-drawn message should not alter the colors or
-  other graphic parameters without good reason.
+  Draws the message. Draw draws the message in the message view window or in a tooltip window. The Canvas
+  parameter is the canvas on which to draw the message. The Rect parameter is the bounding box for the 
+  message. If you draw outside this rectangle, you might obscure other messages. The Wrap Parameter is 
+  true to word-wrap the message on multiple lines or false to keep the message on a single line. The 
+  message view window always uses a single line for each message, but the tooltip (which the user sees by
+  hovering the cursor over the message) can be multiple lines. The drawing objects (brush, pen, and font
+  ) are set up appropriately for drawing messages that look like all the other messages in the message 
+  view. In particular, the brush and font colors are set differently depending on whether the message is 
+  selected. A custom-drawn message should not alter the colors or other graphic parameters without good 
+  reason.
 
   @precon  None.
   @postcon This is where we draw the message on the canvas.
 
-  @param   Canvas as a TCanvas
+  @param   Canvas as a TCanvas as a constant
   @param   Rect   as a TRect as a constant
-  @param   Wrap   as a Boolean
+  @param   Wrap   as a Boolean as a constant
 
 **)
-Procedure TCustomMessage.Draw(Canvas: TCanvas; Const Rect: TRect;
-  Wrap: Boolean);
+Procedure TCustomMessage.Draw(Canvas: TCanvas; Const Rect: TRect; Wrap: Boolean);
 
 Begin
   If Canvas.Brush.Color = clWindow Then
@@ -1016,24 +999,23 @@ End;
 
 (**
 
-  This method adds an image from the projects resource (bitmap) to the IDEs image list.
-  The image name in the resource must end in Image as this is appended to the given name.
-  An integer for the position of that image in the IDEs image list is returned.
+  This method adds an image from the projects resource (bitmap) to the IDEs image list. The image name in
+  the resource must end in Image as this is appended to the given name. An integer for the position of 
+  that image in the IDEs image list is returned.
 
   @precon  None.
-  @postcon The named image is loaded from the projects resource and put into the IDEs
-           image list and its index returned.
+  @postcon The named image is loaded from the projects resource and put into the IDEs image list and its
+           index returned.
 
   @Note    Different technicals are used for the different IDE version.
-  @Note    The way described in Delphi 2010s ToppsAPI file causes an exception and there
-           is not used.
+  @Note    The way described in Delphi 2010s ToppsAPI file causes an exception and there is not used.
 
-  @param   strImageName as a String
-  @param   iMaskColour  as a TColor
+  @param   strImageName as a String as a constant
+  @param   iMaskColour  as a TColor as a constant
   @return  an Integer
 
 **)
-Function AddImageToIDE(strImageName : String; iMaskColour : TColor) : Integer;
+Function AddImageToIDE(Const strImageName : String; Const iMaskColour : TColor) : Integer;
 
 Var
   NTAS : INTAServices;
@@ -1070,18 +1052,16 @@ end;
 
 (**
 
-  This method finds and returns a reference to the named menu item in the IDE
-  else returns nil.
+  This method finds and returns a reference to the named menu item in the IDE else returns nil.
 
   @precon  None.
-  @postcon Finds and returns a reference to the named menu item in the IDE
-           else returns nil.
+  @postcon Finds and returns a reference to the named menu item in the IDE else returns nil.
 
-  @param   strParentMenu as a String
+  @param   strParentMenu as a String as a constant
   @return  a TMenuItem
 
 **)
-function FindMenuItem(strParentMenu : String): TMenuItem;
+function FindMenuItem(Const strParentMenu : String): TMenuItem;
 
   (**
 
@@ -1090,11 +1070,11 @@ function FindMenuItem(strParentMenu : String): TMenuItem;
     @precon  Menu must be a valid menu item.
     @postcon Iterates the submenus of a main menu item.
 
-    @param   Menu as a TMenuItem
+    @param   Menu as a TMenuItem as a constant
     @return  a TMenuItem
 
   **)
-  Function IterateSubMenus(Menu : TMenuItem) : TMenuItem;
+  Function IterateSubMenus(Const Menu : TMenuItem) : TMenuItem;
 
   Var
     iSubMenu : Integer;
@@ -1134,32 +1114,31 @@ end;
 
 (**
 
-  This method does the following: Adds an image to the IDE if found in the project
-  resource, creates a menu item, creates an action in the IDE for the menu if one is
-  required, associated the action with the menu and adds the menu to the IDE as a sibiling
-  or underneath the parent item as required.
+  This method does the following: Adds an image to the IDE if found in the project resource, creates a 
+  menu item, creates an action in the IDE for the menu if one is required, associated the action with the
+  menu and adds the menu to the IDE as a sibiling or underneath the parent item as required.
 
   @precon  None.
   @postcon Returns a reference to the menu.
 
-  @note    You should always keep a reference to the Main menu item you create so you can
-           remove you menus from the IDE.
+  @note    You should always keep a reference to the Main menu item you create so you can remove you 
+           menus from the IDE.
 
-  @param   strName       as a String
-  @param   strCaption    as a String
-  @param   strParentMenu as a String
-  @param   ClickProc     as a TNotifyEvent
-  @param   UpdateProc    as a TNotifyEvent
-  @param   boolBefore    as a Boolean
-  @param   boolChildMenu as a Boolean
-  @param   strShortCut   as a String
-  @param   iMaskColour   as a TColor
+  @param   strName       as a String as a constant
+  @param   strCaption    as a String as a constant
+  @param   strParentMenu as a String as a constant
+  @param   ClickProc     as a TNotifyEvent as a constant
+  @param   UpdateProc    as a TNotifyEvent as a constant
+  @param   boolBefore    as a Boolean as a constant
+  @param   boolChildMenu as a Boolean as a constant
+  @param   strShortCut   as a String as a constant
+  @param   iMaskColour   as a TColor as a constant
   @return  a TMenuItem
 
 **)
-Function CreateMenuItem(strName, strCaption, strParentMenu : String;
-  ClickProc, UpdateProc : TNotifyEvent; boolBefore, boolChildMenu : Boolean;
-  strShortCut : String; iMaskColour : TColor = clLime) : TMenuItem;
+Function CreateMenuItem(Const strName, strCaption, strParentMenu : String;
+  Const ClickProc, UpdateProc : TNotifyEvent; Const boolBefore, boolChildMenu : Boolean;
+  Const strShortCut : String; Const iMaskColour : TColor = clLime) : TMenuItem;
 
 Var
   NTAS : INTAServices;
@@ -1362,11 +1341,11 @@ End;
   @precon  None.
   @postcon Returns the ITHelpers HTML Help file with an optional page reference.
 
-  @param   strContext as a String
+  @param   strContext as a String as a constant
   @return  a String
 
 **)
-Function ITHHTMLHelpFile(strContext : String = '') : String;
+Function ITHHTMLHelpFile(Const strContext : String = '') : String;
 
 Var
   iSize: Cardinal;
