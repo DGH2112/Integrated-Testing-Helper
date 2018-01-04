@@ -21,7 +21,8 @@ Uses
   Classes,
   IniFiles,
   ITHelper.ExternalProcessInfo,
-  ITHelper.GlobalOptions;
+  ITHelper.GlobalOptions, 
+  ITHelper.CustomMessages;
 
 {$INCLUDE 'CompilerDefinitions.inc'}
 
@@ -29,16 +30,16 @@ Type
   (** A class to implement the IDE notifier interfaces **)
   TITHelperIDENotifier = Class(TNotifierObject, IOTANotifier, IOTAIDENotifier,
     IOTAIDENotifier50 {$IFDEF D2005}, IOTAIDENotifier80 {$ENDIF})
-    {$IFDEF D2005} Strict {$ENDIF} Private
+  Strict Private
     { Private declarations }
-    FMsgs: TObjectList;
-    FGlobalOps: TITHGlobalOptions;
-    FParentMsg: TCustomMessage;
-    FLastMessage: TDateTime;
-    FSuccessfulCompile: TTimer;
-    FLastSuccessfulCompile: Int64;
-    FShouldBuildList: TStringList;
-    {$IFDEF D2005} Strict {$ENDIF} Protected
+    FMsgs                  : TObjectList;
+    FGlobalOps             : TITHGlobalOptions;
+    FParentMsg             : TCustomMessage;
+    FLastMessage           : TDateTime;
+    FSuccessfulCompile     : TTimer;
+    FLastSuccessfulCompile : Int64;
+    FShouldBuildList       : TStringList;
+  Strict Protected
     { Protected declarations }
     Function ProcessCompileInformation(Const ProjectOps : TITHProjectOptions; Const Project: IOTAProject;
       Const strWhere: String): Integer;
