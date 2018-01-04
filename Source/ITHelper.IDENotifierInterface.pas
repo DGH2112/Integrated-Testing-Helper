@@ -5,7 +5,7 @@
 
   @Author  David Hoyle.
   @Version 1.0
-  @Date    30 Dec 2017
+  @Date    04 Jan 2018
 
 **)
 Unit ITHelper.IDENotifierInterface;
@@ -22,14 +22,15 @@ Uses
   IniFiles,
   ITHelper.ExternalProcessInfo,
   ITHelper.GlobalOptions, 
-  ITHelper.CustomMessages;
+  ITHelper.CustomMessages, 
+  ITHelper.Interfaces;
 
 {$INCLUDE 'CompilerDefinitions.inc'}
 
 Type
   (** A class to implement the IDE notifier interfaces **)
-  TITHelperIDENotifier = Class(TNotifierObject, IOTANotifier, IOTAIDENotifier,
-    IOTAIDENotifier50 {$IFDEF D2005}, IOTAIDENotifier80 {$ENDIF})
+  TITHelperIDENotifier = Class(TNotifierObject, IOTANotifier, IOTAIDENotifier, IOTAIDENotifier50,
+    IOTAIDENotifier80)
   Strict Private
     { Private declarations }
     FMsgs                  : TObjectList;
@@ -40,16 +41,29 @@ Type
     FLastSuccessfulCompile : Int64;
     FShouldBuildList       : TStringList;
   Strict Protected
-    { Protected declarations }
-    Function ProcessCompileInformation(Const ProjectOps : TITHProjectOptions; Const Project: IOTAProject;
+    // IOTANotifier
+    // IOTAIDENotifier
+    Procedure FileNotification(NotifyCode: TOTAFileNotification; Const FileName: String;
+      Var Cancel: Boolean);
+    Procedure BeforeCompile(Const Project: IOTAProject; Var Cancel: Boolean); Overload;
+    Procedure AfterCompile(Succeeded: Boolean); Overload;
+    // IOTAIDENotifier50
+    Procedure AfterCompile(Succeeded: Boolean; IsCodeInsight: Boolean); Overload;
+    Procedure BeforeCompile(Const Project: IOTAProject; IsCodeInsight: Boolean;
+      Var Cancel: Boolean); Overload;
+    // IOTAIDENotifier80
+    Procedure AfterCompile(Const Project: IOTAProject; Succeeded: Boolean;
+      IsCodeInsight: Boolean); Overload;
+    // General Methods
+    Function ProcessCompileInformation(Const ProjectOps : IITHProjectOptions; Const Project: IOTAProject;
       Const strWhere: String): Integer;
-    Function ZipProjectInformation(Const ProjectOps : TITHProjectOptions;
+    Function ZipProjectInformation(Const ProjectOps : IITHProjectOptions;
       Const Project: IOTAProject): Integer;
-    Procedure IncrementBuild(Const ProjectOps : TITHProjectOptions; Const Project: IOTAProject;
+    Procedure IncrementBuild(Const ProjectOps : IITHProjectOptions; Const Project: IOTAProject;
       Const strProject: String);
     Procedure CopyVersionInfoFromDependency(Const Project: IOTAProject; Const strProject: String;
-      Const ProjectOps: TITHProjectOptions);
-    Function BuildResponseFile(Const Project: IOTAProject; Const ProjectOps: TITHProjectOptions;
+      Const ProjectOps: IITHProjectOptions);
+    Function BuildResponseFile(Const Project: IOTAProject; Const ProjectOps: IITHProjectOptions;
       Const slResponse: TStringList; Const strBasePath, strProject, strZIPName: String): String;
     Function AddToList(Const slResponseFile: TStringList; Const strBasePath,
       strModuleName: String): Boolean;
@@ -59,7 +73,7 @@ Type
     Function CheckResExts(Const slResExts: TStringList; Const strFileName: String): Boolean;
     Procedure ProcessAfterCompile(Const Project: IOTAProject;
       Succeeded, IsCodeInsight: Boolean);
-    Procedure CheckResponseFileAgainExclusions(Const ProjectOps: TITHProjectOptions;
+    Procedure CheckResponseFileAgainExclusions(Const ProjectOps: IITHProjectOptions;
       Const slReponseFile: TStringList);
     Function IsProject(Const Project: IOTAProject; Const strExtType: String): Boolean;
     Procedure BuildTargetFileName(Const slResponseFile: TStringList; Const strBasePath: String;
@@ -67,31 +81,20 @@ Type
     Procedure AddProjectFilesToResponseFile(Const slResponse: TStringList; Const strBasePath: String;
       Const Project: IOTAProject);
     Procedure CheckResponseFilesForIncludeAndRes(Const Project: IOTAProject; Const strProject: String;
-      Const slResponse: TStringList; Const ProjectOps: TITHProjectOptions; Const strBasePath: String);
-    Procedure AddAdditionalZipFilesToResponseFile(Const ProjectOps: TITHProjectOptions;
+      Const slResponse: TStringList; Const ProjectOps: IITHProjectOptions; Const strBasePath: String);
+    Procedure AddAdditionalZipFilesToResponseFile(Const ProjectOps: IITHProjectOptions;
       Const slResponse: TStringList; Const Project : IOTAProject; Const strBasePath: String);
     Procedure SuccessfulCompile(Sender: TObject);
     Function ProjectOptions(Const Project: IOTAProject; Const strOptions: Array Of String): String;
     Procedure ExpandProcessMacro(Const Processes: TITHProcessCollection; Const Project: IOTAProject);
-    Procedure BuildProjectVersionResource(Const ProjectOps: TITHProjectOptions;
+    Procedure BuildProjectVersionResource(Const ProjectOps: IITHProjectOptions;
       Const Project: IOTAProject);
+    Procedure ProcessMsgHandler(Const strMsg: String; Var boolAbort: Boolean);
+    Procedure IdleHandler;
   Public
     { Public declarations }
     Constructor Create(Const GlobalOps: TITHGlobalOptions);
     Destructor Destroy; Override;
-    Procedure AfterCompile(Succeeded: Boolean); Overload;
-    Procedure AfterCompile(Succeeded: Boolean; IsCodeInsight: Boolean); Overload;
-    {$IFDEF D2005}
-    Procedure AfterCompile(Const Project: IOTAProject; Succeeded: Boolean;
-      IsCodeInsight: Boolean); Overload;
-    {$ENDIF}
-    Procedure BeforeCompile(Const Project: IOTAProject; Var Cancel: Boolean); Overload;
-    Procedure BeforeCompile(Const Project: IOTAProject; IsCodeInsight: Boolean;
-      Var Cancel: Boolean); Overload;
-    Procedure ProcessMsgHandler(Const strMsg: String; Var boolAbort: Boolean);
-    Procedure IdleHandler;
-    Procedure FileNotification(NotifyCode: TOTAFileNotification; Const FileName: String;
-      Var Cancel: Boolean);
   End;
 
 Implementation
@@ -108,12 +111,12 @@ Uses
   CommonOptionStrs,
   {$ENDIF}
   Variants, 
-  ITHelper.CommonFunctions;
+  ITHelper.CommonFunctions, 
+  ITHelper.PascalParsing, 
+  ITHelper.Types;
 
-{$IFDEF DXE20}
 Type
   EITHException = Class(Exception);
-{$ENDIF}
 
 ResourceString
   (** This is the warning shown if there are no after compilation tools. **)
@@ -136,153 +139,8 @@ ResourceString
     'information in the project options dialogue.';
 {$ENDIF}
 
-(**
-
-  This function returns a string list contains the tokenized representation of the passed string with 
-  respect to some basic object pascal grammer.
-
-  @precon  strText si the line of text to be tokenised
-  @postcon Returns a new string list of the tokenized string
-
-  @note    The string list returned must be destroyed be the calling method.
-
-  @param   strText as a String as a constant
-  @return  a TStringList
-
-**)
-Function Tokenize(Const strText: String): TStringList;
-
-Type
-  TBADITokenType = (ttUnknown, ttWhiteSpace, ttNumber, ttIdentifier, ttLineEnd,
-    ttStringLiteral, ttSymbol);
-  (** State machine for block types. **)
-  TBlockType = (btNoBlock, btStringLiteral);
-
 Const
-  (** Growth size of the token buffer. **)
-  iTokenCapacity = 25;
-
-Var
-  (** Token buffer. **)
-  strToken: String;
-  CurToken: TBADITokenType;
-  LastToken: TBADITokenType;
-  BlockType: TBlockType;
-  (** Token size **)
-  iTokenLen: Integer;
-  i: Integer;
-
-Begin
-  Result := TStringList.Create;
-  BlockType := btNoBlock;
-  strToken := '';
-  CurToken := ttUnknown;
-  strToken := '';
-
-  iTokenLen := 0;
-  SetLength(strToken, iTokenCapacity);
-
-  For i := 1 To Length(strText) Do
-    Begin
-      LastToken := CurToken;
-      {$IFNDEF D2009}
-      If strText[i] In [#32, #9] Then
-      {$ELSE}
-      If CharInSet(strText[i], [#32, #9]) Then
-        {$ENDIF}
-        CurToken := ttWhiteSpace
-        {$IFNDEF D2009}
-      Else If strText[i] In ['#', '_', 'a' .. 'z', 'A' .. 'Z', '.', '*'] Then
-        {$ELSE}
-      Else If CharInSet(strText[i], ['#', '_', 'a' .. 'z', 'A' .. 'Z', '.', '*']) Then
-        {$ENDIF}
-        Begin
-          {$IFNDEF D2009}
-          If (LastToken = ttNumber) And (strText[i] In ['A' .. 'F', 'a' .. 'f']) Then
-          {$ELSE}
-          If (LastToken = ttNumber) And
-            (CharInSet(strText[i], ['A' .. 'F', 'a' .. 'f'])) Then
-            {$ENDIF}
-            CurToken := ttNumber
-          Else
-            CurToken := ttIdentifier;
-        End
-        {$IFNDEF D2009}
-      Else If strText[i] In ['$', '0' .. '9'] Then
-        {$ELSE}
-      Else If CharInSet(strText[i], ['$', '0' .. '9']) Then
-        {$ENDIF}
-        Begin
-          CurToken := ttNumber;
-          If LastToken = ttIdentifier Then
-            CurToken := ttIdentifier;
-        End
-        {$IFNDEF D2009}
-      Else If strText[i] In [#10, #13] Then
-        {$ELSE}
-      Else If CharInSet(strText[i], [#10, #13]) Then
-        {$ENDIF}
-        CurToken := ttLineEnd
-        {$IFNDEF D2009}
-      Else If strText[i] In ['''', '"'] Then
-        {$ELSE}
-      Else If CharInSet(strText[i], ['''', '"']) Then
-        {$ENDIF}
-        CurToken := ttStringLiteral
-        {$IFNDEF D2009}
-      Else If strText[i] In [#0 .. #255] - ['#', '_', 'a' .. 'z', 'A' .. 'Z', '$',
-        '0' .. '9'] Then
-        {$ELSE}
-      Else If CharInSet(strText[i], [#0 .. #255] - ['#', '_', 'a' .. 'z', 'A' .. 'Z', '$',
-        '0' .. '9']) Then
-        {$ENDIF}
-        CurToken := ttSymbol
-      Else
-        CurToken := ttUnknown;
-      If (LastToken <> CurToken) Or (CurToken = ttSymbol) Then
-        Begin
-          If ((BlockType In [btStringLiteral]) And (CurToken <> ttLineEnd)) Then
-            Begin
-              Inc(iTokenLen);
-              If iTokenLen > Length(strToken) Then
-                SetLength(strToken, iTokenCapacity + Length(strToken));
-              strToken[iTokenLen] := strText[i];
-            End
-          Else
-            Begin
-              SetLength(strToken, iTokenLen);
-              If iTokenLen > 0 Then
-                If Not(LastToken In [ttLineEnd, ttWhiteSpace]) Then
-                  Result.AddObject(strToken, TObject(LastToken));
-              BlockType := btNoBlock;
-              iTokenLen := 1;
-              SetLength(strToken, iTokenCapacity);
-              strToken[iTokenLen] := strText[i];
-            End;
-        End
-      Else
-        Begin
-          Inc(iTokenLen);
-          If iTokenLen > Length(strToken) Then
-            SetLength(strToken, iTokenCapacity + Length(strToken));
-          strToken[iTokenLen] := strText[i];
-        End;
-
-      // Check for string literals
-      If CurToken = ttStringLiteral Then
-        If BlockType = btStringLiteral Then
-          BlockType := btNoBlock
-        Else If BlockType = btNoBlock Then
-          BlockType := btStringLiteral;
-
-    End;
-  If iTokenLen > 0 Then
-    Begin
-      SetLength(strToken, iTokenLen);
-      If Not(CurToken In [ttLineEnd, ttWhiteSpace]) Then
-        Result.AddObject(strToken, TObject(CurToken));
-    End;
-End;
+  iMilliSecInSec = 1000;
 
 (**
 
@@ -299,7 +157,7 @@ End;
 
 **)
 Procedure TITHelperIDENotifier.AddAdditionalZipFilesToResponseFile(
-  Const ProjectOps: TITHProjectOptions; Const slResponse: TStringList; Const Project : IOTAProject;
+  Const ProjectOps: IITHProjectOptions; Const slResponse: TStringList; Const Project : IOTAProject;
   Const strBasePath: String);
 
 Var
@@ -331,7 +189,6 @@ Procedure TITHelperIDENotifier.AddProjectFilesToResponseFile(Const slResponse: T
 Var
   iModule: Integer;
   strFileName: String;
-  //: @debug Like: TDGHArrayOfString;
 
 Begin
   For iModule := 0 To Project.ModuleFileCount - 1 Do
@@ -486,9 +343,10 @@ Procedure TITHelperIDENotifier.BeforeCompile(Const Project: IOTAProject; IsCodeI
 Var
   iResult: Integer;
   strProject: String;
-  ProjectOps: TITHProjectOptions;
+  ProjectOps: IITHProjectOptions;
   iInterval: Int64;
   Ops: TITHEnabledOptions;
+  MS: IOTAMessageServices;
 
 Begin
   If Project = Nil Then
@@ -499,7 +357,7 @@ Begin
   Try
     iInterval := FGlobalOps.ClearMessages;
     If iInterval > 0 Then
-      If FLastMessage < GetTickCount - iInterval * 1000 Then
+      If FLastMessage < GetTickCount - iInterval * iMilliSecInSec Then
         Begin
           ClearMessages([cmCompiler, cmGroup]);
           FLastMessage := GetTickCount;
@@ -515,7 +373,7 @@ Begin
               If eoCopyVersionInfo In Ops Then
                 CopyVersionInfoFromDependency(Project, strProject, ProjectOps);
               If eoBefore In Ops Then
-                With (BorlandIDEServices As IOTAMessageServices) Do
+                If Supports(BorlandIDEServices, IOTAMessageServices, MS) Then
                   Begin
                     iResult := ProcessCompileInformation(ProjectOps, Project, 'Pre-Compilation');
                     If iResult > 0 Then
@@ -546,7 +404,7 @@ Begin
           End;
       End;
   Finally
-    ProjectOps.Free;
+    ProjectOps := Nil;
   End;
 End;
 
@@ -581,7 +439,7 @@ End;
   @param   Project    as an IOTAProject as a constant
 
 **)
-Procedure TITHelperIDENotifier.BuildProjectVersionResource(Const ProjectOps: TITHProjectOptions;
+Procedure TITHelperIDENotifier.BuildProjectVersionResource(Const ProjectOps: IITHProjectOptions;
   Const Project: IOTAProject);
 
 Var
@@ -720,7 +578,7 @@ End;
 
 **)
 Function TITHelperIDENotifier.BuildResponseFile(Const Project: IOTAProject;
-  Const ProjectOps: TITHProjectOptions; Const slResponse: TStringList;
+  Const ProjectOps: IITHProjectOptions; Const slResponse: TStringList;
   Const strBasePath, strProject, strZIPName: String): String;
 
 Begin
@@ -853,7 +711,7 @@ End;
 
 **)
 Procedure TITHelperIDENotifier.CheckResponseFileAgainExclusions(
-  Const ProjectOps: TITHProjectOptions; Const slReponseFile: TStringList);
+  Const ProjectOps: IITHProjectOptions; Const slReponseFile: TStringList);
 
 Var
   i, j: Integer;
@@ -886,7 +744,7 @@ End;
            and RC/RES files are requested.
 
   @param   Project     as an IOTAProject as a constant
-  @param   strProject  as a String
+  @param   strProject  as a String as a Constant
   @param   slResponse  as a TStringList as a constant
   @param   ProjectOps  as a TITHProjectOptions as a constant
   @param   strBasePath as a String as a constant
@@ -894,7 +752,7 @@ End;
 **)
 Procedure TITHelperIDENotifier.CheckResponseFilesForIncludeAndRes(
   Const Project: IOTAProject; Const strProject: String; Const slResponse: TStringList;
-  Const ProjectOps: TITHProjectOptions; Const strBasePath: String);
+  Const ProjectOps: IITHProjectOptions; Const strBasePath: String);
 
 Var
   strFileName: String;
@@ -1098,7 +956,7 @@ End;
 
 **)
 Procedure TITHelperIDENotifier.CopyVersionInfoFromDependency(Const Project: IOTAProject;
-  Const strProject: String; Const ProjectOps: TITHProjectOptions);
+  Const strProject: String; Const ProjectOps: IITHProjectOptions);
 
 Const
   strBugFix = ' abcedfghijklmnopqrstuvwxyz';
@@ -1199,13 +1057,16 @@ End;
 **)
 Constructor TITHelperIDENotifier.Create(Const GlobalOps: TITHGlobalOptions);
 
+Const
+  iTimerIntervalInMSec = 100;
+
 Begin
   FGlobalOps := GlobalOps;
   FMsgs := TObjectList.Create(False);
   FLastSuccessfulCompile := 0;
   FSuccessfulCompile := TTimer.Create(Nil);
   FSuccessfulCompile.OnTimer := SuccessfulCompile;
-  FSuccessfulCompile.Interval := 100;
+  FSuccessfulCompile.Interval := iTimerIntervalInMSec;
   FSuccessfulCompile.Enabled := True;
   FShouldBuildList := TStringList.Create;
   FShouldBuildList.CaseSensitive := False;
@@ -1328,7 +1189,7 @@ End;
   @param   strProject as a String as a constant
 
 **)
-Procedure TITHelperIDENotifier.IncrementBuild(Const ProjectOps : TITHProjectOptions;
+Procedure TITHelperIDENotifier.IncrementBuild(Const ProjectOps : IITHProjectOptions;
   Const Project: IOTAProject; Const strProject: String);
 
 Var
@@ -1343,8 +1204,7 @@ Begin
     Begin
       iBuild := -1;
       {$IFDEF DXE20}
-      If Project.ProjectOptions.QueryInterface(IOTAProjectOptionsConfigurations, POC)
-        = S_OK Then
+      If Project.ProjectOptions.QueryInterface(IOTAProjectOptionsConfigurations, POC) = S_OK Then
         Begin
           AC := POC.ActiveConfiguration;
           If AC.PropertyExists(sVerInfo_IncludeVerInfo) Then
@@ -1421,7 +1281,7 @@ Procedure TITHelperIDENotifier.ProcessAfterCompile(Const Project: IOTAProject;
 Var
   iResult: Integer;
   strProject: String;
-  ProjectOps: TITHProjectOptions;
+  ProjectOps: IITHProjectOptions;
   iIndex: Integer;
   Ops: TITHEnabledOptions;
 
@@ -1442,49 +1302,46 @@ Begin
             strProject := GetProjectName(Project);
             If eoIncrementBuild In Ops Then
               IncrementBuild(ProjectOps, Project, strProject);
-            With (BorlandIDEServices As IOTAMessageServices) Do
+            If eoZip In Ops Then
               Begin
-                If eoZip In Ops Then
+                iResult := ZipProjectInformation(ProjectOps, Project);
+                If iResult > 0 Then
                   Begin
-                    iResult := ZipProjectInformation(ProjectOps, Project);
-                    If iResult > 0 Then
-                      Begin
-                        TfrmITHProcessing.ShowProcessing(Format('ZIP Tool Failure (%s).',
-                          [strProject]), FGlobalOps.FontColour[ithfFailure], True);
-                        ShowHelperMessages(FGlobalOps.GroupMessages);
-                        Abort; // Stop IDE continuing if there was a problem.
-                      End;
+                    TfrmITHProcessing.ShowProcessing(Format('ZIP Tool Failure (%s).',
+                      [strProject]), FGlobalOps.FontColour[ithfFailure], True);
+                    ShowHelperMessages(FGlobalOps.GroupMessages);
+                    Abort; // Stop IDE continuing if there was a problem.
                   End;
-                If eoAfter In Ops Then
-                  Begin
-                    iResult := ProcessCompileInformation(ProjectOps, Project,
-                      'Post-Compilation');
-                    If iResult > 0 Then
-                      Begin
-                        TfrmITHProcessing.ShowProcessing
-                          (Format('Post-Compilation Tools Failed (%s).', [strProject]),
-                          FGlobalOps.FontColour[ithfWarning], True);
-                        ShowHelperMessages(FGlobalOps.GroupMessages);
-                        Abort; // Stop IDE continuing if there was a problem.
-                      End
-                    Else If iResult < 0 Then
-                      If ProjectOps.WarnAfter Then
-                        Begin
-                          AddMsg(Format(strAfterCompileWARNING, [strProject]),
-                            FGlobalOps.GroupMessages, FGlobalOps.AutoScrollMessages,
-                            FGlobalOps.FontName[fnHeader],
-                            FGlobalOps.FontColour[ithfWarning],
-                            FGlobalOps.FontStyles[ithfWarning]);
-                          ShowHelperMessages(FGlobalOps.GroupMessages);
-                        End;
-                  End;
-                FLastSuccessfulCompile := GetTickCount;
               End;
+            If eoAfter In Ops Then
+              Begin
+                iResult := ProcessCompileInformation(ProjectOps, Project,
+                  'Post-Compilation');
+                If iResult > 0 Then
+                  Begin
+                    TfrmITHProcessing.ShowProcessing
+                      (Format('Post-Compilation Tools Failed (%s).', [strProject]),
+                      FGlobalOps.FontColour[ithfWarning], True);
+                    ShowHelperMessages(FGlobalOps.GroupMessages);
+                    Abort; // Stop IDE continuing if there was a problem.
+                  End
+                Else If iResult < 0 Then
+                  If ProjectOps.WarnAfter Then
+                    Begin
+                      AddMsg(Format(strAfterCompileWARNING, [strProject]),
+                        FGlobalOps.GroupMessages, FGlobalOps.AutoScrollMessages,
+                        FGlobalOps.FontName[fnHeader],
+                        FGlobalOps.FontColour[ithfWarning],
+                        FGlobalOps.FontStyles[ithfWarning]);
+                      ShowHelperMessages(FGlobalOps.GroupMessages);
+                    End;
+              End;
+            FLastSuccessfulCompile := GetTickCount;
           Finally
             TfrmITHProcessing.HideProcessing;
           End;
       Finally
-        ProjectOps.Free;
+        ProjectOps := Nil;
       End;
     End;
   FLastMessage := GetTickCount;
@@ -1507,7 +1364,7 @@ End;
   @return  an Integer
 
 **)
-Function TITHelperIDENotifier.ProcessCompileInformation(Const ProjectOps : TITHProjectOptions;
+Function TITHelperIDENotifier.ProcessCompileInformation(Const ProjectOps : IITHProjectOptions;
   Const Project: IOTAProject; Const strWhere: String): Integer;
 
 Var
@@ -1565,6 +1422,8 @@ End;
 
   @precon  None.
   @postcon Outputs the messages from the process to the message window.
+
+  @nohint  boolAbort
 
   @param   strMsg    as a String as a constant
   @param   boolAbort as a Boolean as a reference
@@ -1624,7 +1483,7 @@ End;
 Procedure TITHelperIDENotifier.SuccessfulCompile(Sender: TObject);
 
 Begin
-  If FLastSuccessfulCompile + 1000 > GetTickCount Then
+  If FLastSuccessfulCompile + iMilliSecInSec > GetTickCount Then
     Begin
       FLastSuccessfulCompile := 0;
       If FGlobalOps.SwitchToMessages Then
@@ -1646,7 +1505,7 @@ End;
   @return  an Integer
 
 **)
-Function TITHelperIDENotifier.ZipProjectInformation(Const ProjectOps : TITHProjectOptions;
+Function TITHelperIDENotifier.ZipProjectInformation(Const ProjectOps : IITHProjectOptions;
   Const Project: IOTAProject): Integer;
 
 Var
@@ -1687,12 +1546,9 @@ Begin
             strZIPName := ExpandMacro(strZIPName, Project);
             strFileName := BuildResponseFile(Project, ProjectOps, slResponseFile,
               strBasePath, strProject, strZIPName);
-            With Process Do
-              FParams := StringReplace(FParams, '$RESPONSEFILE$', strFileName, []);
-            With Process Do
-              FParams := StringReplace(FParams, '$FILELIST$', FileList(slResponseFile), []);
-            With Process Do
-              FParams := StringReplace(FParams, '$ZIPFILE$', strZIPName, []);
+            Process.FParams := StringReplace(Process.FParams, '$RESPONSEFILE$', strFileName, []);
+            Process.FParams := StringReplace(Process.FParams, '$FILELIST$', FileList(slResponseFile), []);
+            Process.FParams := StringReplace(Process.FParams, '$ZIPFILE$', strZIPName, []);
             Process.FDir := ExpandMacro(strBasePath, Project);
             FParentMsg :=
               AddMsg(Format('Running: %s (%s %s)', [ExtractFileName(Process.FEXE),

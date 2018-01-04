@@ -5,7 +5,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    03 Jan 2018
+  @Date    04 Jan 2018
 
 **)
 Unit ITHelper.EnabledOptions;
@@ -24,7 +24,8 @@ Uses
   Dialogs,
   StdCtrls,
   Buttons,
-  ITHelper.GlobalOptions;
+  ITHelper.GlobalOptions, 
+  ITHelper.Types;
 
 {$INCLUDE 'CompilerDefinitions.inc'}
 

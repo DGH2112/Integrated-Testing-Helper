@@ -5,7 +5,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    30 Dec 2017
+  @Date    04 Jan 2018
 
 **)
 Unit ITHelper.ProjectOptionsDialogue;
@@ -89,7 +89,8 @@ Uses
   {$IFDEF DXE20}
   CommonOptionStrs,
   {$ENDIF}
-  ITHelper.TestingHelperUtils;
+  ITHelper.TestingHelperUtils, 
+  ITHelper.Interfaces;
 
 Const
   (** An INI Section name for the dialogue settings. **)
@@ -313,7 +314,7 @@ Procedure TfrmITHProjectOptionsDialogue.InitialiseOptions(Const GlobalOps: TITHG
 
 Var
   iniFile: TMemIniFile;
-  GO: TITHProjectOptions;
+  ProjectOps: IITHProjectOptions;
 
 Begin
   iniFile := TMemIniFile.Create(GlobalOps.INIFileName);
@@ -325,22 +326,22 @@ Begin
   Finally
     iniFile.Free;
   End;
-  GO := GlobalOps.ProjectOptions(Project);
+  ProjectOps := GlobalOps.ProjectOptions(Project);
   Try
-    chkIncrementBuildOnCompile.Checked := GO.IncOnCompile;
-    edtVersionInfo.Text          := GO.CopyVerInfo;
-    edtResExts.Text              := GO.ResExtExc;
-    chkEnabled.Checked           := GO.IncITHVerInfo;
-    chkIncludeInProject.Checked  := GO.IncResInProj;
-    chkCompileWithBRCC32.Checked := GO.CompileRes;
-    upMajor.Position             := GO.Major;
-    upMinor.Position             := GO.Minor;
-    upRelease.Position           := GO.Release;
-    upBuild.Position             := GO.Build;
-    edtResourceName.Text         := GO.ResourceName;
-    vleVersionInfo.Strings.Assign(GO.VerInfo);
+    chkIncrementBuildOnCompile.Checked := ProjectOps.IncOnCompile;
+    edtVersionInfo.Text          := ProjectOps.CopyVerInfo;
+    edtResExts.Text              := ProjectOps.ResExtExc;
+    chkEnabled.Checked           := ProjectOps.IncITHVerInfo;
+    chkIncludeInProject.Checked  := ProjectOps.IncResInProj;
+    chkCompileWithBRCC32.Checked := ProjectOps.CompileRes;
+    upMajor.Position             := ProjectOps.Major;
+    upMinor.Position             := ProjectOps.Minor;
+    upRelease.Position           := ProjectOps.Release;
+    upBuild.Position             := ProjectOps.Build;
+    edtResourceName.Text         := ProjectOps.ResourceName;
+    vleVersionInfo.Strings.Assign(ProjectOps.VerInfo);
   Finally
-    GO.Free;
+    ProjectOps := Nil;
   End;
 End;
 
@@ -359,7 +360,7 @@ Procedure TfrmITHProjectOptionsDialogue.SaveOptions(Const GlobalOps: TITHGlobalO
 
 Var
   iniFile: TMemIniFile;
-  GO: TITHProjectOptions;
+  ProjectOps: IITHProjectOptions;
 
 Begin
   iniFile := TMemIniFile.Create(GlobalOps.INIFileName);
@@ -372,22 +373,22 @@ Begin
   Finally
     iniFile.Free;
   End;
-  GO := GlobalOps.ProjectOptions(Project);
+  ProjectOps := GlobalOps.ProjectOptions(Project);
   Try
-    GO.IncOnCompile := chkIncrementBuildOnCompile.Checked;
-    GO.CopyVerInfo := edtVersionInfo.Text;
-    GO.ResExtExc := edtResExts.Text;
-    GO.IncITHVerInfo := chkEnabled.Checked;
-    GO.IncResInProj := chkIncludeInProject.Checked;
-    GO.CompileRes := chkCompileWithBRCC32.Checked;
-    GO.Major := upMajor.Position;
-    GO.Minor := upMinor.Position;
-    GO.Release := upRelease.Position;
-    GO.Build := upBuild.Position;
-    GO.ResourceName := edtResourceName.Text;
-    GO.VerInfo.Assign(vleVersionInfo.Strings);
+    ProjectOps.IncOnCompile := chkIncrementBuildOnCompile.Checked;
+    ProjectOps.CopyVerInfo := edtVersionInfo.Text;
+    ProjectOps.ResExtExc := edtResExts.Text;
+    ProjectOps.IncITHVerInfo := chkEnabled.Checked;
+    ProjectOps.IncResInProj := chkIncludeInProject.Checked;
+    ProjectOps.CompileRes := chkCompileWithBRCC32.Checked;
+    ProjectOps.Major := upMajor.Position;
+    ProjectOps.Minor := upMinor.Position;
+    ProjectOps.Release := upRelease.Position;
+    ProjectOps.Build := upBuild.Position;
+    ProjectOps.ResourceName := edtResourceName.Text;
+    ProjectOps.VerInfo.Assign(vleVersionInfo.Strings);
   Finally
-    GO.Free;
+    ProjectOps := Nil;
   End;
 End;
 

@@ -93,7 +93,8 @@ Uses
   IniFiles,
   FileCtrl,
   ITHelper.ProgrammeInfoForm,
-  ITHelper.TestingHelperUtils;
+  ITHelper.TestingHelperUtils, 
+  ITHelper.Interfaces;
 
 Type
   (** An enumerate to define the columns of the dialogue listview. @nohints **)
@@ -194,7 +195,7 @@ Procedure TfrmITHConfigureDlg.AddProcesses(Const Processes: TITHProcessCollectio
 Var
   i      : Integer;
   Item   : TListItem;
-  ProjectOps: TITHProjectOptions;
+  ProjectOps: IITHProjectOptions;
 
 Begin
   ProjectOps := FGlobalOps.ProjectOptions(Project);
@@ -206,7 +207,7 @@ Begin
         AddListItem(Item, Processes[i]);
       End;
   Finally
-    ProjectOps.Free;
+    ProjectOps := Nil;
   End;
 End;
 
@@ -476,7 +477,7 @@ Procedure TfrmITHConfigureDlg.InitialiseOptions(Const Project: IOTAProject);
 
 Var
   iniFile: TMemIniFile;
-  PO: TITHProjectOptions;
+  ProjectOps: IITHProjectOptions;
 
 Begin
   iniFile :=TMemIniFile.Create(FGlobalOps.INIFileName);
@@ -488,14 +489,14 @@ Begin
   Finally
     iniFile.Free;
   End;
-  PO := FGlobalOps.ProjectOptions(Project);
+  ProjectOps := FGlobalOps.ProjectOptions(Project);
   Try
     If FDlgType = dtBefore Then
-      chkWarn.Checked := PO.WarnBefore
+      chkWarn.Checked := ProjectOps.WarnBefore
     Else
-      chkWarn.Checked := PO.WarnAfter;
+      chkWarn.Checked := ProjectOps.WarnAfter;
   Finally
-    PO.Free;
+    ProjectOps := Nil;
   End;
 End;
 
@@ -707,7 +708,7 @@ Procedure TfrmITHConfigureDlg.SaveOptions(Const Project: IOTAProject);
 
 Var
   iniFile: TMemIniFile;
-  PO: TITHProjectOptions;
+  ProjectOps: IITHProjectOptions;
 
 Begin
   iniFile := TMemIniFile.Create(FGlobalOps.INIFileName);
@@ -720,14 +721,14 @@ Begin
   Finally
     iniFile.Free;
   End;
-  PO := FGlobalOps.ProjectOptions(Project);
+  ProjectOps := FGlobalOps.ProjectOptions(Project);
   Try
     If FDlgType = dtBefore Then
-      PO.WarnBefore := chkWarn.Checked
+      ProjectOps.WarnBefore := chkWarn.Checked
     Else
-      PO.WarnAfter := chkWarn.Checked;
+      ProjectOps.WarnAfter := chkWarn.Checked;
   Finally
-    PO.Free;
+    ProjectOps := Nil;
   End;
 End;
 

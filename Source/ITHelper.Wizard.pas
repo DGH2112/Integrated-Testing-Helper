@@ -4,7 +4,7 @@
   external tools before and after the compilation of the current project.
 
   @Version 1.0
-  @Date    03 Jan 2018
+  @Date    04 Jan 2018
   @Author  David Hoyle
 
 **)
@@ -93,7 +93,8 @@ Uses
   ITHelper.ProjectOptionsDialogue, 
   ITHelper.SplashScreen, 
   ITHelper.AboutBox, 
-  ITHelper.IDENotifierInterface;
+  ITHelper.IDENotifierInterface, 
+  ITHelper.Types;
 
 Const
   (** A constant to define the failed state of a wizard / notifier interface. **)

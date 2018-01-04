@@ -79,7 +79,8 @@ Uses
   FileCtrl,
   ITHelper.TestingHelperUtils,
   IniFiles, 
-  ITHelper.CommonFunctions;
+  ITHelper.CommonFunctions, 
+  ITHelper.Interfaces;
 
 Const
   (** An INI Section for the dialogues size and position. **)
@@ -367,7 +368,7 @@ Procedure TfrmITHZIPDialogue.InitialiseOptions(Const GlobalOps: TITHGlobalOption
 
 Var
   iniFile: TMemIniFile;
-  GO: TITHProjectOptions;
+  ProjectOps: IITHProjectOptions;
 
 Begin
   iniFile := TMemIniFile.Create(GlobalOps.INIFileName);
@@ -380,15 +381,15 @@ Begin
     iniFile.Free;
   End;
   FFileName := GlobalOps.ZipEXE;
-  GO := GlobalOps.ProjectOptions(FProject);
+  ProjectOps := GlobalOps.ProjectOptions(FProject);
   Try
-    cbxEnabledZipping.Checked := GO.EnableZipping;
-    edtZipName.Text           := GO.ZipName;
-    edtBasePath.Text          := GO.BasePath;
-    mmoExclusionPatterns.Text := GO.ExcPatterns;
-    lbAdditionalWildcards.Items.Assign(GO.AddZipFiles);
+    cbxEnabledZipping.Checked := ProjectOps.EnableZipping;
+    edtZipName.Text           := ProjectOps.ZipName;
+    edtBasePath.Text          := ProjectOps.BasePath;
+    mmoExclusionPatterns.Text := ProjectOps.ExcPatterns;
+    lbAdditionalWildcards.Items.Assign(ProjectOps.AddZipFiles);
   Finally
-    GO.Free;
+    ProjectOps := Nil;
   End;
 End;
 
@@ -406,7 +407,7 @@ Procedure TfrmITHZIPDialogue.SaveOptions(Const GlobalOps: TITHGlobalOptions);
 
 Var
   iniFile: TMemIniFile;
-  GO: TITHProjectOptions;
+  ProjectOps: IITHProjectOptions;
 
 Begin
   iniFile := TMemIniFile.Create(GlobalOps.INIFileName);
@@ -419,15 +420,15 @@ Begin
   Finally
     iniFile.Free;
   End;
-  GO := GlobalOps.ProjectOptions(FProject);
+  ProjectOps := GlobalOps.ProjectOptions(FProject);
   Try
-    GO.EnableZipping := cbxEnabledZipping.Checked;
-    GO.ZipName := edtZipName.Text;
-    GO.BasePath := edtBasePath.Text;
-    GO.ExcPatterns := mmoExclusionPatterns.Text;
-    GO.AddZipFiles.Assign(lbAdditionalWildcards.Items);
+    ProjectOps.EnableZipping := cbxEnabledZipping.Checked;
+    ProjectOps.ZipName := edtZipName.Text;
+    ProjectOps.BasePath := edtBasePath.Text;
+    ProjectOps.ExcPatterns := mmoExclusionPatterns.Text;
+    ProjectOps.AddZipFiles.Assign(lbAdditionalWildcards.Items);
   Finally
-    GO.Free;
+    ProjectOps := Nil;
   End;
 End;
 

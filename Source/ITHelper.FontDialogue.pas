@@ -5,7 +5,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    30 Dec 2017
+  @Date    04 Jan 2018
 
 **)
 Unit ITHelper.FontDialogue;
@@ -25,7 +25,8 @@ Uses
   StdCtrls,
   ExtCtrls,
   Buttons,
-  ITHelper.GlobalOptions;
+  ITHelper.GlobalOptions, 
+  ITHelper.Types;
 
 Type
   (** A class to represent the form interface. **)
