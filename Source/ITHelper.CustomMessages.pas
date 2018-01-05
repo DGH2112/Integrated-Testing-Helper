@@ -79,7 +79,7 @@ Uses
   @return  a TRect
 
 **)
-Function TITHCustomMessage.CalcRect(Canvas: TCanvas; MaxWidth: Integer; Wrap: Boolean): TRect;
+Function TITHCustomMessage.CalcRect(Canvas: TCanvas; MaxWidth: Integer; Wrap: Boolean): TRect; //FI:O804
 
 Const
   strTextHeightTest = 'Wp';
@@ -162,7 +162,7 @@ End;
   @param   Wrap   as a Boolean
 
 **)
-Procedure TITHCustomMessage.Draw(Canvas: TCanvas; Const Rect: TRect; Wrap: Boolean);
+Procedure TITHCustomMessage.Draw(Canvas: TCanvas; Const Rect: TRect; Wrap: Boolean); //FI:O804
 
 Begin
   If Canvas.Brush.Color = clWindow Then
@@ -329,7 +329,7 @@ End;
 **)
 Procedure TITHCustomMessage.ShowHelp;
 
-Begin
+Begin //FI:W519
 End;
 
 End.

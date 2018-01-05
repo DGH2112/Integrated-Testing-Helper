@@ -286,6 +286,7 @@ Var
   PM : IOTAProjectManager;
 
 Begin
+  Inherited Create;
   FIDENotifierIndex := iWizardFailState;
   InstallSplashScreen;
   FAboutBoxIndex := AddAboutBoxEntry;
@@ -380,7 +381,7 @@ End;
 **)
 Procedure TITHWizard.Execute;
 
-Begin
+Begin //FI:W519
 End;
 
 (**

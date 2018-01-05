@@ -5,7 +5,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    29 Dec 2017
+  @Date    05 Jan 2018
 
 **)
 Unit ITHelper.ExternalProcessInfo;
@@ -151,6 +151,7 @@ Destructor TITHProcessCollection.Destroy;
 
 Begin
   FProcesses.Free;
+  Inherited Destroy;
 End;
 
 (**

@@ -4,7 +4,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    04 Jan 2018
+  @Date    05 Jan 2018
   
 **)
 Unit ITHelper.CommonFunctions;
@@ -281,7 +281,6 @@ Begin
           End;
         FillChar(StartupInfo, SizeOf(TStartupInfo), 0);
         StartupInfo.cb := SizeOf(TStartupInfo);
-        StartupInfo.cb          := SizeOf(StartupInfo);
         StartupInfo.dwFlags     := STARTF_USESHOWWINDOW or STARTF_USESTDHANDLES;
         StartupInfo.wShowWindow := SW_HIDE;
         StartupInfo.hStdOutput  := hWrite;

@@ -83,7 +83,7 @@ End;
   A destructor for the TITHZipManager class.
 
   @precon  None.
-  @postcon Does nothing - used to check destruction usign CodeSite.
+  @postcon Does nothing - used to check destruction using CodeSite.
 
 **)
 Destructor TITHZipManager.Destroy;
@@ -121,7 +121,7 @@ End;
   @param   boolAbort as a Boolean as a reference
 
 **)
-Procedure TITHZipManager.ProcessMsgHandler(Const strMsg: String; Var boolAbort: Boolean);
+Procedure TITHZipManager.ProcessMsgHandler(Const strMsg: String; Var boolAbort: Boolean); //FI:O804
 
 Begin
   If strMsg <> '' Then

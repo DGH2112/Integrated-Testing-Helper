@@ -94,30 +94,34 @@ Uses
   ITHelper.MessageManager;
 
 Type
+  (** A custom exception for ITHelper problems. **)
   EITHException = Class(Exception);
 
 ResourceString
   (** This is the warning shown if there are no after compilation tools. **)
-  strAfterCompileWARNING = 'WARNING: There are no Post-Compilation tools con' +
-    'figured (%s).';
+  strAfterCompileWARNING = 'WARNING: There are no Post-Compilation tools configured (%s).';
   (** This is the warning shown if there are no before compilation tools. **)
-  strBeforeCompileWARNING = 'WARNING: There are no Pre-Compilation tools con' +
-    'figured (%s).';
+  strBeforeCompileWARNING = 'WARNING: There are no Pre-Compilation tools configured (%s).';
 {$IFDEF DXE20}
+  (** A resource string messge for broken Open Tools API version control XE2 ONLY!!!! **)
   strMsgBroken = 'The Open Tools API''s ability to manipulale the build number of the ' +
     'version information is broken. Althought the number can be incremented this is ' +
     'not included in the EXE/DLL and this incrementation is lost when the project is ' +
     'closed. Please turn off the IDE''s version numbering and use ITHelper''s own ' +
     'mechanism for handling version information in the project options dialogue.';
+  (** A resource string messge for incrementing build number but ITHelpers version control is not
+      enabled. **)
   strMsgIncBuildDisabled = 'You have enabled the incrementation of the build number on ' +
     'successful compilation but you have not enabled ITHelper''s handling of version ' +
     'information in the project options dialogue.';
+  (** A resource string messge for broken Open Tools API version control XE2 ONLY!!!! **)
   strMsgCopyDisabled = 'You have enabled the copying of version information from an ' +
     'existing executabe but you have not enabled ITHelper''s handling of version ' +
     'information in the project options dialogue.';
 {$ENDIF}
 
 Const
+  (** This number of milliseconds in a second. **)
   iMilliSecInSec = 1000;
 
 (**
@@ -135,8 +139,7 @@ Const
 **)
 Procedure TITHelperIDENotifier.AfterCompile(Succeeded: Boolean);
 
-Begin
-  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'AfterCompile', tmoTiming);{$ENDIF}
+Begin //FI:W519
 End;
 
 (**
@@ -156,7 +159,6 @@ End;
 Procedure TITHelperIDENotifier.AfterCompile(Succeeded, IsCodeInsight: Boolean);
 
 Begin
-  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'AfterCompile', tmoTiming);{$ENDIF}
   {$IFNDEF D2005} // For D7 and below
   ProcessAfterCompile(ActiveProject, Succeeded, IsCodeInsight);
   {$ENDIF}
@@ -183,7 +185,6 @@ Procedure TITHelperIDENotifier.AfterCompile(Const Project: IOTAProject;
   Succeeded, IsCodeInsight: Boolean);
 
 Begin // For D2005 and above
-  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'AfterCompile', tmoTiming);{$ENDIF}
   ProcessAfterCompile(Project, Succeeded, IsCodeInsight);
 End;
 {$ENDIF}
@@ -206,6 +207,10 @@ End;
 Procedure TITHelperIDENotifier.BeforeCompile(Const Project: IOTAProject; IsCodeInsight: Boolean;
   Var Cancel: Boolean);
 
+ResourceString
+  strPreCompilation = 'Pre-Compilation';
+  strPreCompilationToolsFailed = 'Pre-Compilation Tools Failed (%s).';
+
 Var
   iResult: Integer;
   strProject: String;
@@ -215,7 +220,6 @@ Var
   MS: IOTAMessageServices;
 
 Begin
-  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'BeforeCompile', tmoTiming);{$ENDIF}
   If Project = Nil Then
     Exit;
   If IsCodeInsight Then
@@ -239,12 +243,12 @@ Begin
               If eoBefore In Ops Then
                 If Supports(BorlandIDEServices, IOTAMessageServices, MS) Then
                   Begin
-                    iResult := ProcessCompileInformation(ProjectOps, Project, 'Pre-Compilation');
+                    iResult := ProcessCompileInformation(ProjectOps, Project, strPreCompilation);
                     If iResult > 0 Then
                       Begin
                         Cancel := True;
                         TfrmITHProcessing.ShowProcessing
-                          (Format('Pre-Compilation Tools Failed (%s).', [strProject]),
+                          (Format(strPreCompilationToolsFailed, [strProject]),
                           FGlobalOps.FontColour[ithfWarning], True);
                         ShowHelperMessages(FGlobalOps.GroupMessages);
                       End
@@ -286,8 +290,7 @@ End;
 Procedure TITHelperIDENotifier.BeforeCompile(Const Project: IOTAProject;
   Var Cancel: Boolean);
   
-Begin
-  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'BeforeCompile', tmoTiming);{$ENDIF}
+Begin //FI:W519
 End;
 
 (**
@@ -297,6 +300,8 @@ End;
   @precon  None.
   @postcon Builds the ITHelper version resource for inclusion in the project.
 
+  @nocheck HardCodedString @todo Break this down.
+  
   @param   ProjectOps as a IITHProjectOptions as a constant
   @param   Project    as an IOTAProject as a constant
 
@@ -315,7 +320,6 @@ Var
   j: Integer;
 
 Begin
-  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'BuildProjectVersionResource', tmoTiming);{$ENDIF}
   sl := TStringList.Create;
   Try
     sl.Add('LANGUAGE LANG_ENGLISH,SUBLANG_ENGLISH_US');
@@ -389,7 +393,7 @@ Begin
           FMsgMgr.ParentMsg.ForeColour := FGlobalOps.FontColour[ithfFailure];
         ShowHelperMessages(FGlobalOps.GroupMessages);
         If iResult > 0 Then
-          Abort;
+          Abort; //: @bug Chnage this!
           FMsgMgr.AddMsg(Format('Resource %s.RC compiled for project %s.', [
             ProjectOps.ResourceName, GetProjectName(Project)]), fnHeader, ithfDefault);
       End;
@@ -417,6 +421,15 @@ Procedure TITHelperIDENotifier.CopyVersionInfoFromDependency(Const Project: IOTA
 
 Const
   strBugFix = ' abcedfghijklmnopqrstuvwxyz';
+  strMajorVersion = 'MajorVersion';
+  strMinorVersion = 'MinorVersion';
+  strRelease = 'Release';
+  strBuild = 'Build';
+
+ResourceString
+  strVersionDependencyFoundForProject = 'Version Dependency (%s) found for project %s.';
+  strDependentBuild = 'Dependent Build %d.%d%s (%d.%d.%d.%d).';
+  strDependencyWasNotFound = 'The dependency "%s" was not found. (%s)';
 
 Var
   iMajor, iMinor, iBugfix, iBuild: Integer;
@@ -428,20 +441,19 @@ Var
   {$ENDIF}
   
 Begin
-  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'CopyVersionInfoFromDependency', tmoTiming);{$ENDIF}
   Group := ProjectGroup;
   If Group = Nil Then
     Exit;
   strTargetName := ExpandMacro(ProjectOps.CopyVerInfo, Project.FileName);
   If strTargetName <> '' Then
     Begin
-      FMsgMgr.AddMsg(Format('Version Dependency (%s) found for project %s.',
+      FMsgMgr.AddMsg(Format(strVersionDependencyFoundForProject,
         [ExtractFileName(strTargetName), strProject]), fnHeader, ithfDefault);
       If FileExists(strTargetName) Then
         Begin
           Try
             BuildNumber(strTargetName, iMajor, iMinor, iBugfix, iBuild);
-            FMsgMgr.AddMsg(Format('Dependent Build %d.%d%s (%d.%d.%d.%d).',
+            FMsgMgr.AddMsg(Format(strDependentBuild,
               [iMajor, iMinor, strBugFix[iBugfix + 1], iMajor, iMinor, iBugfix, iBuild]),
               fnHeader, ithfDefault);
             {$IFDEF DXE20}
@@ -457,14 +469,14 @@ Begin
             {$ELSE}
             If Not ProjectOps.IncITHVerInfo Then
               Begin
-                If Project.ProjectOptions.Values['MajorVersion'] <> iMajor Then
-                  Project.ProjectOptions.Values['MajorVersion'] := iMajor;
-                If Project.ProjectOptions.Values['MinorVersion'] <> iMinor Then
-                  Project.ProjectOptions.Values['MinorVersion'] := iMinor;
-                If Project.ProjectOptions.Values['Release'] <> iBugfix Then
-                  Project.ProjectOptions.Values['Release'] := iBugfix;
-                If Project.ProjectOptions.Values['Build'] <> iBuild Then
-                  Project.ProjectOptions.Values['Build'] := iBuild;
+                If Project.ProjectOptions.Values[strMajorVersion] <> iMajor Then
+                  Project.ProjectOptions.Values[strMajorVersion] := iMajor;
+                If Project.ProjectOptions.Values[strMinorVersion] <> iMinor Then
+                  Project.ProjectOptions.Values[strMinorVersion] := iMinor;
+                If Project.ProjectOptions.Values[strRelease] <> iBugfix Then
+                  Project.ProjectOptions.Values[strRelease] := iBugfix;
+                If Project.ProjectOptions.Values[strBuild] <> iBuild Then
+                  Project.ProjectOptions.Values[strBuild] := iBuild;
               End;
             {$ENDIF}
               If ProjectOps.IncITHVerInfo Then
@@ -485,7 +497,7 @@ Begin
           ShowHelperMessages(FGlobalOps.GroupMessages);
         End
       Else
-        FMsgMgr.AddMsg(Format('The dependency "%s" was not found. (%s)',
+        FMsgMgr.AddMsg(Format(strDependencyWasNotFound,
           [strTargetName, strProject]), fnHeader, ithfWarning);
     End;
 End;
@@ -506,7 +518,7 @@ Const
   iTimerIntervalInMSec = 100;
 
 Begin
-  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Create', tmoTiming);{$ENDIF}
+  Inherited Create;
   FGlobalOps := GlobalOps;
   FMsgMgr := TITHMessageManager.Create(GlobalOps);
   FLastSuccessfulCompile := 0;
@@ -529,7 +541,6 @@ End;
 Destructor TITHelperIDENotifier.Destroy;
 
 Begin
-  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Destroy', tmoTiming);{$ENDIF}
   FShouldBuildList.Free;
   FSuccessfulCompile.Enabled := False;
   FSuccessfulCompile.OnTimer := Nil;
@@ -556,7 +567,6 @@ Var
   P: TITHProcessInfo;
 
 Begin
-  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'ExpandProcessMacro', tmoTiming);{$ENDIF}
   For i := 0 To Processes.Count - 1 Do
     Begin
       P := Processes[i];
@@ -585,7 +595,7 @@ End;
 Procedure TITHelperIDENotifier.FileNotification(NotifyCode: TOTAFileNotification;
   Const FileName: String; Var Cancel: Boolean);
 
-Begin
+Begin //FI:W519
 End;
 
 (**
@@ -617,6 +627,12 @@ End;
 Procedure TITHelperIDENotifier.IncrementBuild(Const ProjectOps : IITHProjectOptions;
   Const Project: IOTAProject; Const strProject: String);
 
+ResourceString
+  strIncrementingBuildFromTo = 'Incrementing %s''s Build from %d to %d.';
+
+Const
+  strBuild = 'Build';
+
 Var
   iBuild: Integer;
   {$IFDEF DXE20}
@@ -625,7 +641,6 @@ Var
   {$ENDIF}
 
 Begin
-  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'IncrementBuild', tmoTiming);{$ENDIF}
   If ProjectOps.IncOnCompile Then
     Begin
       iBuild := -1;
@@ -641,16 +656,16 @@ Begin
         End;
       {$ELSE}
       If Not ProjectOps.IncITHVerInfo Then
-        iBuild := Project.ProjectOptions.Values['Build'];
+        iBuild := Project.ProjectOptions.Values[strBuild];
       {$ENDIF}
       If ProjectOps.IncITHVerInfo Then
         iBuild := ProjectOps.Build;
       If iBuild > -1 Then
-        FMsgMgr.AddMsg(Format('Incrementing %s''s Build from %d to %d.',
+        FMsgMgr.AddMsg(Format(strIncrementingBuildFromTo,
           [strProject, iBuild, iBuild + 1]), fnHeader, ithfDefault);
       {$IFNDEF DXE20}
       If Not ProjectOps.IncITHVerInfo Then
-        Project.ProjectOptions.Values['Build'] := iBuild + 1;
+        Project.ProjectOptions.Values[strBuild] := iBuild + 1;
       {$ENDIF}
       If ProjectOps.IncITHVerInfo Then
         ProjectOps.Build := iBuild + 1;
@@ -676,6 +691,13 @@ End;
 Procedure TITHelperIDENotifier.ProcessAfterCompile(Const Project: IOTAProject;
   Succeeded, IsCodeInsight: Boolean);
 
+Const
+  strZIPToolFailure = 'ZIP Tool Failure (%s).';
+
+ResourceString
+  strPostCompilation = 'Post-Compilation';
+  strPostCompilationToolsFailed = 'Post-Compilation Tools Failed (%s).';
+
 Var
   iResult: Integer;
   strProject: String;
@@ -685,7 +707,6 @@ Var
   ZipMgr : IITHZipManager;
 
 Begin
-  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'ProcessAfterCompile', tmoTiming);{$ENDIF}
   If Project = Nil Then
     Exit;
   If IsCodeInsight Or Not Succeeded Then
@@ -708,23 +729,23 @@ Begin
                 iResult := ZipMgr.ZipProjectInformation;
                 If iResult > 0 Then
                   Begin
-                    TfrmITHProcessing.ShowProcessing(Format('ZIP Tool Failure (%s).',
+                    TfrmITHProcessing.ShowProcessing(Format(strZIPToolFailure,
                       [strProject]), FGlobalOps.FontColour[ithfFailure], True);
                     ShowHelperMessages(FGlobalOps.GroupMessages);
-                    Abort; // Stop IDE continuing if there was a problem.
+                    Abort; //: @bug Stop IDE continuing if there was a problem - Change this to
+                           //:      return a signal to pass failure to the IDE notifier methods.
                   End;
               End;
             If eoAfter In Ops Then
               Begin
-                iResult := ProcessCompileInformation(ProjectOps, Project,
-                  'Post-Compilation');
+                iResult := ProcessCompileInformation(ProjectOps, Project, strPostCompilation);
                 If iResult > 0 Then
                   Begin
                     TfrmITHProcessing.ShowProcessing
-                      (Format('Post-Compilation Tools Failed (%s).', [strProject]),
+                      (Format(strPostCompilationToolsFailed, [strProject]),
                       FGlobalOps.FontColour[ithfWarning], True);
                     ShowHelperMessages(FGlobalOps.GroupMessages);
-                    Abort; // Stop IDE continuing if there was a problem.
+                    Abort; //: @bug Stop IDE continuing if there was a problem.
                   End
                 Else If iResult < 0 Then
                   If ProjectOps.WarnAfter Then
@@ -764,13 +785,16 @@ End;
 Function TITHelperIDENotifier.ProcessCompileInformation(Const ProjectOps : IITHProjectOptions;
   Const Project: IOTAProject; Const strWhere: String): Integer;
 
+ResourceString
+  strRunning = 'Running: %s (%s %s)';
+  strProcessing = 'Processing %s...';
+
 Var
   Processes: TITHProcessCollection;
   i, j: Integer;
   strProject: String;
 
 Begin
-  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'ProcessCompileInformation', tmoTiming);{$ENDIF}
   Result := -1; // Signifies no tools configured.
   strProject := GetProjectName(Project);
   Processes := TITHProcessCollection.Create;
@@ -785,9 +809,9 @@ Begin
         If Processes[i].FEnabled Then
           Begin
             FMsgMgr.ParentMsg :=
-              FMsgMgr.AddMsg(Format('Running: %s (%s %s)',
+              FMsgMgr.AddMsg(Format(strRunning,
               [ExtractFileName(Processes[i].FTitle), strProject, strWhere]), fnHeader, ithfHeader);
-            TfrmITHProcessing.ShowProcessing(Format('Processing %s...',
+            TfrmITHProcessing.ShowProcessing(Format(strProcessing,
               [ExtractFileName(Processes[i].FTitle)]));
             Inc(Result, DGHCreateProcess(Processes[i], ProcessMsgHandler, IdleHandler));
             For j := 0 To FMsgMgr.Count - 1 Do
@@ -821,10 +845,9 @@ End;
   @param   boolAbort as a Boolean as a reference
 
 **)
-Procedure TITHelperIDENotifier.ProcessMsgHandler(Const strMsg: String; Var boolAbort: Boolean);
+Procedure TITHelperIDENotifier.ProcessMsgHandler(Const strMsg: String; Var boolAbort: Boolean); //FI:O804
 
 Begin
-  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'ProcessMsgHandler', tmoTiming);{$ENDIF}
   If strMsg <> '' Then
     FMsgMgr.AddMsg(strMsg, fnTools, ithfDefault, FMsgMgr.ParentMsg.MessagePntr);
 End;
@@ -852,4 +875,5 @@ Begin
 End;
 
 End.
+
 
