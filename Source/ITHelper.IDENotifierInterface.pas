@@ -421,10 +421,12 @@ Procedure TITHelperIDENotifier.CopyVersionInfoFromDependency(Const Project: IOTA
 
 Const
   strBugFix = ' abcedfghijklmnopqrstuvwxyz';
+  {$IFNDEF DXE20}
   strMajorVersion = 'MajorVersion';
   strMinorVersion = 'MinorVersion';
   strRelease = 'Release';
   strBuild = 'Build';
+  {$ENDIF}
 
 ResourceString
   strVersionDependencyFoundForProject = 'Version Dependency (%s) found for project %s.';
@@ -630,8 +632,10 @@ Procedure TITHelperIDENotifier.IncrementBuild(Const ProjectOps : IITHProjectOpti
 ResourceString
   strIncrementingBuildFromTo = 'Incrementing %s''s Build from %d to %d.';
 
+{$IFNDEF DXE20}
 Const
   strBuild = 'Build';
+{$ENDIF}
 
 Var
   iBuild: Integer;
