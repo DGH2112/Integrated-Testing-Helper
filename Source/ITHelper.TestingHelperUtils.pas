@@ -4,7 +4,7 @@
 
   @Version 1.0
   @Author  David Hoyle
-  @Date    04 Jan 2018
+  @Date    05 Jan 2018
 
 **)
 unit ITHelper.TestingHelperUtils;
@@ -53,12 +53,9 @@ Type
   Procedure OutputMessage(Const strText : String); Overload;
   Procedure OutputMessage(Const strFileName, strText, strPrefix : String; Const iLine,
     iCol : Integer); Overload;
-  Function ExpandMacro(Const strPath : String; Const Project : IOTAProject) : String;
+  Function ExpandMacro(Const strPath : String; Const strFileName : String) : String;
   Procedure OutputMessage(Const strText : String; Const strGroupName : String); Overload;
   Procedure ShowMessages(Const strGroupName : String = '');
-  Function  AddMsg(Const strText: String; Const boolGroup, boolAutoScroll: Boolean;
-    Const strFontName: String; Const iForeColour: TColor; Const fsStyle: TFontStyles;
-    Const iBackColour: TColor = clWindow; Const ptrParent: Pointer = Nil): Pointer;
   Function  AddImageToIDE(Const strImageName : String; Const iMaskColour : TColor) : Integer;
   Function  CreateMenuItem(Const strName, strCaption, strParentMenu : String;
     Const ClickProc, UpdateProc : TNotifyEvent; Const boolBefore, boolChildMenu : Boolean;
@@ -95,11 +92,8 @@ Uses
   {$IFNDEF CONSOLE_TESTRUNNER} 
   ITHelper.CustomMessages,
   {$ENDIF}
-  ComCtrls;
-
-ResourceString
-  (** This is a resourcestring for the message tab name. **)
-  strITHelperGroup = 'ITHelper Messages';
+  ComCtrls, 
+  ITHelper.ResourceStrings;
 
 Var
   (** A private variable to is used to hold action reference so that they
@@ -236,71 +230,6 @@ begin
     End;
 end;
 
-(**
-
-  This method adds a custom message to the IDE and returns a POINTER to that message.
-
-  @precon  ptrParent must be a POINTER to another message not a reference.
-  @postcon Adds a custom message to the IDE and returns a POINTER to that message.
-
-  @param   strText        as a String as a constant
-  @param   boolGroup      as a Boolean as a constant
-  @param   boolAutoScroll as a Boolean as a constant
-  @param   strFontName    as a String as a constant
-  @param   iForeColour    as a TColor as a constant
-  @param   fsStyle        as a TFontStyles as a constant
-  @param   iBackColour    as a TColor as a constant
-  @param   ptrParent      as a Pointer as a constant
-  @return  a Pointer
-
-**)
-Function AddMsg(Const strText: String; Const boolGroup, boolAutoScroll: Boolean;
-  Const strFontName: String; Const iForeColour: TColor; Const fsStyle: TFontStyles;
-  Const iBackColour: TColor = clWindow; Const ptrParent: Pointer = Nil): Pointer;
-
-Var
-  MS : IOTAMessageServices;
-  M: TCustomMessage;
-  {$IFDEF D0006}
-  G: IOTAMessageGroup;
-  {$ENDIF}
-
-Begin
-  Result := Nil;
-  If Supports(BorlandIDEServices, IOTAMessageServices, MS) Then
-    Begin
-      //: @bug Need to replace with interfaces
-      M := TCustomMessage.Create(strText, strFontName, iForeColour, fsStyle, iBackColour);
-      Result := M;
-      If ptrParent = Nil Then
-        Begin
-          {$IFDEF D0006}
-          G := Nil;
-          If boolGroup Then
-            G := MS.AddMessageGroup(strITHelperGroup)
-          Else
-            G := MS.GetMessageGroup(0);
-          {$IFDEF D2005}
-          If boolAutoScroll <> G.AutoScroll Then
-            G.AutoScroll := boolAutoScroll;
-          {$ENDIF}
-          {$IFDEF D2005}
-          M.MessagePntr := MS.AddCustomMessagePtr(M As IOTACustomMessage, G);
-          {$ELSE}
-          MS.AddCustomMessage(M As IOTACustomMessage, G);
-          {$ENDIF}
-          {$ELSE}
-          MS.AddCustomMessage(M As IOTACustomMessage);
-          {$ENDIF}
-        End
-      Else
-        {$IFDEF D2005}
-        MS.AddCustomMessage(M As IOTACustomMessage, ptrParent);
-        {$ELSE}
-        MS.AddCustomMessage(M As IOTACustomMessage);
-        {$ENDIF}
-    End;
-End;
 {$ENDIF}
 
 (**
@@ -526,12 +455,12 @@ End;
   @precon  Project must be a valid instance.
   @postcon Returns the passed path / filename with any macros expanded.
 
-  @param   strPath as a String as a constant
-  @param   Project as an IOTAProject as a constant
+  @param   strPath     as a String as a constant
+  @param   strFileName as a String as a constant
   @return  a String
 
 **)
-Function ExpandMacro(Const strPath : String; Const Project : IOTAProject) : String;
+Function ExpandMacro(Const strPath : String; Const strFileName : String) : String;
 
 Const
   strPROJPATHMacroName = '{$PROJPATH$}';
@@ -539,9 +468,9 @@ Const
 
 Begin
   Result := strPath;
-  Result := StringReplace(Result, strPROJPATHMacroName, ExtractFilePath(Project.FileName),
+  Result := StringReplace(Result, strPROJPATHMacroName, ExtractFilePath(strFileName),
     [rfReplaceAll, rfIgnoreCase]);
-  Result := StringReplace(Result, strPROJDRIVEMacroName, ExtractFileDrive(Project.FileName),
+  Result := StringReplace(Result, strPROJDRIVEMacroName, ExtractFileDrive(strFileName),
     [rfReplaceAll, rfIgnoreCase]);
 End;
 

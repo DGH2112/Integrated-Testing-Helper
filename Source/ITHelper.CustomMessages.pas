@@ -5,7 +5,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    04 Jan 2018
+  @Date    05 Jan 2018
   
 **)
 Unit ITHelper.CustomMessages;
@@ -17,11 +17,13 @@ Interface
 Uses
   ToolsAPI,
   Graphics,
-  Windows;
+  Windows,
+  ITHelper.Interfaces;
 
 Type
   (** This class defined a custom message for the IDE. **)
-  TCustomMessage = Class(TInterfacedObject, IOTACustomMessage, INTACustomDrawMessage)
+  TITHCustomMessage = Class(TInterfacedObject, IOTACustomMessage, INTACustomDrawMessage,
+    IITHCustomMessage)
   Strict Private
     FMsg         : String;
     FFontName    : String;
@@ -39,27 +41,15 @@ Type
     // INTACustomDrawMessage
     Function CalcRect(Canvas: TCanvas; MaxWidth: Integer; Wrap: Boolean): TRect;
     Procedure Draw(Canvas: TCanvas; Const Rect: TRect; Wrap: Boolean);
-    // General Methods
+    // IITHCustomMessage
     Procedure SetForeColour(Const iColour : TColor);
+    Function  GetMessagePntr : Pointer;
+    Procedure SetMessagePntr(Const ptrValue : Pointer);
+    // General Methods
   Public
     Constructor Create(Const strMsg : String; Const FontName : String;
       Const ForeColour : TColor = clBlack; Const Style : TFontStyles = [];
       Const BackColour : TColor = clWindow);
-    (**
-      This allows the colour of the font to be updated.
-      @precon  None.
-      @postcon Updates the font colour of the message.
-      @return  a TColor
-    **)
-    Property ForeColour : TColor Write SetForeColour;
-    (**
-      This property returns the message pointer to be used as the parent for
-      sub messages.
-      @precon  None.
-      @postcon Returns the message pointer to be used as the parent for
-      @return  a Pointer
-    **)
-    Property MessagePntr: Pointer Read FMessagePntr Write FMessagePntr;
   End;
 
 Implementation
@@ -89,7 +79,7 @@ Uses
   @return  a TRect
 
 **)
-Function TCustomMessage.CalcRect(Canvas: TCanvas; MaxWidth: Integer; Wrap: Boolean): TRect;
+Function TITHCustomMessage.CalcRect(Canvas: TCanvas; MaxWidth: Integer; Wrap: Boolean): TRect;
 
 Const
   strTextHeightTest = 'Wp';
@@ -116,7 +106,7 @@ End;
   @param   BackColour as a TColor as a constant
 
 **)
-Constructor TCustomMessage.Create(Const strMsg: String; Const FontName: String;
+Constructor TITHCustomMessage.Create(Const strMsg: String; Const FontName: String;
   Const ForeColour: TColor = clBlack; Const Style: TFontStyles = [];
   Const BackColour: TColor = clWindow);
 
@@ -172,7 +162,7 @@ End;
   @param   Wrap   as a Boolean
 
 **)
-Procedure TCustomMessage.Draw(Canvas: TCanvas; Const Rect: TRect; Wrap: Boolean);
+Procedure TITHCustomMessage.Draw(Canvas: TCanvas; Const Rect: TRect; Wrap: Boolean);
 
 Begin
   If Canvas.Brush.Color = clWindow Then
@@ -202,7 +192,7 @@ End;
   @return  an Integer
 
 **)
-Function TCustomMessage.GetColumnNumber: Integer;
+Function TITHCustomMessage.GetColumnNumber: Integer;
 
 Begin
   Result := 0;
@@ -227,7 +217,7 @@ End;
   @return  a String
 
 **)
-Function TCustomMessage.GetFileName: String;
+Function TITHCustomMessage.GetFileName: String;
 
 Begin
   Result := '';
@@ -249,7 +239,7 @@ End;
   @return  an Integer
 
 **)
-Function TCustomMessage.GetLineNumber: Integer;
+Function TITHCustomMessage.GetLineNumber: Integer;
 
 Begin
   Result := 0;
@@ -267,10 +257,26 @@ End;
   @return  a String
 
 **)
-Function TCustomMessage.GetLineText: String;
+Function TITHCustomMessage.GetLineText: String;
 
 Begin
   Result := FMsg;
+End;
+
+(**
+
+  This is a getter method for the MessagePtr property.
+
+  @precon  None.
+  @postcon Returns the message pointer (used in parenting messages).
+
+  @return  a Pointer
+
+**)
+Function TITHCustomMessage.GetMessagePntr: Pointer;
+
+Begin
+  Result := FMessagePntr;
 End;
 
 (**
@@ -283,11 +289,28 @@ End;
   @param   iColour as a TColor as a constant
 
 **)
-Procedure TCustomMessage.SetForeColour(Const iColour: TColor);
+Procedure TITHCustomMessage.SetForeColour(Const iColour: TColor);
 
 Begin
   If FForeColour <> iColour Then
     FForeColour := iColour;
+End;
+
+(**
+
+  This is a setter method for the MessagePtr property.
+
+  @precon  None.
+  @postcon Sets the message pointer (used in parenting messages).
+
+  @param   ptrValue as a Pointer as a constant
+
+**)
+Procedure TITHCustomMessage.SetMessagePntr(Const ptrValue: Pointer);
+
+Begin
+  If FMessagePntr <> ptrValue Then
+    FMessagePntr := ptrValue;
 End;
 
 (**
@@ -304,7 +327,7 @@ End;
            here.
 
 **)
-Procedure TCustomMessage.ShowHelp;
+Procedure TITHCustomMessage.ShowHelp;
 
 Begin
 End;

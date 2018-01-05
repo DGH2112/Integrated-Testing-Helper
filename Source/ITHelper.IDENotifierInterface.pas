@@ -5,7 +5,7 @@
 
   @Author  David Hoyle.
   @Version 1.0
-  @Date    04 Jan 2018
+  @Date    05 Jan 2018
 
 **)
 Unit ITHelper.IDENotifierInterface;
@@ -21,8 +21,6 @@ Uses
   Classes,
   IniFiles,
   ITHelper.ExternalProcessInfo,
-  ITHelper.GlobalOptions, 
-  ITHelper.CustomMessages, 
   ITHelper.Interfaces;
 
 {$INCLUDE 'CompilerDefinitions.inc'}
@@ -33,13 +31,11 @@ Type
     IOTAIDENotifier80)
   Strict Private
     { Private declarations }
-    FMsgs                  : TObjectList;
     FGlobalOps             : IITHGlobalOptions;
-    FParentMsg             : TCustomMessage;
-    FLastMessage           : TDateTime;
     FSuccessfulCompile     : TTimer;
     FLastSuccessfulCompile : Int64;
     FShouldBuildList       : TStringList;
+    FMsgMgr                : IITHMessageManager;
   Strict Protected
     // IOTANotifier
     // IOTAIDENotifier
@@ -57,35 +53,13 @@ Type
     // General Methods
     Function ProcessCompileInformation(Const ProjectOps : IITHProjectOptions; Const Project: IOTAProject;
       Const strWhere: String): Integer;
-    Function ZipProjectInformation(Const ProjectOps : IITHProjectOptions;
-      Const Project: IOTAProject): Integer;
     Procedure IncrementBuild(Const ProjectOps : IITHProjectOptions; Const Project: IOTAProject;
       Const strProject: String);
     Procedure CopyVersionInfoFromDependency(Const Project: IOTAProject; Const strProject: String;
       Const ProjectOps: IITHProjectOptions);
-    Function BuildResponseFile(Const Project: IOTAProject; Const ProjectOps: IITHProjectOptions;
-      Const slResponse: TStringList; Const strBasePath, strProject, strZIPName: String): String;
-    Function AddToList(Const slResponseFile: TStringList; Const strBasePath,
-      strModuleName: String): Boolean;
-    Procedure CheckSourceForInclude(Const strFileName, strInclude: String;
-      Const slIncludeFiles: TStringList);
-    Function FileList(Const slResponseFile: TStringList): String;
-    Function CheckResExts(Const slResExts: TStringList; Const strFileName: String): Boolean;
     Procedure ProcessAfterCompile(Const Project: IOTAProject;
       Succeeded, IsCodeInsight: Boolean);
-    Procedure CheckResponseFileAgainExclusions(Const ProjectOps: IITHProjectOptions;
-      Const slReponseFile: TStringList);
-    Function IsProject(Const Project: IOTAProject; Const strExtType: String): Boolean;
-    Procedure BuildTargetFileName(Const slResponseFile: TStringList; Const strBasePath: String;
-      Const Project: IOTAProject);
-    Procedure AddProjectFilesToResponseFile(Const slResponse: TStringList; Const strBasePath: String;
-      Const Project: IOTAProject);
-    Procedure CheckResponseFilesForIncludeAndRes(Const Project: IOTAProject; Const strProject: String;
-      Const slResponse: TStringList; Const ProjectOps: IITHProjectOptions; Const strBasePath: String);
-    Procedure AddAdditionalZipFilesToResponseFile(Const ProjectOps: IITHProjectOptions;
-      Const slResponse: TStringList; Const Project : IOTAProject; Const strBasePath: String);
     Procedure SuccessfulCompile(Sender: TObject);
-    Function ProjectOptions(Const Project: IOTAProject; Const strOptions: Array Of String): String;
     Procedure ExpandProcessMacro(Const Processes: TITHProcessCollection; Const Project: IOTAProject);
     Procedure BuildProjectVersionResource(Const ProjectOps: IITHProjectOptions;
       Const Project: IOTAProject);
@@ -100,6 +74,9 @@ Type
 Implementation
 
 Uses
+  {$IFDEF CODESITE}
+  CodeSiteLogging,
+  {$ENDIF}
   ITHelper.EnabledOptions,
   ITHelper.ProcessingForm,
   Windows,
@@ -112,8 +89,9 @@ Uses
   {$ENDIF}
   Variants, 
   ITHelper.CommonFunctions, 
-  ITHelper.PascalParsing, 
-  ITHelper.Types;
+  ITHelper.Types, 
+  ITHelper.ZIPManager, 
+  ITHelper.MessageManager;
 
 Type
   EITHException = Class(Exception);
@@ -144,121 +122,6 @@ Const
 
 (**
 
-  This method adds additional files list for the zip process to the responce file.
-
-  @precon  INIFile must be a valid insyanceof a TMemIniFile class and slRepsonse must be a valid 
-           instance of a TStringList.
-  @postcon Adds additional files list for the zip process to the responce file.
-
-  @param   ProjectOps  as a TITHProjectOptions as a constant
-  @param   slResponse  as a TStringList as a constant
-  @param   Project     as an IOTAProject as a constant
-  @param   strBasePath as a String as a constant
-
-**)
-Procedure TITHelperIDENotifier.AddAdditionalZipFilesToResponseFile(
-  Const ProjectOps: IITHProjectOptions; Const slResponse: TStringList; Const Project : IOTAProject;
-  Const strBasePath: String);
-
-Var
-  slWildcards: TStringList;
-  iModule: Integer;
-
-Begin
-  slWildcards := ProjectOps.AddZipFiles;
-  For iModule := 0 To slWildcards.Count - 1 Do
-    AddToList(slResponse, strBasePath, ExpandMacro(slWildcards[iModule], Project));
-End;
-
-(**
-
-  This method adds project files to the response file for zipping.
-
-  @precon  slRepsonse file must be a valid instance of a TStringList. Project must be a valid instance 
-           of a IOTAProject interface.
-  @postcon Adds project files to the response file for zipping.
-
-  @param   slResponse  as a TStringList as a constant
-  @param   strBasePath as a String as a constant
-  @param   Project     as an IOTAProject as a constant
-
-**)
-Procedure TITHelperIDENotifier.AddProjectFilesToResponseFile(Const slResponse: TStringList;
-  Const strBasePath: String; Const Project: IOTAProject);
-
-Var
-  iModule: Integer;
-  strFileName: String;
-
-Begin
-  For iModule := 0 To Project.ModuleFileCount - 1 Do
-    Begin
-      TfrmITHProcessing.ProcessFileName
-        (ExtractFileName(Project.ModuleFileEditors[iModule].FileName));
-      AddToList(slResponse, strBasePath, Project.ModuleFileEditors[iModule].FileName);
-    End;
-  For iModule := 0 To Project.GetModuleCount - 1 Do
-    Begin
-      strFileName := Project.GetModule(iModule).FileName;
-      TfrmITHProcessing.ProcessFileName(ExtractFileName(strFileName));
-      AddToList(slResponse, strBasePath, strFileName);
-      // Check for DCR on Type Libraries
-      If Like('*_tlb.pas', strFileName) Then
-        AddToList(slResponse, strBasePath, ChangeFileExt(strFileName, '.dcr'));
-      // Check for DFM files
-      If Project.GetModule(iModule).FormName <> '' Then
-        Begin
-          If Like('*.pas', strFileName) Or Like('*.cpp', strFileName) Then
-            AddToList(slResponse, strBasePath,
-              ChangeFileExt(Project.GetModule(iModule).FileName, '.dfm'))
-          Else
-            AddToList(slResponse, strBasePath,
-              ResolvePath(Project.GetModule(iModule).FormName,
-              ExtractFilePath(Project.FileName)));
-        End;
-    End;
-End;
-
-(**
-
-  This procedure adds the module name to the list of zip files after changing it to a relative path. If 
-  the file already exists in the list true is returned else false.
-
-  @precon  None.
-  @postcon Adds the module name to the list of zip files after changing it to a relative path. If the 
-           file already exists in the list true is returned else false.
-
-  @param   slResponseFile as a TStringList as a constant
-  @param   strBasePath    as a String as a constant
-  @param   strModuleName  as a String as a constant
-  @return  a Boolean
-
-**)
-Function TITHelperIDENotifier.AddToList(Const slResponseFile: TStringList;
-  Const strBasePath, strModuleName: String): Boolean;
-
-Var
-  iIndex: Integer;
-  strNewModuleName: String;
-
-Begin
-  Result := False;
-  If Pos('\modelsupport_', Lowercase(strModuleName)) = 0 Then
-    Begin
-      strNewModuleName := strModuleName;
-      If DGHPathRelativePathTo(strBasePath, strNewModuleName) Then
-        Begin
-          If strNewModuleName <> '' Then
-            Begin
-              Result := slResponseFile.Find(strNewModuleName, iIndex);
-              slResponseFile.Add(strNewModuleName);
-            End;
-        End;
-    End;
-End;
-
-(**
-
   This is an null implementation for the AfterCompile interface.
 
   @precon  None.
@@ -273,6 +136,7 @@ End;
 Procedure TITHelperIDENotifier.AfterCompile(Succeeded: Boolean);
 
 Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'AfterCompile', tmoTiming);{$ENDIF}
 End;
 
 (**
@@ -292,6 +156,7 @@ End;
 Procedure TITHelperIDENotifier.AfterCompile(Succeeded, IsCodeInsight: Boolean);
 
 Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'AfterCompile', tmoTiming);{$ENDIF}
   {$IFNDEF D2005} // For D7 and below
   ProcessAfterCompile(ActiveProject, Succeeded, IsCodeInsight);
   {$ENDIF}
@@ -318,6 +183,7 @@ Procedure TITHelperIDENotifier.AfterCompile(Const Project: IOTAProject;
   Succeeded, IsCodeInsight: Boolean);
 
 Begin // For D2005 and above
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'AfterCompile', tmoTiming);{$ENDIF}
   ProcessAfterCompile(Project, Succeeded, IsCodeInsight);
 End;
 {$ENDIF}
@@ -349,6 +215,7 @@ Var
   MS: IOTAMessageServices;
 
 Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'BeforeCompile', tmoTiming);{$ENDIF}
   If Project = Nil Then
     Exit;
   If IsCodeInsight Then
@@ -357,11 +224,8 @@ Begin
   Try
     iInterval := FGlobalOps.ClearMessages;
     If iInterval > 0 Then
-      If FLastMessage < GetTickCount - iInterval * iMilliSecInSec Then
-        Begin
-          ClearMessages([cmCompiler, cmGroup]);
-          FLastMessage := GetTickCount;
-        End;
+      If FMsgMgr.LastMessage < GetTickCount - iInterval * iMilliSecInSec Then
+        ClearMessages([cmCompiler, cmGroup]);
     If Project.ProjectBuilder.ShouldBuild Then
       Begin
         FShouldBuildList.Add(Project.FileName);
@@ -387,11 +251,8 @@ Begin
                     Else If iResult < 0 Then
                       If ProjectOps.WarnBefore Then
                         Begin
-                          AddMsg(Format(strBeforeCompileWARNING, [strProject]),
-                            FGlobalOps.GroupMessages, FGlobalOps.AutoScrollMessages,
-                            FGlobalOps.FontName[fnHeader],
-                            FGlobalOps.FontColour[ithfWarning],
-                            FGlobalOps.FontStyles[ithfWarning]);
+                          FMsgMgr.AddMsg(Format(strBeforeCompileWARNING, [strProject]), fnHeader,
+                            ithfWarning);
                           ShowHelperMessages(FGlobalOps.GroupMessages);
                         End;
                   End;
@@ -426,6 +287,7 @@ Procedure TITHelperIDENotifier.BeforeCompile(Const Project: IOTAProject;
   Var Cancel: Boolean);
   
 Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'BeforeCompile', tmoTiming);{$ENDIF}
 End;
 
 (**
@@ -435,7 +297,7 @@ End;
   @precon  None.
   @postcon Builds the ITHelper version resource for inclusion in the project.
 
-  @param   ProjectOps as a TITHProjectOptions as a constant
+  @param   ProjectOps as a IITHProjectOptions as a constant
   @param   Project    as an IOTAProject as a constant
 
 **)
@@ -453,6 +315,7 @@ Var
   j: Integer;
 
 Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'BuildProjectVersionResource', tmoTiming);{$ENDIF}
   sl := TStringList.Create;
   Try
     sl.Add('LANGUAGE LANG_ENGLISH,SUBLANG_ENGLISH_US');
@@ -484,14 +347,8 @@ Begin
     sl.Add('}');
     strFileName := ExtractFilePath(Project.FileName) + ProjectOps.ResourceName + '.RC';
     sl.SaveToFile(strFileName);
-    AddMsg(Format('Version information resource %s.RC created for project %s.', [
-      ProjectOps.ResourceName, GetProjectName(Project)]),
-      FGlobalOps.GroupMessages,
-      FGlobalOps.AutoScrollMessages,
-      FGlobalOps.FontName[fnHeader],
-      FGlobalOps.FontColour[ithfDefault],
-      FGlobalOps.FontStyles[ithfDefault]
-    );
+    FMsgMgr.AddMsg(Format('Version information resource %s.RC created for project %s.', [
+      ProjectOps.ResourceName, GetProjectName(Project)]), fnHeader, ithfDefault);
     If ProjectOps.IncResInProj Then
       Begin
         boolFound := False;
@@ -504,14 +361,8 @@ Begin
         If Not boolFound Then
           Begin
             Project.AddFile(strFileName, True);
-            AddMsg(Format('Resource %s.RC added to project %s.', [
-              ProjectOps.ResourceName, GetProjectName(Project)]),
-              FGlobalOps.GroupMessages,
-              FGlobalOps.AutoScrollMessages,
-              FGlobalOps.FontName[fnHeader],
-              FGlobalOps.FontColour[ithfDefault],
-              FGlobalOps.FontStyles[ithfDefault]
-            );
+            FMsgMgr.AddMsg(Format('Resource %s.RC added to project %s.', [
+              ProjectOps.ResourceName, GetProjectName(Project)]), fnHeader, ithfDefault);
           End;
       End;
     If ProjectOps.CompileRes Then
@@ -521,420 +372,26 @@ Begin
         Process.FEXE := 'BRCC32.exe';
         Process.FParams := '-v "' + strFileName + '"';
         Process.FDir := GetCurrentDir;
-        FParentMsg :=
-          AddMsg(Format('Running: %s (%s)',
-            [ExtractFileName(Process.FTitle), GetProjectName(Project)]),
-            FGlobalOps.GroupMessages,
-            FGlobalOps.AutoScrollMessages,
-            FGlobalOps.FontName[fnHeader],
-            FGlobalOps.FontColour[ithfHeader],
-            FGlobalOps.FontStyles[ithfHeader]);
+        FMsgMgr.ParentMsg :=
+          FMsgMgr.AddMsg(Format('Running: %s (%s)',
+            [ExtractFileName(Process.FTitle), GetProjectName(Project)]), fnHeader, ithfHeader);
         TfrmITHProcessing.ShowProcessing(Format('Processing %s...',
           [ExtractFileName(Process.FTitle)]));
-        FMsgs.Clear;
+        FMsgMgr.Clear;
         iResult := DGHCreateProcess(Process, ProcessMsgHandler, IdleHandler);
-        For j := 0 To FMsgs.Count - 1 Do
+        For j := 0 To FMsgMgr.Count - 1 Do
           Case iResult Of
-            0:
-              (FMsgs.Items[j] As TCustomMessage).ForeColour :=
-                FGlobalOps.FontColour[ithfSuccess];
+            0: FMsgMgr[j].ForeColour := FGlobalOps.FontColour[ithfSuccess];
           Else
-            (FMsgs.Items[j] As TCustomMessage).ForeColour := FGlobalOps.FontColour
-              [ithfFailure];
+            FMsgMgr[j].ForeColour := FGlobalOps.FontColour[ithfFailure];
           End;
         If iResult <> 0 Then
-          FParentMsg.ForeColour := FGlobalOps.FontColour[ithfFailure];
+          FMsgMgr.ParentMsg.ForeColour := FGlobalOps.FontColour[ithfFailure];
         ShowHelperMessages(FGlobalOps.GroupMessages);
         If iResult > 0 Then
           Abort;
-          AddMsg(Format('Resource %s.RC compiled for project %s.', [
-            ProjectOps.ResourceName, GetProjectName(Project)]),
-            FGlobalOps.GroupMessages,
-            FGlobalOps.AutoScrollMessages,
-            FGlobalOps.FontName[fnHeader],
-            FGlobalOps.FontColour[ithfDefault],
-            FGlobalOps.FontStyles[ithfDefault]
-          );
-      End;
-  Finally
-    sl.Free;
-  End;
-End;
-
-(**
-
-  This method adds files to the response file starting with project files and then project modules.
-
-  @precon  INIFile and slReponse should be valid instances.
-  @postcon Adds files to the response file starting with project files and then project modules.
-
-  @param   Project     as an IOTAProject as a constant
-  @param   ProjectOps  as a TITHProjectOptions as a constant
-  @param   slResponse  as a TStringList as a constant
-  @param   strBasePath as a String as a constant
-  @param   strProject  as a String as a constant
-  @param   strZIPName  as a String as a constant
-  @return  a String
-
-**)
-Function TITHelperIDENotifier.BuildResponseFile(Const Project: IOTAProject;
-  Const ProjectOps: IITHProjectOptions; Const slResponse: TStringList;
-  Const strBasePath, strProject, strZIPName: String): String;
-
-Begin
-  TfrmITHProcessing.ShowProcessing(Format('Building Filelist for %s...',
-    [ExtractFileName(strProject)]));
-  AddToList(slResponse, strBasePath, Project.FileName);
-  AddToList(slResponse, strBasePath, ChangeFileExt(Project.FileName, '.res'));
-  AddToList(slResponse, strBasePath, ChangeFileExt(Project.FileName, '.cfg'));
-  BuildTargetFileName(slResponse, strBasePath, Project);
-  AddProjectFilesToResponseFile(slResponse, strBasePath, Project);
-  TfrmITHProcessing.ShowProcessing('Checking Filelist for Resources...');
-  CheckResponseFilesForIncludeAndRes(Project, strProject, slResponse, ProjectOps,
-    strBasePath);
-  AddAdditionalZipFilesToResponseFile(ProjectOps, slResponse, Project, strBasePath);
-  Result := ChangeFileExt(strZIPName, '.response');
-  CheckResponseFileAgainExclusions(ProjectOps, slResponse);
-  Try
-    //ShowMessage(slResponse.Text);
-    slResponse.SaveToFile(Result);
-  Except
-    On E: EWriteError Do
-      Begin
-        AddMsg(Format(E.Message + '(%s)', [strProject]), FGlobalOps.GroupMessages,
-          FGlobalOps.AutoScrollMessages, FGlobalOps.FontName[fnHeader],
-          FGlobalOps.FontColour[ithfFailure], FGlobalOps.FontStyles[ithfFailure]);
-        Exit;
-      End;
-  End;
-End;
-
-(**
-
-  This method builds the target file name from scratch using project options.
-
-  @precon  slResponse must be a valid instance of a TStringList and Project must be a valid instance of 
-           a IOTAProject interface.
-  @postcon Builds the target file name from scratch using project options.
-
-  @note    This will not handle project options in INC files.
-
-  @param   slResponseFile as a TStringList as a constant
-  @param   strBasePath    as a String as a constant
-  @param   Project        as an IOTAProject as a constant
-
-**)
-Procedure TITHelperIDENotifier.BuildTargetFileName(Const slResponseFile: TStringList;
-  Const strBasePath: String; Const Project: IOTAProject);
-
-Var
-  strExt: String;
-  i: Integer;
-  strTargetName: String;
-  sl: TStringList;
-  iStart: Integer;
-  iEnd: Integer;
-
-Begin
-  If IsProject(Project, '*.dpk') Then
-    strExt := '.bpl'
-  Else If IsProject(Project, '*.dpr') Then
-    Begin
-      strExt := '.exe';
-      sl := TStringList.Create;
-      Try
-        sl.LoadFromFile(ChangeFileExt(Project.FileName, '.dpr'));
-        For i := 0 To sl.Count - 1 Do
-          Begin
-            If Like(Format('*library*%s*;*',
-              [ChangeFileExt(ExtractFileName(Project.FileName), '')]), sl[i]) Then
-              strExt := '.dll';
-            If Like('{$e *}*', sl[i]) Or Like('{$e'#9'*}*', sl[i]) Then
-            // Search for alternate extension
-              Begin
-                iStart := Pos('{$e', Lowercase(sl[i]));
-                iEnd := Pos('}', sl[i]);
-                If (iStart > 0) And (iEnd > 0) And (iStart < iEnd) Then
-                  strExt := '.' + Trim(Copy(sl[i], iStart + 3, iEnd - iStart - 3));
-              End;
-          End;
-      Finally
-        sl.Free;
-      End;
-    End;
-  strTargetName := ExtractFilePath(Project.FileName) + ProjectOptions(Project,
-    ['OutputDir', 'PkgDllDir']) + ProjectOptions(Project, ['DllPrefix', 'SOPrefix']) +
-    ExtractFileName(ChangeFileExt(Project.FileName, '')) + ProjectOptions(Project,
-    ['DllSuffix', 'SOSuffix']) + strExt + '.' + ProjectOptions(Project,
-    ['DllVersion', 'SOVersion']);
-  strTargetName := ExpandFileName(strTargetName);
-  AddToList(slResponseFile, strBasePath, strTargetName);
-End;
-
-(**
-
-  This method checks whether the extension of the given file exists in the semi-colon separated list of 
-  extension to be excluded resource warnings. If it does then it returns false.
-
-  @precon  None.
-  @postcon Checks whether the extension of the given file exists in the semi-colon separated list of 
-           extension to be excluded resource warnings. If it does then it returns false.
-
-  @param   slResExts   as a TStringList as a constant
-  @param   strFileName as a String as a constant
-  @return  a Boolean
-
-**)
-Function TITHelperIDENotifier.CheckResExts(Const slResExts: TStringList;
-  Const strFileName: String): Boolean;
-
-Var
-  iExt: Integer;
-
-Begin
-  Result := True;
-  For iExt := 0 To slResExts.Count - 1 Do
-    Result := Result And Not Like(slResExts[iExt], strFileName);
-End;
-
-(**
-
-  This method processes the response file information removing any items that make the wildcard (LIKE) 
-  exclusions.
-
-  @precon  None.
-  @postcon Processes the response file information removing any items that make the wildcard (LIKE) 
-           exclusions.
-
-  @param   ProjectOps    as a TITHProjectOptions as a constant
-  @param   slReponseFile as a TStringList as a constant
-
-**)
-Procedure TITHelperIDENotifier.CheckResponseFileAgainExclusions(
-  Const ProjectOps: IITHProjectOptions; Const slReponseFile: TStringList);
-
-Var
-  i, j: Integer;
-  sl: TStringList;
-
-Begin
-  sl := TStringList.Create;
-  Try
-    sl.Text := ProjectOps.ExcPatterns;
-    For j := 0 To sl.Count - 1 Do
-      For i := slReponseFile.Count - 1 DownTo 0 Do
-        If Like(sl[j], slReponseFile[i]) Then
-          Begin
-            slReponseFile.Delete(i);
-            Break;
-          End;
-  Finally
-    sl.Free;
-  End;
-End;
-
-(**
-
-  This method searches the list of files in the response file for INCLUDE statements where additional INC
-  and RC/RES files are requested.
-
-  @precon  Project must be a valid instance of a IOTAProject interface, slResponse must be a valid 
-           instance of a TStringList and INIFile must be a valid instance of a TMemINIFile class.
-  @postcon Searches the list of files in the response file for INCLUDE statements where additional INC 
-           and RC/RES files are requested.
-
-  @param   Project     as an IOTAProject as a constant
-  @param   strProject  as a String as a Constant
-  @param   slResponse  as a TStringList as a constant
-  @param   ProjectOps  as a TITHProjectOptions as a constant
-  @param   strBasePath as a String as a constant
-
-**)
-Procedure TITHelperIDENotifier.CheckResponseFilesForIncludeAndRes(
-  Const Project: IOTAProject; Const strProject: String; Const slResponse: TStringList;
-  Const ProjectOps: IITHProjectOptions; Const strBasePath: String);
-
-Var
-  strFileName: String;
-  slIncludeFiles: TStringList;
-  strExts: String;
-  iModule: Integer;
-  iExt: Integer;
-  slResExts: TStringList;
-  i: Integer;
-  astrResExts: TDGHArrayOfString;
-
-Begin
-  // Check Source files (*.pas) for INCLUDE & RES files.
-  For iModule := 0 To Project.GetModuleCount - 1 Do
-    Begin
-      strFileName := Project.GetModule(iModule).FileName;
-      TfrmITHProcessing.ProcessFileName(ExtractFileName(strFileName));
-      slIncludeFiles := TStringList.Create;
-      Try
-        CheckSourceForInclude(Project.GetModule(iModule).FileName, '{$I', slIncludeFiles);
-        CheckSourceForInclude(Project.GetModule(iModule).FileName, '{$INCLUDE',
-          slIncludeFiles);
-        For i := 0 To slIncludeFiles.Count - 1 Do
-          If Not AddToList(slResponse, strBasePath, slIncludeFiles[i]) Then
-            AddMsg(Format('%s is not referenced in the project (%s).',
-              [slIncludeFiles[i], strProject]), FGlobalOps.GroupMessages,
-              FGlobalOps.AutoScrollMessages, FGlobalOps.FontName[fnTools],
-              FGlobalOps.FontColour[ithfWarning], FGlobalOps.FontStyles[ithfWarning]);
-        slIncludeFiles.Clear;
-        CheckSourceForInclude(Project.GetModule(iModule).FileName, '{$R', slIncludeFiles);
-        CheckSourceForInclude(Project.GetModule(iModule).FileName, '{$RESOURCE',
-          slIncludeFiles);
-        slResExts := TStringList.Create;
-        Try
-          strExts := ProjectOps.ResExtExc;
-          astrResExts := DGHSplit(strExts, ';');
-          For iExt := Low(astrResExts) To High(astrResExts) Do
-            Begin
-              If (astrResExts[iExt] <> '') And (astrResExts[iExt][1] = '.') Then
-                astrResExts[iExt] := '*' + astrResExts[iExt];
-              slResExts.Add(astrResExts[iExt]);
-            End;
-          For i := 0 To slIncludeFiles.Count - 1 Do
-            If Not AddToList(slResponse, strBasePath, slIncludeFiles[i]) Then
-              If CheckResExts(slResExts, slIncludeFiles[i]) Then
-                AddMsg(Format('%s is not referenced in the project (%s). Consider ' +
-                  'using an RC file and the form {$R resfile.res rcfile.rc}.',
-                  [slIncludeFiles[i], strProject]), FGlobalOps.GroupMessages,
-                  FGlobalOps.AutoScrollMessages, FGlobalOps.FontName[fnTools],
-                  FGlobalOps.FontColour[ithfWarning], FGlobalOps.FontStyles[ithfWarning]);
-        Finally
-          slResExts.Free;
-        End;
-      Finally
-        slIncludeFiles.Free;
-      End;
-    End;
-End;
-
-(**
-
-  This method searches for include / res files in source code and extracts the file name and adds it to 
-  the list of files to be included in the zip response.
-
-  @precon  slResponse must be a valid instance.
-  @postcon Searches for include / res files in source code and extracts the file name and adds it to the
-           list of files to be included in the zip response.
-
-  @param   strFileName    as a String as a constant
-  @param   strInclude     as a String as a constant
-  @param   slIncludeFiles as a TStringList as a constant
-
-**)
-Procedure TITHelperIDENotifier.CheckSourceForInclude(Const strFileName, strInclude: String;
-  Const slIncludeFiles: TStringList);
-
-  (**
-
-    This function returns the positions of the closing brace before the end of the line containing 
-    iOffset or the line end. If the brace is found a positive offset is returned else if the line end is 
-    found a negative offset is returned.
-
-    @precon  None.
-    @postcon Returns the positions of the closing brace before the end of the line containing iOffset or
-             the line end. If the brace is found a positive offset is returned else if the line end is
-             found a negative offset is returned.
-
-    @param   strText as a String as a constant
-    @param   iOffset as an Integer as a constant
-    @return  an Integer
-
-  **)
-  Function FindClosingBrace(Const strText: String; Const iOffset: Integer): Integer;
-
-  Var
-    i: Integer;
-
-  Begin
-    Result := 0;
-    For i := iOffset To Length(strText) Do
-      {$IFNDEF D2009}
-      If strText[i] In ['}', #13, #10] Then
-      {$ELSE}
-      If CharInSet(strText[i], ['}', #13, #10]) Then
-        {$ENDIF}
-        Begin
-          If strText[i] = '}' Then
-            Result := i
-          Else
-            Result := -i;
-          Exit;
-        End;
-  End;
-
-Var
-  sl: TStringList;
-  iOffset: Integer;
-  iEnd: Integer;
-  strIncFile: String;
-  iPos: Integer;
-  slTokens: TStringList;
-
-Begin
-  sl := TStringList.Create;
-  Try
-    If FileExists(strFileName) Then
-      Begin
-        Try
-          sl.LoadFromFile(strFileName);
-          iOffset := 1;
-          While iOffset > 0 Do
-            Begin
-              iOffset := PosEx(strInclude, sl.Text, iOffset);
-              If iOffset > 0 Then
-                Begin
-                  Inc(iOffset, Length(strInclude));
-                  {$IFNDEF D2009}
-                  If sl.Text[iOffset] In [#32, #9] Then
-                  {$ELSE}
-                  If CharInSet(sl.Text[iOffset], [#32, #9]) Then
-                    {$ENDIF}
-                    Begin
-                      iEnd := FindClosingBrace(sl.Text, iOffset);
-                      If iEnd > iOffset Then
-                        Begin
-                          slTokens := Tokenize(Copy(sl.Text, iOffset, iEnd - iOffset));
-                          Try
-                            If slTokens.Count > 0 Then
-                              Begin
-                                strIncFile := slTokens[0];
-                                iPos := Pos('*', strIncFile);
-                                While iPos > 0 Do
-                                  Begin
-                                    strIncFile := Copy(strIncFile, 1, iPos - 1) +
-                                      ChangeFileExt(ExtractFileName(strFileName), '') +
-                                      Copy(strIncFile, iPos + 1, Length(strIncFile));
-                                    iPos := Pos('*', strIncFile);
-                                  End;
-                                strIncFile := StringReplace(strIncFile, '''', '',
-                                  [rfReplaceAll]);
-                                If ExtractFilePath(strIncFile) = '' Then
-                                  strIncFile := ExtractFilePath(strFileName) + strIncFile;
-                                strIncFile := ExpandFileName(strIncFile);
-                                If FileExists(strIncFile) Then
-                                  slIncludeFiles.Add(strIncFile);
-                              End;
-                          Finally
-                            slTokens.Free;
-                          End;
-                          iOffset := iEnd + 1;
-                        End
-                      Else
-                        iOffset := Abs(iEnd) + 1;
-                    End;
-                End;
-            End;
-        Except
-          On E: Exception Do
-            AddMsg('ITHelper: ' + E.Message, FGlobalOps.GroupMessages,
-              FGlobalOps.AutoScrollMessages, FGlobalOps.FontName[fnHeader],
-              FGlobalOps.FontColour[ithfFailure], FGlobalOps.FontStyles[ithfFailure]);
-        End;
+          FMsgMgr.AddMsg(Format('Resource %s.RC compiled for project %s.', [
+            ProjectOps.ResourceName, GetProjectName(Project)]), fnHeader, ithfDefault);
       End;
   Finally
     sl.Free;
@@ -952,7 +409,7 @@ End;
 
   @param   Project    as an IOTAProject as a constant
   @param   strProject as a String as a constant
-  @param   ProjectOps as a TITHProjectOptions as a constant
+  @param   ProjectOps as a IITHProjectOptions as a constant
 
 **)
 Procedure TITHelperIDENotifier.CopyVersionInfoFromDependency(Const Project: IOTAProject;
@@ -971,27 +428,22 @@ Var
   {$ENDIF}
   
 Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'CopyVersionInfoFromDependency', tmoTiming);{$ENDIF}
   Group := ProjectGroup;
   If Group = Nil Then
     Exit;
-  strTargetName := ExpandMacro(ProjectOps.CopyVerInfo, Project);
+  strTargetName := ExpandMacro(ProjectOps.CopyVerInfo, Project.FileName);
   If strTargetName <> '' Then
     Begin
-      AddMsg(Format('Version Dependency (%s) found for project %s.',
-        [ExtractFileName(strTargetName), strProject]), FGlobalOps.GroupMessages,
-        FGlobalOps.AutoScrollMessages, FGlobalOps.FontName[fnHeader],
-        FGlobalOps.FontColour[ithfDefault], FGlobalOps.FontStyles[ithfDefault]);
+      FMsgMgr.AddMsg(Format('Version Dependency (%s) found for project %s.',
+        [ExtractFileName(strTargetName), strProject]), fnHeader, ithfDefault);
       If FileExists(strTargetName) Then
         Begin
           Try
             BuildNumber(strTargetName, iMajor, iMinor, iBugfix, iBuild);
-            AddMsg(Format('Dependent Build %d.%d%s (%d.%d.%d.%d).',
+            FMsgMgr.AddMsg(Format('Dependent Build %d.%d%s (%d.%d.%d.%d).',
               [iMajor, iMinor, strBugFix[iBugfix + 1], iMajor, iMinor, iBugfix, iBuild]),
-              FGlobalOps.GroupMessages,
-              FGlobalOps.AutoScrollMessages,
-              FGlobalOps.FontName[fnHeader],
-              FGlobalOps.FontColour[ithfDefault],
-              FGlobalOps.FontStyles[ithfDefault]);
+              fnHeader, ithfDefault);
             {$IFDEF DXE20}
             If Project.ProjectOptions.QueryInterface(IOTAProjectOptionsConfigurations, POC) = S_OK Then
               Begin
@@ -1028,20 +480,13 @@ Begin
                 End;
           Except
             On E: EITHException Do
-              AddMsg(Format(E.Message + ' (%s)', [strProject]),
-                FGlobalOps.GroupMessages,
-                FGlobalOps.AutoScrollMessages,
-                FGlobalOps.FontName[fnHeader],
-                FGlobalOps.FontColour[ithfWarning],
-                FGlobalOps.FontStyles[ithfWarning]);
+              FMsgMgr.AddMsg(Format(E.Message + ' (%s)', [strProject]), fnHeader, ithfWarning);
           End;
           ShowHelperMessages(FGlobalOps.GroupMessages);
         End
       Else
-        AddMsg(Format('The dependency "%s" was not found. (%s)',
-          [strTargetName, strProject]), FGlobalOps.GroupMessages,
-          FGlobalOps.AutoScrollMessages, FGlobalOps.FontName[fnHeader],
-          FGlobalOps.FontColour[ithfWarning], FGlobalOps.FontStyles[ithfWarning]);
+        FMsgMgr.AddMsg(Format('The dependency "%s" was not found. (%s)',
+          [strTargetName, strProject]), fnHeader, ithfWarning);
     End;
 End;
 
@@ -1052,7 +497,7 @@ End;
   @precon  None.
   @postcon Initialises the class.
 
-  @param   GlobalOps as a TITHGlobalOptions as a constant
+  @param   GlobalOps as a IITHGlobalOptions as a constant
 
 **)
 Constructor TITHelperIDENotifier.Create(Const GlobalOps: IITHGlobalOptions);
@@ -1061,8 +506,9 @@ Const
   iTimerIntervalInMSec = 100;
 
 Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Create', tmoTiming);{$ENDIF}
   FGlobalOps := GlobalOps;
-  FMsgs := TObjectList.Create(False);
+  FMsgMgr := TITHMessageManager.Create(GlobalOps);
   FLastSuccessfulCompile := 0;
   FSuccessfulCompile := TTimer.Create(Nil);
   FSuccessfulCompile.OnTimer := SuccessfulCompile;
@@ -1083,11 +529,11 @@ End;
 Destructor TITHelperIDENotifier.Destroy;
 
 Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Destroy', tmoTiming);{$ENDIF}
   FShouldBuildList.Free;
   FSuccessfulCompile.Enabled := False;
   FSuccessfulCompile.OnTimer := Nil;
   FSuccessfulCompile.Free;
-  FMsgs.Free;
   Inherited Destroy;
 End;
 
@@ -1110,36 +556,15 @@ Var
   P: TITHProcessInfo;
 
 Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'ExpandProcessMacro', tmoTiming);{$ENDIF}
   For i := 0 To Processes.Count - 1 Do
     Begin
       P := Processes[i];
-      P.FEXE := ExpandMacro(P.FEXE, Project);
-      P.FParams := ExpandMacro(P.FParams, Project);
-      P.FDir := ExpandMacro(P.FDir, Project);
+      P.FEXE := ExpandMacro(P.FEXE, Project.FileName);
+      P.FParams := ExpandMacro(P.FParams, Project.FileName);
+      P.FDir := ExpandMacro(P.FDir, Project.FileName);
       Processes[i] := P;
     End;
-End;
-
-(**
-
-  This method expands the list of files to include as a space separated list of double quoted files.
-
-  @precon  slResponseFile must be a valid instance of a string list.
-  @postcon Returns a list of files to include as a space separated list of double quoted files.
-
-  @param   slResponseFile as a TStringList as a constant
-  @return  a String
-
-**)
-Function TITHelperIDENotifier.FileList(Const slResponseFile: TStringList): String;
-
-Var
-  i: Integer;
-
-Begin
-  Result := '';
-  For i := 0 To slResponseFile.Count - 1 Do
-    Result := Result + Format('"%s" ', [slResponseFile[i]]);
 End;
 
 (**
@@ -1184,7 +609,7 @@ End;
   @precon  ProjectOps must be a valid instance.
   @postcon Increments the buld number of the passed project IF this is enabled in the options.
 
-  @param   ProjectOps as a TITHProjectOptions as a constant
+  @param   ProjectOps as a IITHProjectOptions as a constant
   @param   Project    as an IOTAProject as a constant
   @param   strProject as a String as a constant
 
@@ -1200,6 +625,7 @@ Var
   {$ENDIF}
 
 Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'IncrementBuild', tmoTiming);{$ENDIF}
   If ProjectOps.IncOnCompile Then
     Begin
       iBuild := -1;
@@ -1220,13 +646,8 @@ Begin
       If ProjectOps.IncITHVerInfo Then
         iBuild := ProjectOps.Build;
       If iBuild > -1 Then
-        AddMsg(Format('Incrementing %s''s Build from %d to %d.',
-          [strProject, iBuild, iBuild + 1]),
-          FGlobalOps.GroupMessages,
-          FGlobalOps.AutoScrollMessages,
-          FGlobalOps.FontName[fnHeader],
-          FGlobalOps.FontColour[ithfDefault],
-          FGlobalOps.FontStyles[ithfDefault]);
+        FMsgMgr.AddMsg(Format('Incrementing %s''s Build from %d to %d.',
+          [strProject, iBuild, iBuild + 1]), fnHeader, ithfDefault);
       {$IFNDEF DXE20}
       If Not ProjectOps.IncITHVerInfo Then
         Project.ProjectOptions.Values['Build'] := iBuild + 1;
@@ -1234,29 +655,6 @@ Begin
       If ProjectOps.IncITHVerInfo Then
         ProjectOps.Build := iBuild + 1;
     End;
-End;
-
-(**
-
-  This method searches the projects module files in search of the given file extension pattern.
-
-  @precon  Project must be a valid instance of a IOTAProject interface.
-  @postcon Returns return if the file extension pattern was found in the module files.
-
-  @param   Project    as an IOTAProject as a constant
-  @param   strExtType as a String as a constant
-  @return  a Boolean
-
-**)
-Function TITHelperIDENotifier.IsProject(Const Project: IOTAProject; Const strExtType: String): Boolean;
-
-Var
-  i: Integer;
-
-Begin
-  Result := Like(strExtType, Project.FileName);
-  For i := 0 To Project.ModuleFileCount - 1 Do
-    Result := Result Or Like(strExtType, Project.ModuleFileEditors[i].FileName);
 End;
 
 (**
@@ -1284,8 +682,10 @@ Var
   ProjectOps: IITHProjectOptions;
   iIndex: Integer;
   Ops: TITHEnabledOptions;
+  ZipMgr : IITHZipManager;
 
 Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'ProcessAfterCompile', tmoTiming);{$ENDIF}
   If Project = Nil Then
     Exit;
   If IsCodeInsight Or Not Succeeded Then
@@ -1304,7 +704,8 @@ Begin
               IncrementBuild(ProjectOps, Project, strProject);
             If eoZip In Ops Then
               Begin
-                iResult := ZipProjectInformation(ProjectOps, Project);
+                ZipMgr := TITHZIPManager.Create(Project, FGlobalOps, ProjectOps, FMsgMgr);
+                iResult := ZipMgr.ZipProjectInformation;
                 If iResult > 0 Then
                   Begin
                     TfrmITHProcessing.ShowProcessing(Format('ZIP Tool Failure (%s).',
@@ -1328,11 +729,8 @@ Begin
                 Else If iResult < 0 Then
                   If ProjectOps.WarnAfter Then
                     Begin
-                      AddMsg(Format(strAfterCompileWARNING, [strProject]),
-                        FGlobalOps.GroupMessages, FGlobalOps.AutoScrollMessages,
-                        FGlobalOps.FontName[fnHeader],
-                        FGlobalOps.FontColour[ithfWarning],
-                        FGlobalOps.FontStyles[ithfWarning]);
+                      FMsgMgr.AddMsg(Format(strAfterCompileWARNING, [strProject]),
+                        fnTools, ithfWarning);
                       ShowHelperMessages(FGlobalOps.GroupMessages);
                     End;
               End;
@@ -1344,7 +742,6 @@ Begin
         ProjectOps := Nil;
       End;
     End;
-  FLastMessage := GetTickCount;
 End;
 
 (**
@@ -1358,7 +755,7 @@ End;
            captures the output. If any of the tools raises an Exit Code > 0 then this is added to the 
            return result.
 
-  @param   ProjectOps as a TITHProjectOptions as a constant
+  @param   ProjectOps as a IITHProjectOptions as a constant
   @param   Project    as an IOTAProject as a constant
   @param   strWhere   as a String as a constant
   @return  an Integer
@@ -1373,6 +770,7 @@ Var
   strProject: String;
 
 Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'ProcessCompileInformation', tmoTiming);{$ENDIF}
   Result := -1; // Signifies no tools configured.
   strProject := GetProjectName(Project);
   Processes := TITHProcessCollection.Create;
@@ -1383,29 +781,23 @@ Begin
       Result := 0;
     For i := 0 To Processes.Count - 1 Do
       Begin
-        FMsgs.Clear;
+        FMsgMgr.Clear;
         If Processes[i].FEnabled Then
           Begin
-            FParentMsg :=
-              AddMsg(Format('Running: %s (%s %s)',
-              [ExtractFileName(Processes[i].FTitle), strProject, strWhere]),
-              FGlobalOps.GroupMessages, FGlobalOps.AutoScrollMessages,
-              FGlobalOps.FontName[fnHeader], FGlobalOps.FontColour[ithfHeader],
-              FGlobalOps.FontStyles[ithfHeader]);
+            FMsgMgr.ParentMsg :=
+              FMsgMgr.AddMsg(Format('Running: %s (%s %s)',
+              [ExtractFileName(Processes[i].FTitle), strProject, strWhere]), fnHeader, ithfHeader);
             TfrmITHProcessing.ShowProcessing(Format('Processing %s...',
               [ExtractFileName(Processes[i].FTitle)]));
             Inc(Result, DGHCreateProcess(Processes[i], ProcessMsgHandler, IdleHandler));
-            For j := 0 To FMsgs.Count - 1 Do
+            For j := 0 To FMsgMgr.Count - 1 Do
               Case Result Of
-                0:
-                  (FMsgs.Items[j] As TCustomMessage).ForeColour :=
-                    FGlobalOps.FontColour[ithfSuccess];
+                0:FMsgMgr[j].ForeColour := FGlobalOps.FontColour[ithfSuccess];
               Else
-                (FMsgs.Items[j] As TCustomMessage).ForeColour := FGlobalOps.FontColour
-                  [ithfFailure];
+                FMsgMgr[j].ForeColour := FGlobalOps.FontColour[ithfFailure];
               End;
             If Result <> 0 Then
-              FParentMsg.ForeColour := FGlobalOps.FontColour[ithfFailure];
+              FMsgMgr.ParentMsg.ForeColour := FGlobalOps.FontColour[ithfFailure];
             ShowHelperMessages(FGlobalOps.GroupMessages);
             If Result > 0 Then
                 Break;
@@ -1432,41 +824,9 @@ End;
 Procedure TITHelperIDENotifier.ProcessMsgHandler(Const strMsg: String; Var boolAbort: Boolean);
 
 Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'ProcessMsgHandler', tmoTiming);{$ENDIF}
   If strMsg <> '' Then
-    FMsgs.Add(AddMsg(strMsg, FGlobalOps.GroupMessages, FGlobalOps.AutoScrollMessages,
-      FGlobalOps.FontName[fnTools], FGlobalOps.FontColour[ithfDefault],
-      FGlobalOps.FontStyles[ithfDefault], clWindow, FParentMsg.MessagePntr));
-End;
-
-(**
-
-  This method returns the first non-null occurance of the list of project option values.
-
-  @precon  Project must be a valid instance of a IOTAProject interface.
-  @postcon Returns the first non-null occurance of the list of project option values.
-
-  @param   Project    as an IOTAProject as a constant
-  @param   strOptions as an Array Of String as a constant
-  @return  a String
-
-**)
-Function TITHelperIDENotifier.ProjectOptions(Const Project: IOTAProject;
-  Const strOptions: Array Of String): String;
-
-Var
-  i: Integer;
-  varValue: Variant;
-
-Begin
-  Result := '';
-  For i := Low(strOptions) To High(strOptions) Do
-    Begin
-      varValue := Project.ProjectOptions.Values[strOptions[i]];
-      If VarType(varValue) And varString > 0 Then
-        Result := varValue;
-      If Result <> '' Then
-        Break;
-    End;
+    FMsgMgr.AddMsg(strMsg, fnTools, ithfDefault, FMsgMgr.ParentMsg.MessagePntr);
 End;
 
 (**
@@ -1491,96 +851,5 @@ Begin
     End;
 End;
 
-(**
-
-  This method build a response file for a command line zip tool in order to backup all the files required
-  to build this project.
-
-  @precon  ProjectOps and Project must be valid instances.
-  @postcon Build a response file for a command line zip tool in order to backup all the files required 
-           to build this project.
-
-  @param   ProjectOps as a TITHProjectOptions as a constant
-  @param   Project    as an IOTAProject as a constant
-  @return  an Integer
-
-**)
-Function TITHelperIDENotifier.ZipProjectInformation(Const ProjectOps : IITHProjectOptions;
-  Const Project: IOTAProject): Integer;
-
-Var
-  slResponseFile: TStringList;
-  i: Integer;
-  strFileName: String;
-  strZIPName: String;
-  strBasePath: String;
-  strProject: String;
-  Process: TITHProcessInfo;
-
-Begin
-  Result := 0;
-  strProject := GetProjectName(Project);
-  If ProjectOps.EnableZipping Then
-    Begin
-      slResponseFile := TStringList.Create;
-      Try
-        slResponseFile.Duplicates := dupIgnore;
-        slResponseFile.Sorted := True;
-        strZIPName := ProjectOps.ZipName;
-        If strZIPName <> '' Then
-          Begin
-            strBasePath := ExpandMacro(ProjectOps.BasePath, Project);
-            Process.FEnabled := True;
-            Process.FEXE := ExpandMacro(FGlobalOps.ZipEXE, Project);
-            Process.FParams := ExpandMacro(FGlobalOps.ZipParameters, Project);
-            If Not FileExists(Process.FEXE) Then
-              Begin
-                Inc(Result);
-                AddMsg(Format('ZIP Tool (%s) not found! (%s).',
-                  [Process.FEXE, strProject]), FGlobalOps.GroupMessages,
-                  FGlobalOps.AutoScrollMessages, FGlobalOps.FontName[fnHeader],
-                  FGlobalOps.FontColour[ithfFailure],
-                  FGlobalOps.FontStyles[ithfFailure]);
-                Exit;
-              End;
-            strZIPName := ExpandMacro(strZIPName, Project);
-            strFileName := BuildResponseFile(Project, ProjectOps, slResponseFile,
-              strBasePath, strProject, strZIPName);
-            Process.FParams := StringReplace(Process.FParams, '$RESPONSEFILE$', strFileName, []);
-            Process.FParams := StringReplace(Process.FParams, '$FILELIST$', FileList(slResponseFile), []);
-            Process.FParams := StringReplace(Process.FParams, '$ZIPFILE$', strZIPName, []);
-            Process.FDir := ExpandMacro(strBasePath, Project);
-            FParentMsg :=
-              AddMsg(Format('Running: %s (%s %s)', [ExtractFileName(Process.FEXE),
-              strProject, 'Zipping']), FGlobalOps.GroupMessages,
-              FGlobalOps.AutoScrollMessages, FGlobalOps.FontName[fnHeader],
-              FGlobalOps.FontColour[ithfHeader], FGlobalOps.FontStyles[ithfHeader]);
-            TfrmITHProcessing.ShowProcessing(Format('Processing %s...',
-              [ExtractFileName(Process.FEXE)]));
-            FMsgs.Clear;
-            Result := DGHCreateProcess(Process, ProcessMsgHandler, IdleHandler);
-            For i := 0 To FMsgs.Count - 1 Do
-              Case Result Of
-                0:
-                  (FMsgs.Items[i] As TCustomMessage).ForeColour :=
-                    FGlobalOps.FontColour[ithfSuccess];
-              Else
-                (FMsgs.Items[i] As TCustomMessage).ForeColour :=
-                  FGlobalOps.FontColour[ithfFailure];
-              End;
-            If Result <> 0 Then
-              FParentMsg.ForeColour := FGlobalOps.FontColour[ithfFailure];
-          End Else
-            AddMsg(Format('ZIP File not configured (%s).', [strProject]),
-              FGlobalOps.GroupMessages, FGlobalOps.AutoScrollMessages,
-              FGlobalOps.FontName[fnHeader], FGlobalOps.FontColour[ithfFailure],
-              FGlobalOps.FontStyles[ithfFailure]);
-        Finally
-          If FileExists(strFileName) Then
-            DeleteFile(strFileName);
-          slResponseFile.Free;
-        End;
-    End;
-End;
-
 End.
+

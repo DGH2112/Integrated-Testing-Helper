@@ -32,7 +32,8 @@ uses
   ITHelper.ExternalProcessInfo in '..\Source\ITHelper.ExternalProcessInfo.pas',
   ITHelper.Interfaces in '..\Source\ITHelper.Interfaces.pas',
   ITHelper.Types in '..\Source\ITHelper.Types.pas',
-  ITHelper.ProjectOptions in '..\Source\ITHelper.ProjectOptions.pas';
+  ITHelper.ProjectOptions in '..\Source\ITHelper.ProjectOptions.pas',
+  ITHelper.ResourceStrings in '..\Source\ITHelper.ResourceStrings.pas';
 
 {$R *.RES}
 

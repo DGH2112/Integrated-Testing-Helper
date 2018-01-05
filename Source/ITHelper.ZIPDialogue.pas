@@ -138,7 +138,7 @@ Var
 Begin
   strDir := edtBasePath.Text;
   If strDir = '' Then
-    strDir := ExpandMacro(ExtractFilePath(edtZipName.Text), FProject);
+    strDir := ExpandMacro(ExtractFilePath(edtZipName.Text), FProject.FileName);
   If SelectDirectory(strZipBaseDirectory, '', strDir {$IFDEF D2005},
     [sdNewFolder, sdShowShares, sdNewUI, sdValidateDir] {$ENDIF}) Then
     edtBasePath.Text := strDir + '\';
@@ -158,8 +158,8 @@ End;
 Procedure TfrmITHZIPDialogue.btnBrowseZipClick(Sender: TObject);
 
 Begin
-  dlgOpenZIP.FileName := ExtractFileName(ExpandMacro(edtZipName.Text, FProject));
-  dlgOpenZIP.InitialDir := ExtractFilePath(ExpandMacro(edtZipName.Text, FProject));
+  dlgOpenZIP.FileName := ExtractFileName(ExpandMacro(edtZipName.Text, FProject.FileName));
+  dlgOpenZIP.InitialDir := ExtractFilePath(ExpandMacro(edtZipName.Text, FProject.FileName));
   If dlgOpenZIP.Execute Then
     edtZipName.Text := dlgOpenZIP.FileName;
 End;
@@ -245,17 +245,17 @@ ResourceString
 
 Begin
   If cbxEnabledZipping.Checked And Not SysUtils.DirectoryExists(ExpandMacro(edtBasePath.Text,
-      FProject)) Then
+      FProject.FileName)) Then
     Begin
       MessageDlg(Format(strZipFileBaseDirectoryDoesNotExist,
-          [ExpandMacro(edtBasePath.Text, FProject)]), mtError, [mbOK], 0);
+          [ExpandMacro(edtBasePath.Text, FProject.FileName)]), mtError, [mbOK], 0);
       ModalResult := mrNone;
     End;
   If cbxEnabledZipping.Checked And Not SysUtils.DirectoryExists(ExtractFilePath(ExpandMacro(
-    edtZipName.Text, FProject))) Then
+    edtZipName.Text, FProject.FileName))) Then
     Begin
       MessageDlg(Format(strZipFilePathDirectoryDoesNotExist,
-          [ExpandMacro(ExtractFilePath(edtZipName.Text), FProject)]), mtError, [mbOK], 0);
+          [ExpandMacro(ExtractFilePath(edtZipName.Text), FProject.FileName)]), mtError, [mbOK], 0);
       ModalResult := mrNone;
     End;
 End;

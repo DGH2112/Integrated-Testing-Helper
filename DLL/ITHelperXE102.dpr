@@ -4,14 +4,14 @@
   implement an IDE wizard.
 
   @Author  David Hoyle
-  @Date    30 Dec 2017
+  @Date    05 Jan 2018
   @Version 2.0
 
   @nocheck EmptyBEGINEND
 
   @todo    Change ALL (BorlandIDEServices As Xxxx) for Supports()
   @todo    Create a wrapper for the ziplibrary and use that instead of an external zip programme.
-  @todo    Put the prject options back into a single tabbed dialogue (remember NOT to use listviews
+  @todo    Put the project options back into a single tabbed dialogue (remember NOT to use listviews
            to store information).
   @todo    Put global options into the IDEs Options dialogue.
 
@@ -39,8 +39,8 @@ uses
   ITHelper.Wizard in '..\Source\ITHelper.Wizard.pas',
   ITHelper.ConfigurationForm in '..\Source\ITHelper.ConfigurationForm.pas' {frmITHConfigureDlg},
   ITHelper.TestingHelperUtils in '..\Source\ITHelper.TestingHelperUtils.pas',
-  ITHelper.AdditionalZipFilesForm in '..\Source\ITHelper.AdditionalZipFilesForm.pas' {Form1},
-  ITHelper.EnabledOptions in '..\Source\ITHelper.EnabledOptions.pas' {frmEnabledOptions},
+  ITHelper.AdditionalZipFilesForm in '..\Source\ITHelper.AdditionalZipFilesForm.pas' {frmITHAdditionalZipFiles},
+  ITHelper.EnabledOptions in '..\Source\ITHelper.EnabledOptions.pas' {frmITHEnabledOptions},
   ITHelper.OTAInterfaces in '..\Source\ITHelper.OTAInterfaces.pas',
   ITHelper.ProjectManagerMenuInterface in '..\Source\ITHelper.ProjectManagerMenuInterface.pas',
   ITHelper.IDENotifierInterface in '..\Source\ITHelper.IDENotifierInterface.pas',
@@ -56,7 +56,15 @@ uses
   ITHelper.AboutBox in '..\Source\ITHelper.AboutBox.pas',
   ITHelper.ExternalProcessInfo in '..\Source\ITHelper.ExternalProcessInfo.pas',
   ITHelper.ProcessingForm in '..\Source\ITHelper.ProcessingForm.pas' {frmITHProcessing},
-  ITHelper.ProgrammeInfoForm in '..\Source\ITHelper.ProgrammeInfoForm.pas' {frmProgrammeInfo};
+  ITHelper.ProgrammeInfoForm in '..\Source\ITHelper.ProgrammeInfoForm.pas' {frmITHProgrammeInfo},
+  ITHelper.CustomMessages in '..\Source\ITHelper.CustomMessages.pas',
+  ITHelper.PascalParsing in '..\Source\ITHelper.PascalParsing.pas',
+  ITHelper.Interfaces in '..\Source\ITHelper.Interfaces.pas',
+  ITHelper.Types in '..\Source\ITHelper.Types.pas',
+  ITHelper.ProjectOptions in '..\Source\ITHelper.ProjectOptions.pas',
+  ITHelper.ZIPManager in '..\Source\ITHelper.ZIPManager.pas',
+  ITHelper.ResponseFile in '..\Source\ITHelper.ResponseFile.pas',
+  ITHelper.MessageManager in '..\Source\ITHelper.MessageManager.pas';
 
 {$R *.res}
 

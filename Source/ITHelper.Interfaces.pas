@@ -6,8 +6,6 @@
   @Version 1.0
   @Date    05 Jan 2018
 
-  @todo    Check that AutoScrollMessages actually gets used?
-  
 **)
 Unit ITHelper.Interfaces;
 
@@ -338,6 +336,94 @@ Type
     **)
     Property ClearMessages: Integer Read GetClearMessages Write SetClearMessages;
   End;
+
+  (** This interface provide access to creating a ZIP of a projects files. **)
+  IITHZipManager = Interface
+  ['{595AB8AC-3D75-498D-A294-AC22307DED8B}']
+    Function ZipProjectInformation : Integer;
+  End;
+  
+  (** This interface builds and provide access to the response file. **)
+  IITHResponseFile = Interface
+  ['{D00061A5-FAC9-41E5-97C2-8F33734623C2}']
+    Function  GetFileName : String;
+    Procedure BuildResponseFile(Const strBasePath, strProject, strZIPName: String);
+    Function  FileList : String;
+    (**
+      This property returns the filename of the repsonse file for zipping information.
+      @precon  None.
+      @postcon The response filename is returned.
+      @return  a String
+    **)
+    Property FileName : String Read GetFileName;
+  End;
+
+  {$IFNDEF CONSOLE_TESTRUNNER}
+  (** This interface is for handling custom ITH messages. **)
+  IITHCustomMessage = Interface(INTACustomDrawMessage)
+  ['{DB89170C-FBB6-440E-B10B-FFF662187B57}']
+    Procedure SetForeColour(Const iValue : TColor);
+    Function  GetMessagePntr : Pointer;
+    Procedure SetMessagePntr(Const ptrValue : Pointer);
+    (**
+      This allows the colour of the font to be updated.
+      @precon  None.
+      @postcon Updates the font colour of the message.
+      @return  a TColor
+    **)
+    Property ForeColour : TColor Write SetForeColour;
+    (**
+      This property returns the message pointer to be used as the parent for
+      sub messages.
+      @precon  None.
+      @postcon Returns the message pointer to be used as the parent for
+      @return  a Pointer
+    **)
+    Property MessagePntr: Pointer Read GetMessagePntr Write SetMessagePntr;
+  End;
+
+  (** This interface is a manager for ALL ITHelper custom messages. **)
+  IITHMessageManager = Interface
+  ['{836EC9B2-EB70-4CD7-95D0-DD6DD9BC4B5D}']
+    Function  GetCount : Integer;
+    Function  GetItem(Const iIndex : Integer) : IITHCustomMessage;
+    Function  GetLastMessage : Int64;
+    Function  GetParentMsg : IITHCustomMessage;
+    Procedure SetParentMsg(Const ParentMsg : IITHCustomMessage);
+    Function  AddMsg(Const strText: String; Const eFontName : TITHFontNames;
+      Const eFont : TITHFonts; Const ptrParentMsg : Pointer = Nil): IITHCustomMessage;
+    Procedure Clear;
+    (**
+      This property returns the current number of messages in the managers collection.
+      @precon  None.
+      @postcon The number of message managed is returned.
+      @return  an Integer
+    **)
+    Property Count : Integer Read GetCount;
+    (**
+      This property returns a refernecee to the indexed message.
+      @precon  iIndex must be a valid index.
+      @postcon The indexed message is returned from the managers collection.
+      @param   iIndex as an Integer as a constant
+      @return  an IITHCustomMessage
+    **)
+    Property Item[Const iIndex : Integer] : IITHCustomMessage Read GetItem; Default;
+    (**
+      This property determines the last time a message was output.
+      @precon  None.
+      @postcon returns the tickcount (in milliseconds) from the last message.
+      @return  an Int64
+    **)
+    Property LastMessage : Int64 Read GetLastMessage;
+    (**
+      This property defines the single parent message for any tool messages.
+      @precon  None.
+      @postcon Gets and sets the parent message.
+      @return  an IITHCustomMessage
+    **)
+    Property ParentMsg : IITHCustomMessage Read GetParentMsg Write SetParentMsg;
+  End;
+  {$ENDIF}
 
 Implementation
 

@@ -1,3 +1,12 @@
+(**
+  
+  This module contains code for tokenizing object pascal code.
+
+  @Author  David Hoyle
+  @Version 1.0
+  @Date    05 Jan 2018  
+  
+**)
 Unit ITHelper.PascalParsing;
 
 Interface

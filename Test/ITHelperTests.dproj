@@ -122,6 +122,7 @@
         <DCCReference Include="..\Source\ITHelper.Interfaces.pas"/>
         <DCCReference Include="..\Source\ITHelper.Types.pas"/>
         <DCCReference Include="..\Source\ITHelper.ProjectOptions.pas"/>
+        <DCCReference Include="..\Source\ITHelper.ResourceStrings.pas"/>
         <None Include="ModelSupport_ITHelperTests\default.txaPackage"/>
         <BuildConfiguration Include="Debug">
             <Key>Cfg_2</Key>
