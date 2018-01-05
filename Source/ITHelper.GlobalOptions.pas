@@ -4,7 +4,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    04 Jan 2018
+  @Date    05 Jan 2018
 
 **)
 Unit ITHelper.GlobalOptions;
@@ -21,7 +21,7 @@ Uses
 
 Type
   (** A class to manage the gloabl options of the application. **)
-  TITHGlobalOptions = Class
+  TITHGlobalOptions = Class(TInterfacedObject, IITHGlobalOptions)
   Strict Private
     FINIFileName       : String;
     FFontName          : Array [Low(TITHFontNames) .. High(TITHFontNames)] Of String;
@@ -45,99 +45,25 @@ Type
     Procedure SetFontStyles(Const iFont: TITHFonts; Const iValue: TFontStyles);
     Function  GetProjectGroupOps: TITHEnabledOptions;
     Procedure SetProjectGroupOps(Const Ops: TITHEnabledOptions);
+    Function  GetINIFileName : String;
+    Function  GetSwitchToMessages : Boolean;
+    Procedure SetSwitchToMessages(Const boolValue : Boolean);
+    Function  GetZipEXE : String;
+    Procedure SetZipEXE(Const strValue : String);
+    Function  GetZipParameters : String;
+    Procedure SetZipParameters(Const strValue : String);
+    Function  GetGroupMessages : Boolean;
+    Procedure SetGroupMessages(Const boolValue : Boolean);
+    Function  GetAutoScrollMessages : Boolean;
+    Procedure SetAutoScrollMessages(Const boolValue : Boolean);
+    Function  GetClearMessages : Integer;
+    Procedure SetClearMessages(Const iValue : Integer);
     Procedure ExceptionsMgs(Const strExceptionMsg: String);
+    Procedure Save;
+    Function ProjectOptions(Const Project: IOTAProject): IITHProjectOptions;
   Public
     Constructor Create;
     Destructor Destroy; Override;
-    Procedure Save;
-    Function ProjectOptions(Const Project: IOTAProject): IITHProjectOptions;
-    (**
-      A property to return the Main INI file name for the application.
-      @precon  None.
-      @postcon Return the Main INI file name for the application.
-      @return  a String
-    **)
-    Property INIFileName: String Read FINIFileName;
-    (**
-      This property determines the font name of the enumerated item.
-      @precon  None.
-      @postcon Returns the font name.
-      @param   iFont as a TITHFontNames as a Constant
-      @return  a String
-    **)
-    Property FontName[Const iFont: TITHFontNames]: String Read GetFontName Write SetFontName;
-    (**
-      A property that determines the font colour for the specific enumeration.
-      @precon  None.
-      @postcon Returns the font colour for the specific enumeration.
-      @param   iFont as a TITHFonts as a Constant
-      @return  a TColor
-    **)
-    Property FontColour[Const iFont: TITHFonts]: TColor Read GetFontColour Write SetFontColour;
-    (**
-      A property that determines the font styles for the specific enumeration.
-      @precon  None.
-      @postcon Returns the font styles for the specific enumeration.
-      @param   iFont as a TITHFonts as a Constant
-      @return  a TFontStyles
-    **)
-    Property FontStyles[Const iFont: TITHFonts]: TFontStyles Read GetFontStyles Write SetFontStyles;
-    (**
-      A property to determine whether the IDE should which to the output messages
-               after a successful compilation.
-      @precon  None.
-      @postcon Returns whether the IDE should which to the output messages
-               after a successful compilation.
-      @return  a Boolean
-    **)
-    Property SwitchToMessages: Boolean Read FSwitchToMessages Write FSwitchToMessages;
-    (**
-      A property to determines the project group options for the Integrated Testing
-      Helper.
-      @precon  None.
-      @postcon Returns the project group options.
-      @return  a TITHEnabledOptions
-    **)
-    Property ProjectGroupOps: TITHEnabledOptions Read GetProjectGroupOps Write SetProjectGroupOps;
-    (**
-      A property to define the executable archive programme for zipping files.
-      @precon  None.
-      @postcon Returns the archiving programme for zipping files.
-      @return  a String
-    **)
-    Property ZipEXE: String Read FZipEXE Write FZipEXE;
-    (**
-      A property to define the parameter to be passed to the archive programme for zipping
-      files.
-      @precon  None.
-      @postcon Returns the parameter to be passed to the archive programme for zipping
-               files.
-      @return  a String
-    **)
-    Property ZipParameters: String Read FZipParameters Write FZipParameters;
-    (**
-      A property to determine whether messages are group under headings.
-      @precon  None.
-      @postcon Returns whether messages are group under headings.
-      @return  a Boolean
-    **)
-    Property GroupMessages: Boolean Read FGroupMessages Write FGroupMessages;
-    (**
-      A property to determines of new messages should be scrolled to.
-      @precon  None.
-      @postcon Returns whether new messages should be scrolled to.
-      @return  a Boolean
-    **)
-    Property AutoScrollMessages: Boolean Read FAutoScrollMessages Write FAutoScrollMessages;
-    (**
-      A property to determine the number of seconds since the last compiled that should
-      elapse before messages are cleared.
-      @precon  None.
-      @postcon Returns the number of seconds since the last compiled that should
-               elapse before messages are cleared.
-      @return  an Integer
-    **)
-    Property ClearMessages: Integer Read FClearMessages Write FClearMessages;
   End;
 
 Implementation
@@ -250,6 +176,38 @@ End;
 
 (**
 
+  This is a getter method for the AutoScrollMessages property.
+
+  @precon  None.
+  @postcon Returns whether new messages should be scrolled to in the message window.
+
+  @return  a Boolean
+
+**)
+Function TITHGlobalOptions.GetAutoScrollMessages: Boolean;
+
+Begin
+  Result := FAutoScrollMessages;
+End;
+
+(**
+
+  This is a getter method for the ClearMessages property.
+
+  @precon  None.
+  @postcon Returns the period in seconds after which whether messages should be cleared.
+
+  @return  an Integer
+
+**)
+Function TITHGlobalOptions.GetClearMessages: Integer;
+
+Begin
+  Result := FClearMessages;
+End;
+
+(**
+
   This is a getter method for the FontColour property.
 
   @precon  None.
@@ -297,6 +255,38 @@ Function TITHGlobalOptions.GetFontStyles(Const iFont: TITHFonts): TFontStyles;
 
 Begin
   Result := FFontStyle[iFont];
+End;
+
+(**
+
+  This is a getter method for the GroupMessages property.
+
+  @precon  None.
+  @postcon Returns whether messages should be grouped.
+
+  @return  a Boolean
+
+**)
+Function TITHGlobalOptions.GetGroupMessages: Boolean;
+
+Begin
+  Result := FGroupMessages;
+End;
+
+(**
+
+  This is a getter method for the INIFileName property.
+
+  @precon  None.
+  @postcon Returns the internal INI Filename.
+
+  @return  a String
+
+**)
+Function TITHGlobalOptions.GetINIFileName: String;
+
+Begin
+  Result := FINIFileName;
 End;
 
 (**
@@ -372,6 +362,54 @@ Begin
     End
   Else
     Result := TITHEnabledOptions(Byte(FProjectGroupOps.Objects[iIndex]));
+End;
+
+(**
+
+  This is a getter method for the SwitchToMessages property.
+
+  @precon  None.
+  @postcon Returns whether the IDE should switch to the ITHelper messages after a successful compile.
+
+  @return  a Boolean
+
+**)
+Function TITHGlobalOptions.GetSwitchToMessages: Boolean;
+
+Begin
+  Result := FSwitchToMessages;
+End;
+
+(**
+
+  This is a getter method for the ZipEXE property.
+
+  @precon  None.
+  @postcon Returns the ZipEXE filename.
+
+  @return  a String
+
+**)
+Function TITHGlobalOptions.GetZipEXE: String;
+
+Begin
+  Result := FZipEXE;
+End;
+
+(**
+
+  This is a getter method for the ZipParameters property.
+
+  @precon  None.
+  @postcon Returns the Zip Parameters.
+
+  @return  a String
+
+**)
+Function TITHGlobalOptions.GetZipParameters: String;
+
+Begin
+  Result := FZipParameters;
 End;
 
 (**
@@ -500,7 +538,7 @@ Begin
   If Not FileExists(strINIFileName) Then
     Begin
       // Migrate settings from the main INI file to a local one
-      iniMain := TMemIniFile.Create(INIFileName);
+      iniMain := TMemIniFile.Create(GetINIFileName);
       Try
         iniProject := TMemIniFile.Create(strINIFileName);
         Try
@@ -600,6 +638,41 @@ End;
 
 (**
 
+  This is a setter method for the AutoScrollMessages property.
+
+  @precon  None.
+  @postcon Sets whether the message view should automatically scroll to the last message.
+
+  @param   boolValue as a Boolean as a constant
+
+**)
+Procedure TITHGlobalOptions.SetAutoScrollMessages(Const boolValue: Boolean);
+
+Begin
+  If FAutoScrollMessages <> boolValue Then
+    FAutoScrollMessages := boolValue;
+End;
+
+(**
+
+  This is a setter method for the ClearMessages property.
+
+  @precon  None.
+  @postcon Sets the number of seconds after which the message view can be cleared of existing ITHelper
+           messages.
+
+  @param   iValue as an Integer as a constant
+
+**)
+Procedure TITHGlobalOptions.SetClearMessages(Const iValue: Integer);
+
+Begin
+  If FClearMessages <> iValue Then
+    FClearMessages := iValue;
+End;
+
+(**
+
   This is a setter method for the FontColour property.
 
   @precon  None.
@@ -651,6 +724,23 @@ End;
 
 (**
 
+  This is a setter method for the GroupMessages property.
+
+  @precon  None.
+  @postcon Sets whether the ITHelper messages should be grouped into their own message pane.
+
+  @param   boolValue as a Boolean as a constant
+
+**)
+Procedure TITHGlobalOptions.SetGroupMessages(Const boolValue: Boolean);
+
+Begin
+  If FGroupMessages <> boolValue Then
+    FGroupMessages := boolValue;
+End;
+
+(**
+
   This is a setter method for the ProjectGroupOps property.
 
   @precon  None.
@@ -676,6 +766,58 @@ Begin
     FProjectGroupOps.AddObject(strProjectGroup, TObject(Byte(Ops)))
   Else
     FProjectGroupOps.Objects[iIndex] := TObject(Byte(Ops));
+End;
+
+(**
+
+  This is a setter method for the SwitchToMessages property.
+
+  @precon  None.
+  @postcon Sets whetherm after a successful compilation, the messages view with the ITHelper messages
+           should be displayed.
+
+  @param   boolValue as a Boolean as a constant
+
+**)
+Procedure TITHGlobalOptions.SetSwitchToMessages(Const boolValue: Boolean);
+
+Begin
+  If FSwitchToMessages <> boolValue Then
+    FSwitchToMessages := boolValue;
+End;
+
+(**
+
+  This is a setter method for the ZipEXE property.
+
+  @precon  None.
+  @postcon Sets the Zip EXE Filename.
+
+  @param   strValue as a String as a constant
+
+**)
+Procedure TITHGlobalOptions.SetZipEXE(Const strValue: String);
+
+Begin
+  If FZipEXE <> strValue Then
+    FZipEXE := strValue;
+End;
+
+(**
+
+  This is a setter method for the ZipParameters property.
+
+  @precon  None.
+  @postcon Sets the Zip parameters.
+
+  @param   strValue as a String as a constant
+
+**)
+Procedure TITHGlobalOptions.SetZipParameters(Const strValue: String);
+
+Begin
+  If FZipParameters <> strValue Then
+    FZipParameters := strValue;
 End;
 
 End.

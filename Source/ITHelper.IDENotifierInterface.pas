@@ -34,7 +34,7 @@ Type
   Strict Private
     { Private declarations }
     FMsgs                  : TObjectList;
-    FGlobalOps             : TITHGlobalOptions;
+    FGlobalOps             : IITHGlobalOptions;
     FParentMsg             : TCustomMessage;
     FLastMessage           : TDateTime;
     FSuccessfulCompile     : TTimer;
@@ -93,7 +93,7 @@ Type
     Procedure IdleHandler;
   Public
     { Public declarations }
-    Constructor Create(Const GlobalOps: TITHGlobalOptions);
+    Constructor Create(Const GlobalOps: IITHGlobalOptions);
     Destructor Destroy; Override;
   End;
 
@@ -1055,7 +1055,7 @@ End;
   @param   GlobalOps as a TITHGlobalOptions as a constant
 
 **)
-Constructor TITHelperIDENotifier.Create(Const GlobalOps: TITHGlobalOptions);
+Constructor TITHelperIDENotifier.Create(Const GlobalOps: IITHGlobalOptions);
 
 Const
   iTimerIntervalInMSec = 100;

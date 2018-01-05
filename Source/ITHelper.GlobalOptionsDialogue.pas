@@ -5,7 +5,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    03 Jan 2018
+  @Date    05 Jan 2018
 
 **)
 Unit ITHelper.GlobalOptionsDialogue;
@@ -25,7 +25,7 @@ Uses
   Buttons,
   ComCtrls,
   StdCtrls,
-  ITHelper.GlobalOptions;
+  ITHelper.Interfaces;
 
 Type
   (** A class which represents a form **)
@@ -55,12 +55,12 @@ Type
     Procedure btnHelpClick(Sender: TObject);
   Private
     { Private declarations }
-    FGlobalOps: TITHGlobalOptions;
-    Procedure InitialiseOptions(Const GlobalOps: TITHGlobalOptions);
-    Procedure SaveOptions(Const GlobalOps: TITHGlobalOptions);
+    FGlobalOps: IITHGlobalOptions;
+    Procedure InitialiseOptions(Const GlobalOps: IITHGlobalOptions);
+    Procedure SaveOptions(Const GlobalOps: IITHGlobalOptions);
   Public
     { Public declarations }
-    Class Procedure Execute(Const GlobalOps: TITHGlobalOptions);
+    Class Procedure Execute(Const GlobalOps: IITHGlobalOptions);
   End;
 
 Implementation
@@ -138,10 +138,10 @@ End;
   @precon  GlobalOps must be a valid instance.
   @postcon Displays the dialogue
 
-  @param   GlobalOps as a TITHGlobalOptions as a constant
+  @param   GlobalOps as a IITHGlobalOptions as a constant
 
 **)
-Class Procedure TfrmITHGlobalOptionsDialogue.Execute(Const GlobalOps: TITHGlobalOptions);
+Class Procedure TfrmITHGlobalOptionsDialogue.Execute(Const GlobalOps: IITHGlobalOptions);
 
 Var
   frm: TfrmITHGlobalOptionsDialogue;
@@ -165,10 +165,10 @@ End;
   @precon  GlobalOps must be a valid instance.
   @postcon Initialises the project options in the dialogue.
 
-  @param   GlobalOps as a TITHGlobalOptions as a constant
+  @param   GlobalOps as a IITHGlobalOptions as a constant
 
 **)
-Procedure TfrmITHGlobalOptionsDialogue.InitialiseOptions(Const GlobalOps: TITHGlobalOptions);
+Procedure TfrmITHGlobalOptionsDialogue.InitialiseOptions(Const GlobalOps: IITHGlobalOptions);
 
 Var
   i: Integer;
@@ -220,10 +220,10 @@ end;
   @precon  GlobalOps must be a valid instance.
   @postcon Saves the project options to the ini file.
 
-  @param   GlobalOps as a TITHGlobalOptions as a constant
+  @param   GlobalOps as a IITHGlobalOptions as a constant
 
 **)
-Procedure TfrmITHGlobalOptionsDialogue.SaveOptions(Const GlobalOps: TITHGlobalOptions);
+Procedure TfrmITHGlobalOptionsDialogue.SaveOptions(Const GlobalOps: IITHGlobalOptions);
 
 Var
   i: Integer;

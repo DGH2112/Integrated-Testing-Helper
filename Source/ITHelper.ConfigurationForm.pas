@@ -6,7 +6,7 @@
 
   @Version 1.0
   @Author  David Hoyle
-  @Date    04 Jan 2018
+  @Date    05 Jan 2018
 
 **)
 Unit ITHelper.ConfigurationForm;
@@ -31,7 +31,7 @@ Uses
   ExtCtrls,
   System.ImageList,
   ITHelper.ExternalProcessInfo,
-  ITHelper.GlobalOptions;
+  ITHelper.Interfaces;
 
 Type
   (** An enumerate to define which set of data the dialogue is to work with. **)
@@ -67,7 +67,7 @@ Type
     procedure btnHelpClick(Sender: TObject);
   Strict Private
     { Private declarations }
-    FGlobalOps: TITHGlobalOptions;
+    FGlobalOps: IITHGlobalOptions;
     FProject  : IOTAProject;
     FDlgType  : TITHDlgType;
   Strict Protected
@@ -81,7 +81,7 @@ Type
     Procedure SaveOptions(Const Project: IOTAProject);
   Public
     { Public declarations }
-    Class Function Execute(Const Project: IOTAProject; Const GlobalOps: TITHGlobalOptions;
+    Class Function Execute(Const Project: IOTAProject; Const GlobalOps: IITHGlobalOptions;
       Const DlgType : TITHDlgType): Boolean;
   End;
 
@@ -93,8 +93,7 @@ Uses
   IniFiles,
   FileCtrl,
   ITHelper.ProgrammeInfoForm,
-  ITHelper.TestingHelperUtils, 
-  ITHelper.Interfaces;
+  ITHelper.TestingHelperUtils;
 
 Type
   (** An enumerate to define the columns of the dialogue listview. @nohints **)
@@ -136,7 +135,7 @@ Const
 Function TITHColumnHelper.ColumnIndex: Integer;
 
 Begin
-  Result := Integer(Self);
+  Result := Ord(Self);
 End;
 
 (**
@@ -152,7 +151,7 @@ End;
 Function TITHColumnHelper.SubItemIndex: Integer;
 
 Begin
-  Result := Pred(Integer(Self));
+  Result := Pred(Ord(Self));
 End;
 
 (**
@@ -409,13 +408,13 @@ End;
   @postcon The classes main interface method for invoking the dialogue.
 
   @param   Project   as an IOTAProject as a constant
-  @param   GlobalOps as a TITHGlobalOptions as a constant
+  @param   GlobalOps as an IITHGlobalOptions as a constant
   @param   DlgType   as a TITHDlgType as a constant
   @return  a Boolean
 
 **)
 Class Function TfrmITHConfigureDlg.Execute(Const Project: IOTAProject;
-  Const GlobalOps: TITHGlobalOptions; Const DlgType : TITHDlgType): Boolean;
+  Const GlobalOps: IITHGlobalOptions; Const DlgType : TITHDlgType): Boolean;
 
 Const
   strSection : Array[Low(TITHDlgType)..High(TITHDlgType)] Of String = (

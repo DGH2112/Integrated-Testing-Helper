@@ -4,7 +4,7 @@
   external tools before and after the compilation of the current project.
 
   @Version 1.0
-  @Date    04 Jan 2018
+  @Date    05 Jan 2018
   @Author  David Hoyle
 
 **)
@@ -14,14 +14,8 @@ Interface
 
 Uses
   ToolsAPI,
-  Classes,
   Menus,
-  Contnrs,
-  ITHelper.TestingHelperUtils,
-  ExtCtrls,
-  ITHelper.ConfigurationForm,
-  IniFiles,
-  ITHelper.GlobalOptions;
+  ITHelper.Interfaces;
 
 {$INCLUDE 'CompilerDefinitions.inc'}
 
@@ -34,7 +28,7 @@ Type
   TITHWizard = Class(TNotifierObject, IOTAWizard)
   Strict Private
     FAboutBoxIndex          : Integer;
-    FGlobalOps              : TITHGlobalOptions;
+    FGlobalOps              : IITHGlobalOptions;
     FTestingHelperMenu      : TMenuItem;
     FProjectMgrMenuIndex    : Integer;
     FProjectMgrMenuNotifier : IOTAProjectMenuItemCreatorNotifier;
@@ -94,7 +88,10 @@ Uses
   ITHelper.SplashScreen, 
   ITHelper.AboutBox, 
   ITHelper.IDENotifierInterface, 
-  ITHelper.Types;
+  ITHelper.Types, 
+  ITHelper.ConfigurationForm, 
+  ITHelper.TestingHelperUtils, 
+  ITHelper.GlobalOptions;
 
 Const
   (** A constant to define the failed state of a wizard / notifier interface. **)
@@ -359,7 +356,7 @@ Begin
   //: the IDE closes down.
   ClearMessages([cmCompiler, cmGroup]);
   {$ENDIF}
-  FGlobalOps.Free;
+  FGlobalOps := Nil;
   If FProjectMgrMenuIndex > -1 Then
     If Supports(BorlandIDEServices, IOTAPRojectManager, PM) Then
       {$IFNDEF D2010}

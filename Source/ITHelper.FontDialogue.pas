@@ -5,7 +5,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    04 Jan 2018
+  @Date    05 Jan 2018
 
 **)
 Unit ITHelper.FontDialogue;
@@ -24,9 +24,9 @@ Uses
   Dialogs,
   StdCtrls,
   ExtCtrls,
-  Buttons,
-  ITHelper.GlobalOptions, 
-  ITHelper.Types;
+  Buttons, 
+  ITHelper.Types,
+  ITHelper.Interfaces;
 
 Type
   (** A class to represent the form interface. **)
@@ -56,11 +56,11 @@ Type
     FFontColour: Array [Low(TITHFonts) .. High(TITHFonts)] Of TColor;
     FFontStyle : Array [Low(TITHFonts) .. High(TITHFonts)] Of TFontStyles;
     FUpdating  : Boolean;
-    Procedure InitialiseMessageOptions(Const GlobalOps: TITHGlobalOptions);
-    Procedure SaveMessageOptions(Const GlobalOps: TITHGlobalOptions);
+    Procedure InitialiseMessageOptions(Const GlobalOps: IITHGlobalOptions);
+    Procedure SaveMessageOptions(Const GlobalOps: IITHGlobalOptions);
   Public
     { Public declarations }
-    Class Procedure Execute(Const GlobalOptions: TITHGlobalOptions);
+    Class Procedure Execute(Const GlobalOptions: IITHGlobalOptions);
   End;
 
 Implementation
@@ -148,10 +148,10 @@ End;
   @precon  GlobalOptions must be a valid instance.
   @postcon Displays the dialogue.
 
-  @param   GlobalOptions as a TITHGlobalOptions as a constant
+  @param   GlobalOptions as a IITHGlobalOptions as a constant
 
 **)
-Class Procedure TfrmITHFontDialogue.Execute(Const GlobalOptions: TITHGlobalOptions);
+Class Procedure TfrmITHFontDialogue.Execute(Const GlobalOptions: IITHGlobalOptions);
 
 Var
   frm: TfrmITHFontDialogue;
@@ -205,10 +205,10 @@ End;
   @precon  None.
   @postcon Initialises the message font checkboxes in the dialogue.
 
-  @param   GlobalOps as a TITHGlobalOptions as a constant
+  @param   GlobalOps as a IITHGlobalOptions as a constant
 
 **)
-Procedure TfrmITHFontDialogue.InitialiseMessageOptions(Const GlobalOps: TITHGlobalOptions);
+Procedure TfrmITHFontDialogue.InitialiseMessageOptions(Const GlobalOps: IITHGlobalOptions);
 
 Const
   strFontDescriptions: Array [Low(TITHFonts) .. High(TITHFonts)
@@ -241,10 +241,10 @@ End;
   @precon  None.
   @postcon Saves the message options to the Options record structure.
 
-  @param   GlobalOps as a TITHGlobalOptions as a constant
+  @param   GlobalOps as a IITHGlobalOptions as a constant
 
 **)
-Procedure TfrmITHFontDialogue.SaveMessageOptions(Const GlobalOps: TITHGlobalOptions);
+Procedure TfrmITHFontDialogue.SaveMessageOptions(Const GlobalOps: IITHGlobalOptions);
 
 Var
   iMessageType: TITHFonts;

@@ -5,7 +5,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    04 Jan 2018
+  @Date    05 Jan 2018
 
 **)
 Unit ITHelper.ZIPDialogue;
@@ -25,7 +25,7 @@ Uses
   StdCtrls,
   Buttons,
   ToolsAPI,
-  ITHelper.GlobalOptions;
+  ITHelper.Interfaces;
 
 {$INCLUDE 'CompilerDefinitions.inc'}
 
@@ -58,8 +58,8 @@ Type
     Procedure cbxEnabledZippingClick(Sender: TObject);
     Procedure edtZipEXEExit(Sender: TObject);
     Procedure btnOKClick(Sender: TObject);
-    Procedure InitialiseOptions(Const GlobalOps: TITHGlobalOptions);
-    Procedure SaveOptions(Const GlobalOps: TITHGlobalOptions);
+    Procedure InitialiseOptions(Const GlobalOps: IITHGlobalOptions);
+    Procedure SaveOptions(Const GlobalOps: IITHGlobalOptions);
     procedure btnHelpClick(Sender: TObject);
   Strict Private
     { Private declarations }
@@ -67,7 +67,7 @@ Type
     FFileName: String;
   Public
     { Public declarations }
-    Class Procedure Execute(Const Project: IOTAProject; Const GlobalOps: TITHGlobalOptions);
+    Class Procedure Execute(Const Project: IOTAProject; Const GlobalOps: IITHGlobalOptions);
   End;
 
 Implementation
@@ -79,8 +79,7 @@ Uses
   FileCtrl,
   ITHelper.TestingHelperUtils,
   IniFiles, 
-  ITHelper.CommonFunctions, 
-  ITHelper.Interfaces;
+  ITHelper.CommonFunctions;
 
 Const
   (** An INI Section for the dialogues size and position. **)
@@ -328,10 +327,11 @@ End;
   @postcon Dislays the dialogue.
 
   @param   Project   as an IOTAProject as a constant
-  @param   GlobalOps as a TITHGlobalOptions as a constant
+  @param   GlobalOps as a IITHGlobalOptions as a constant
 
 **)
-Class Procedure TfrmITHZIPDialogue.Execute(Const Project: IOTAProject; Const GlobalOps: TITHGlobalOptions);
+Class Procedure TfrmITHZIPDialogue.Execute(Const Project: IOTAProject;
+  Const GlobalOps: IITHGlobalOptions);
 
 ResourceString
   strZIPOptionsFor = 'ZIP Options for %s';
@@ -361,10 +361,10 @@ End;
   @precon  None.
   @postcon Initialises the project options in the dialogue.
 
-  @param   GlobalOps as a TITHGlobalOptions as a constant
+  @param   GlobalOps as a IITHGlobalOptions as a constant
 
 **)
-Procedure TfrmITHZIPDialogue.InitialiseOptions(Const GlobalOps: TITHGlobalOptions);
+Procedure TfrmITHZIPDialogue.InitialiseOptions(Const GlobalOps: IITHGlobalOptions);
 
 Var
   iniFile: TMemIniFile;
@@ -400,10 +400,10 @@ End;
   @precon  None.
   @postcon Saves the project options to the ini file.
 
-  @param   GlobalOps as a TITHGlobalOptions as a constant
+  @param   GlobalOps as a IITHGlobalOptions as a constant
 
 **)
-Procedure TfrmITHZIPDialogue.SaveOptions(Const GlobalOps: TITHGlobalOptions);
+Procedure TfrmITHZIPDialogue.SaveOptions(Const GlobalOps: IITHGlobalOptions);
 
 Var
   iniFile: TMemIniFile;

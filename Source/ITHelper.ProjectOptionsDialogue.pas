@@ -5,7 +5,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    04 Jan 2018
+  @Date    05 Jan 2018
 
 **)
 Unit ITHelper.ProjectOptionsDialogue;
@@ -27,7 +27,7 @@ Uses
   Buttons,
   StdCtrls,
   ToolsAPI,
-  ITHelper.GlobalOptions,
+  ITHelper.Interfaces,
   Grids,
   ValEdit,
   ComCtrls;
@@ -73,11 +73,11 @@ Type
   Private
     { Private declarations }
     FProject : IOTAProject;
-    Procedure InitialiseOptions(Const GlobalOps: TITHGlobalOptions; Const Project: IOTAProject);
-    Procedure SaveOptions(Const GlobalOps: TITHGlobalOptions; Const Project: IOTAProject);
+    Procedure InitialiseOptions(Const GlobalOps: IITHGlobalOptions; Const Project: IOTAProject);
+    Procedure SaveOptions(Const GlobalOps: IITHGlobalOptions; Const Project: IOTAProject);
   Public
     { Public declarations }
-    Class Procedure Execute(Const GlobalOps: TITHGlobalOptions; Const Project: IOTAProject);
+    Class Procedure Execute(Const GlobalOps: IITHGlobalOptions; Const Project: IOTAProject);
   End;
 
 Implementation
@@ -89,8 +89,7 @@ Uses
   {$IFDEF DXE20}
   CommonOptionStrs,
   {$ENDIF}
-  ITHelper.TestingHelperUtils, 
-  ITHelper.Interfaces;
+  ITHelper.TestingHelperUtils;
 
 Const
   (** An INI Section name for the dialogue settings. **)
@@ -271,11 +270,12 @@ End;
   @precon  None.
   @postcon Initialises the project options in the dialogue.
 
-  @param   GlobalOps as a TITHGlobalOptions as a constant
+  @param   GlobalOps as a IITHGlobalOptions as a constant
   @param   Project   as an IOTAProject as a constant
 
 **)
-Class Procedure TfrmITHProjectOptionsDialogue.Execute(Const GlobalOps: TITHGlobalOptions; Const Project: IOTAProject);
+Class Procedure TfrmITHProjectOptionsDialogue.Execute(Const GlobalOps: IITHGlobalOptions;
+  Const Project: IOTAProject);
 
 ResourceString
   strProjectOptionsFor = 'Project Options for %s';
@@ -306,11 +306,12 @@ End;
   @postcon Initialises the dialogue controls with information from the global options and the project 
            options.
 
-  @param   GlobalOps as a TITHGlobalOptions as a constant
+  @param   GlobalOps as a IITHGlobalOptions as a constant
   @param   Project   as an IOTAProject as a constant
 
 **)
-Procedure TfrmITHProjectOptionsDialogue.InitialiseOptions(Const GlobalOps: TITHGlobalOptions; Const Project: IOTAProject);
+Procedure TfrmITHProjectOptionsDialogue.InitialiseOptions(Const GlobalOps: IITHGlobalOptions;
+  Const Project: IOTAProject);
 
 Var
   iniFile: TMemIniFile;
@@ -352,11 +353,12 @@ End;
   @precon  None.
   @postcon Saves the project options to the ini file.
 
-  @param   GlobalOps as a TITHGlobalOptions as a constant
+  @param   GlobalOps as a IITHGlobalOptions as a constant
   @param   Project   as an IOTAProject as a constant
 
 **)
-Procedure TfrmITHProjectOptionsDialogue.SaveOptions(Const GlobalOps: TITHGlobalOptions; Const Project: IOTAProject);
+Procedure TfrmITHProjectOptionsDialogue.SaveOptions(Const GlobalOps: IITHGlobalOptions;
+  Const Project: IOTAProject);
 
 Var
   iniFile: TMemIniFile;
