@@ -154,6 +154,7 @@
         <DCCReference Include="..\Source\ITHelper.ZIPManager.pas"/>
         <DCCReference Include="..\Source\ITHelper.ResponseFile.pas"/>
         <DCCReference Include="..\Source\ITHelper.MessageManager.pas"/>
+        <DCCReference Include="..\Source\ITHelper.VersionManager.pas"/>
         <None Include="..\Source\CompilerDefinitions.inc"/>
         <None Include="..\License.md"/>
         <None Include="..\README.md"/>

@@ -5,7 +5,7 @@
 
   @Author  David Hoyle.
   @Version 1.0
-  @Date    05 Jan 2018
+  @Date    07 Jan 2018
 
 **)
 Unit ITHelper.IDENotifierInterface;
@@ -61,8 +61,6 @@ Type
       Succeeded, IsCodeInsight: Boolean);
     Procedure SuccessfulCompile(Sender: TObject);
     Procedure ExpandProcessMacro(Const Processes: TITHProcessCollection; Const Project: IOTAProject);
-    Procedure BuildProjectVersionResource(Const ProjectOps: IITHProjectOptions;
-      Const Project: IOTAProject);
     Procedure ProcessMsgHandler(Const strMsg: String; Var boolAbort: Boolean);
     Procedure IdleHandler;
   Public
@@ -91,7 +89,8 @@ Uses
   ITHelper.CommonFunctions, 
   ITHelper.Types, 
   ITHelper.ZIPManager, 
-  ITHelper.MessageManager;
+  ITHelper.MessageManager, 
+  ITHelper.VersionManager;
 
 Type
   (** A custom exception for ITHelper problems. **)
@@ -218,6 +217,7 @@ Var
   iInterval: Int64;
   Ops: TITHEnabledOptions;
   MS: IOTAMessageServices;
+  VersionMgr : IITHVersionManager;
 
 Begin
   If Project = Nil Then
@@ -262,7 +262,10 @@ Begin
                   End;
               If eoBuildVersionResource In Ops Then
                 If ProjectOps.IncITHVerInfo Then
-                  BuildProjectVersionResource(Projectops, Project);
+                  Begin
+                    VersionMgr := TITHVersionManager.Create(FGlobalOps, ProjectOps, Project, FMsgMgr);
+                    VersionMgr.BuildProjectVersionResource;
+                  End;
             Finally
               TfrmITHProcessing.HideProcessing;
             End;
@@ -291,115 +294,6 @@ Procedure TITHelperIDENotifier.BeforeCompile(Const Project: IOTAProject;
   Var Cancel: Boolean);
   
 Begin //FI:W519
-End;
-
-(**
-
-  This method builds the ITHelper version resource for inclusion in the project.
-
-  @precon  None.
-  @postcon Builds the ITHelper version resource for inclusion in the project.
-
-  @nocheck HardCodedString @todo Break this down.
-  
-  @param   ProjectOps as a IITHProjectOptions as a constant
-  @param   Project    as an IOTAProject as a constant
-
-**)
-Procedure TITHelperIDENotifier.BuildProjectVersionResource(Const ProjectOps: IITHProjectOptions;
-  Const Project: IOTAProject);
-
-Var
-  sl, S: TStringList;
-  i: Integer;
-  strFileName : String;
-  iModule : Integer;
-  boolFound : Boolean;
-  Process : TITHProcessInfo;
-  iResult: Integer;
-  j: Integer;
-
-Begin
-  sl := TStringList.Create;
-  Try
-    sl.Add('LANGUAGE LANG_ENGLISH,SUBLANG_ENGLISH_US');
-    sl.Add('');
-    sl.Add('1 VERSIONINFO LOADONCALL MOVEABLE DISCARDABLE IMPURE');
-    sl.Add(Format('FILEVERSION %d, %d, %d, %d', [ProjectOps.Major, ProjectOps.Minor,
-      ProjectOps.Release, ProjectOps.Build]));
-    sl.Add(Format('PRODUCTVERSION %d, %d, %d, %d', [ProjectOps.Major, ProjectOps.Minor,
-      ProjectOps.Release, ProjectOps.Build]));
-    sl.Add('FILEFLAGSMASK VS_FFI_FILEFLAGSMASK');
-    sl.Add('FILEOS VOS__WINDOWS32');
-    sl.Add('FILETYPE VFT_APP');
-    sl.Add('{');
-    sl.Add('  BLOCK "StringFileInfo"');
-    sl.Add('  {');
-    sl.Add('    BLOCK "040904E4"');
-    sl.Add('    {');
-    S := ProjectOps.VerInfo;
-    For i := 0 To S.Count - 1 Do
-      Begin
-        sl.Add(Format('     VALUE "%s", "%s\000"', [S.Names[i], S.ValueFromIndex[i]]));
-      End;
-    sl.Add('    }');
-    sl.Add('  }');
-    sl.Add('  BLOCK "VarFileInfo"');
-    sl.Add('  {');
-    sl.Add('    VALUE "Translation", 1033, 1252');
-    sl.Add('  }');
-    sl.Add('}');
-    strFileName := ExtractFilePath(Project.FileName) + ProjectOps.ResourceName + '.RC';
-    sl.SaveToFile(strFileName);
-    FMsgMgr.AddMsg(Format('Version information resource %s.RC created for project %s.', [
-      ProjectOps.ResourceName, GetProjectName(Project)]), fnHeader, ithfDefault);
-    If ProjectOps.IncResInProj Then
-      Begin
-        boolFound := False;
-        For iModule := 0 To Project.GetModuleCount - 1 Do
-          If CompareText(Project.GetModule(iModule).FileName, strFileName) = 0 Then
-            Begin
-              boolFound := True;
-              Break;
-            End;
-        If Not boolFound Then
-          Begin
-            Project.AddFile(strFileName, True);
-            FMsgMgr.AddMsg(Format('Resource %s.RC added to project %s.', [
-              ProjectOps.ResourceName, GetProjectName(Project)]), fnHeader, ithfDefault);
-          End;
-      End;
-    If ProjectOps.CompileRes Then
-      Begin
-        Process.FEnabled := True;
-        Process.FTitle := 'Compiling ' + ProjectOps.ResourceName + ' with BRCC32';
-        Process.FEXE := 'BRCC32.exe';
-        Process.FParams := '-v "' + strFileName + '"';
-        Process.FDir := GetCurrentDir;
-        FMsgMgr.ParentMsg :=
-          FMsgMgr.AddMsg(Format('Running: %s (%s)',
-            [ExtractFileName(Process.FTitle), GetProjectName(Project)]), fnHeader, ithfHeader);
-        TfrmITHProcessing.ShowProcessing(Format('Processing %s...',
-          [ExtractFileName(Process.FTitle)]));
-        FMsgMgr.Clear;
-        iResult := DGHCreateProcess(Process, ProcessMsgHandler, IdleHandler);
-        For j := 0 To FMsgMgr.Count - 1 Do
-          Case iResult Of
-            0: FMsgMgr[j].ForeColour := FGlobalOps.FontColour[ithfSuccess];
-          Else
-            FMsgMgr[j].ForeColour := FGlobalOps.FontColour[ithfFailure];
-          End;
-        If iResult <> 0 Then
-          FMsgMgr.ParentMsg.ForeColour := FGlobalOps.FontColour[ithfFailure];
-        ShowHelperMessages(FGlobalOps.GroupMessages);
-        If iResult > 0 Then
-          Abort; //: @bug Chnage this!
-          FMsgMgr.AddMsg(Format('Resource %s.RC compiled for project %s.', [
-            ProjectOps.ResourceName, GetProjectName(Project)]), fnHeader, ithfDefault);
-      End;
-  Finally
-    sl.Free;
-  End;
 End;
 
 (**

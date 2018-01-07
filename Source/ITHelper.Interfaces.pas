@@ -4,7 +4,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    05 Jan 2018
+  @Date    06 Jan 2018
 
 **)
 Unit ITHelper.Interfaces;
@@ -424,6 +424,12 @@ Type
     Property ParentMsg : IITHCustomMessage Read GetParentMsg Write SetParentMsg;
   End;
   {$ENDIF}
+
+  (** An interface for creating and managing a version RC file for the project. **)
+  IITHVersionManager = Interface
+  ['{F230054C-67E1-48D7-ACDA-5BC1AC19E04B}']
+    Procedure BuildProjectVersionResource();
+  End;
 
 Implementation
 

@@ -4,16 +4,18 @@
   implement an IDE wizard.
 
   @Author  David Hoyle
-  @Date    05 Jan 2018
+  @Date    06 Jan 2018
   @Version 2.0
 
   @nocheck EmptyBEGINEND
 
   @todo    Change ALL (BorlandIDEServices As Xxxx) for Supports()
-  @todo    Create a wrapper for the ziplibrary and use that instead of an external zip programme.
+  @todo    Change DGHCreateProcess to take an IITHMessageManager interface so all process messages are 
+           handled by the interface.
   @todo    Put the project options back into a single tabbed dialogue (remember NOT to use listviews
            to store information).
   @todo    Put global options into the IDEs Options dialogue.
+  @todo    Create a wrapper for the ziplibrary and use that instead of an external zip programme.
 
 **)
 Library ITHelperXE102;
@@ -64,7 +66,8 @@ uses
   ITHelper.ProjectOptions in '..\Source\ITHelper.ProjectOptions.pas',
   ITHelper.ZIPManager in '..\Source\ITHelper.ZIPManager.pas',
   ITHelper.ResponseFile in '..\Source\ITHelper.ResponseFile.pas',
-  ITHelper.MessageManager in '..\Source\ITHelper.MessageManager.pas';
+  ITHelper.MessageManager in '..\Source\ITHelper.MessageManager.pas',
+  ITHelper.VersionManager in '..\Source\ITHelper.VersionManager.pas';
 
 {$R *.res}
 
