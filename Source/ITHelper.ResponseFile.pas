@@ -5,7 +5,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    05 Jan 2018
+  @Date    07 Jan 2018
   
 **)
 Unit ITHelper.ResponseFile;
@@ -104,41 +104,34 @@ End;
 **)
 Procedure TITHResponseFile.AddProjectFilesToResponseFile(Const strBasePath: String);
 
-Const
-  strTypeLibSuffix = '*_tlb.pas';
-  strDCRExt = '.dcr';
-  strCPPExt = '*.cpp';
-  strDFMExt = '.dfm';
-  strPASExt = '*.pas';
-
 Var
   iModule: Integer;
-  strFileName: String;
+  ModuleInfo: IOTAModuleInfo;
+  iFile: Integer;
+  slFiles : TStringList;
 
 Begin
-  For iModule := 0 To FProject.ModuleFileCount - 1 Do
-    Begin
-      TfrmITHProcessing.ProcessFileName(ExtractFileName(FProject.ModuleFileEditors[iModule].FileName));
-      AddToList(strBasePath, FProject.ModuleFileEditors[iModule].FileName);
-    End;
-  For iModule := 0 To FProject.GetModuleCount - 1 Do
-    Begin
-      strFileName := FProject.GetModule(iModule).FileName;
-      TfrmITHProcessing.ProcessFileName(ExtractFileName(strFileName));
-      AddToList(strBasePath, strFileName);
-      // Check for DCR on Type Libraries
-      If Like(strTypeLibSuffix, strFileName) Then
-        AddToList(strBasePath, ChangeFileExt(strFileName, strDCRExt));
-      // Check for DFM files
-      If FProject.GetModule(iModule).FormName <> '' Then
-        Begin
-          If Like(strPASExt, strFileName) Or Like(strCPPExt, strFileName) Then
-            AddToList(strBasePath, ChangeFileExt(FProject.GetModule(iModule).FileName, strDFMExt))
-          Else
-            AddToList(strBasePath, ResolvePath(FProject.GetModule(iModule).FormName,
-              ExtractFilePath(FProject.FileName)));
-        End;
-    End;
+  slFiles := TStringList.Create;
+  Try
+    // 160 and above (Delphi 8)
+    FProject.GetCompleteFileList(slFiles);
+    For iFile := 0 To slFiles.Count - 1 Do
+      AddToList(strBasePath, slFiles[iFile]);
+    // Manually
+    For iModule := 0 To FProject.GetModuleCount - 1 Do
+      Begin
+        ModuleInfo := FProject.GetModule(iModule);
+        AddToList(strBasePath, ModuleInfo.FileName);
+        ModuleInfo.GetAdditionalFiles(slFiles);
+        For iFile := 0 To slFiles.Count - 1 Do
+          AddToList(strBasePath, slFiles[iFile]);
+      End;
+    FProject.GetAssociatedFilesFromModule(slFiles);
+    For iFile := 0 To FProject.ModuleFileCount - 1 Do
+      AddToList(strBasePath, FProject.ModuleFileEditors[iFile].FileName);
+  Finally
+    slFiles.Free;
+  End;
 End;
 
 (**
@@ -199,14 +192,14 @@ ResourceString
   strCheckingFilelistForResources = 'Checking Filelist for Resources...';
 
 Const
-  strRESExt = '.res';
+  //: @debug strRESExt = '.res';
   strCFGExt = '.cfg';
   strResponseFileExt = '.response';
 
 Begin
   TfrmITHProcessing.ShowProcessing(Format(strBuildingFilelistFor, [ExtractFileName(strProject)]));
-  AddToList(strBasePath, FProject.FileName);
-  AddToList(strBasePath, ChangeFileExt(FProject.FileName, strRESExt));
+  //: @debug AddToList(strBasePath, FProject.FileName);
+  //: @debug AddToList(strBasePath, ChangeFileExt(FProject.FileName, strRESExt));
   AddToList(strBasePath, ChangeFileExt(FProject.FileName, strCFGExt));
   BuildTargetFileName(strBasePath);
   AddProjectFilesToResponseFile(strBasePath);
@@ -216,6 +209,7 @@ Begin
   FFileName := ChangeFileExt(strZIPName, strResponseFileExt);
   CheckResponseFileAgainExclusions;
   Try
+    {$IFDEF CODESITE}CodeSite.Send('Response File', FResponseFile);{$ENDIF}
     FResponseFile.SaveToFile(FFileName);
   Except
     On E: EWriteError Do

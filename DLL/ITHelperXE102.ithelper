@@ -10,7 +10,7 @@ CompileWithBRCC32=0
 MajorVer=2
 MinorVer=0
 ReleaseVer=0
-BuildVer=1337
+BuildVer=1349
 ResourceName=ITHelperVersionInfo
 
 [Zipping]
@@ -41,7 +41,7 @@ Item2={$PROJDRIVE$}\HoylD\RAD Studio\IDE Addins\Integrated Testing Helper\HTML H
 [VersionInfo]
 CompanyName=Season's Fall Music
 FileDescription=Integrated Testing Helper for Embarcadero RAD Studio
-FileVersion=2.0.0.1337
+FileVersion=2.0.0.1349
 InternalName=ITHelper
 LegalCopyright=Season's Fall Music
 LegalTrademarks=Season's Fall Music
