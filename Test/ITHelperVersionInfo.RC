@@ -1,8 +1,8 @@
 LANGUAGE LANG_ENGLISH,SUBLANG_ENGLISH_US
 
 1 VERSIONINFO LOADONCALL MOVEABLE DISCARDABLE IMPURE
-FILEVERSION 1, 0, 15, 1776
-PRODUCTVERSION 1, 0, 15, 1776
+FILEVERSION 1, 0, 15, 1783
+PRODUCTVERSION 1, 0, 15, 1783
 FILEFLAGSMASK VS_FFI_FILEFLAGSMASK
 FILEOS VOS__WINDOWS32
 FILETYPE VFT_APP
@@ -11,16 +11,16 @@ FILETYPE VFT_APP
   {
     BLOCK "040904E4"
     {
-     VALUE "CompanyName", "Season's Fall Music Limited (c) 1989\000"
-     VALUE "FileDescription", "Unit Tets for the ITHelper project\000"
-     VALUE "FileVersion", "1.0.15.1776\000"
-     VALUE "InternalName", "ITHelper\000"
-     VALUE "LegalCopyright", "Season's Fall Music Limited (c) 1989\000"
-     VALUE "LegalTrademarks", "Season's Fall Music Limited (c) 1989\000"
-     VALUE "OriginalFilename", "ITHelper\000"
-     VALUE "ProductName", "ITHelper\000"
-     VALUE "ProductVersion", "1.0\000"
-     VALUE "Comments", "\000"
+      VALUE "CompanyName", "Season's Fall Music Limited (c) 1989\000"
+      VALUE "FileDescription", "Unit Tets for the ITHelper project\000"
+      VALUE "FileVersion", "1.0.15.1783\000"
+      VALUE "InternalName", "ITHelper\000"
+      VALUE "LegalCopyright", "Season's Fall Music Limited (c) 1989\000"
+      VALUE "LegalTrademarks", "Season's Fall Music Limited (c) 1989\000"
+      VALUE "OriginalFilename", "ITHelper\000"
+      VALUE "ProductName", "ITHelper\000"
+      VALUE "ProductVersion", "1.0\000"
+      VALUE "Comments", "\000"
     }
   }
   BLOCK "VarFileInfo"

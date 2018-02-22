@@ -5,7 +5,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    07 Jan 2018
+  @Date    13 Jan 2018
   
 **)
 Unit ITHelper.ResponseFile;
@@ -209,7 +209,6 @@ Begin
   FFileName := ChangeFileExt(strZIPName, strResponseFileExt);
   CheckResponseFileAgainExclusions;
   Try
-    {$IFDEF CODESITE}CodeSite.Send('Response File', FResponseFile);{$ENDIF}
     FResponseFile.SaveToFile(FFileName);
   Except
     On E: EWriteError Do
@@ -259,6 +258,7 @@ Var
   iEnd: Integer;
 
 Begin
+  //: @todo UPdate!!!!!
   If IsProject(strDPKExt) Then
     strExt := strBPLExt
   Else If IsProject(strDPRExt) Then

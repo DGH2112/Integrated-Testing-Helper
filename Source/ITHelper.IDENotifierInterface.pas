@@ -5,7 +5,7 @@
 
   @Author  David Hoyle.
   @Version 1.0
-  @Date    07 Jan 2018
+  @Date    12 Jan 2018
 
 **)
 Unit ITHelper.IDENotifierInterface;
@@ -649,7 +649,7 @@ Begin
                   If ProjectOps.WarnAfter Then
                     Begin
                       FMsgMgr.AddMsg(Format(strAfterCompileWARNING, [strProject]),
-                        fnTools, ithfWarning);
+                        fnHeader, ithfWarning);
                       ShowHelperMessages(FGlobalOps.GroupMessages);
                     End;
               End;
