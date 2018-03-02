@@ -4,8 +4,8 @@ object frmITHProcessing: TfrmITHProcessing
   BorderStyle = bsNone
   BorderWidth = 1
   Caption = 'frmITHProcessing'
-  ClientHeight = 51
-  ClientWidth = 495
+  ClientHeight = 58
+  ClientWidth = 498
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText

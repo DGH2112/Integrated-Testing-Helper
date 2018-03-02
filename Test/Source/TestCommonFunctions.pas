@@ -6,7 +6,7 @@
   Modify the generated code to correctly setup and call the methods from the unit
   being tested.
 
-  @stopdocumentation
+  @stopdocumentation @nochecks No checks for tests
 
 **)
 
@@ -90,7 +90,7 @@ Begin
       CheckEquals('This allocation runs successfully and', ProcMsgHndr.Output[0]);
       CheckEquals('returns an ERRORLEVEL = 0.', ProcMsgHndr.Output[1]);
       slLines.Clear;
-      Process.FEXE := strDrive + '\HoylD\RAD Studio\Library\Test\FailureConsoleApp.exe';
+      Process.FEXE := strDrive + '\Documents\RAD Studio\Library\Test\FailureConsoleApp.exe';
       iResult := DGHCreateProcess(Process, ProcMsgHndr.ProcessMsgHandler,
         ProcMsgHndr.IdleHandler);
       CheckEquals(1, iResult, 'SuccessConsoleApp ERRORLEVEL');

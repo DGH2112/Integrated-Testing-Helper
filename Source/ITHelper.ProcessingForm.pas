@@ -5,7 +5,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    30 Dec 2017
+  @Date    02 Mar 2018
 
 **)
 Unit ITHelper.ProcessingForm;
@@ -32,19 +32,20 @@ Type
   (** A class to represent the modeless form. **)
   TfrmITHProcessing = Class(TForm)
   Strict Private
-    { Private declarations }
-    FForm: TPanel;
-    FInfo: TPanel;
-    FFileName: TPanel;
-    FMsg: TTimer;
-    FCanHide: Boolean;
+    FForm     : TPanel;
+    FInfo     : TPanel;
+    FFileName : TPanel;
+    FMsg      : TTimer;
+    FCanHide  : Boolean;
+    FMessage  : String;
+    FFName    : String;
   Strict Protected
-    Function TextWidth(Const AFont: TFont; Const strMsg: String): Integer;
+    Function  TextWidth(Const AFont: TFont; Const strMsg: String): Integer;
     Procedure MsgTimer(Sender: TObject);
+    Class Procedure CheckWidth;
   Protected
     Procedure InitialiseControls;
   Public
-    { Public declarations }
     Class Procedure ShowProcessing(Const strMsg: String; Const iColour: TColor = clBlue;
       Const boolWait: Boolean = False);
     Class Procedure HideProcessing;
@@ -62,10 +63,38 @@ Implementation
 
 {$R *.dfm}
 
+Uses
+  Math;
+
 
 Var
   (** A private varaiable to hold the Singleton reference to the form. **)
   FormInstance: TfrmITHProcessing;
+
+(**
+
+  This class method calculates the minimum width for the progress form based on the filename and message
+  text.
+
+  @precon  None.
+  @postcon Updates the width and position of the progress for based on the message and filename strings.
+
+**)
+Class Procedure TfrmITHProcessing.CheckWidth;
+
+Const
+  iTextPadding = 50;
+var
+  iWidth: Integer;
+
+Begin
+  iWidth := Max(
+    FormInstance.TextWidth(FormInstance.FInfo.Font, FormInstance.FMessage),
+    FormInstance.TextWidth(FormInstance.FInfo.Font, FormInstance.FFName)
+  );
+  FormInstance.Width := iTextPadding + iWidth;
+  FormInstance.Left := Screen.Width Div 2 - FormInstance.Width Div 2;
+End;
 
 (**
 
@@ -183,7 +212,9 @@ End;
 Class Procedure TfrmITHProcessing.ProcessFileName(Const strFileName: String);
 
 Begin
-  FormInstance.FFileName.Caption := strFileName;
+  FormInstance.FFName := strFileName;
+  FormInstance.FFileName.Caption := FormInstance.FFName;
+  CheckWidth;
   Application.ProcessMessages;
 End;
 
@@ -204,15 +235,12 @@ End;
 Class Procedure TfrmITHProcessing.ShowProcessing(Const strMsg: String;
   Const iColour: TColor = clBlue; Const boolWait: Boolean = False);
 
-Const
-  iTextPadding = 50;
-
 Begin
   FormInstance.CanHide := False;
   FormInstance.FInfo.Caption := strMsg;
   FormInstance.FInfo.Font.Color := iColour;
-  FormInstance.Width := iTextPadding + FormInstance.TextWidth(FormInstance.FInfo.Font, strMsg);
-  FormInstance.Left := Screen.Width Div 2 - FormInstance.Width Div 2;
+  FormInstance.FMessage := strMsg;
+  CheckWidth;
   If Not FormInstance.Visible Then
     FormInstance.Show;
   FormInstance.FFileName.Caption := '';
