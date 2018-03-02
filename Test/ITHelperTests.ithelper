@@ -11,13 +11,13 @@ CompileWithBRCC32=0
 MajorVer=1
 MinorVer=0
 ReleaseVer=15
-BuildVer=1784
+BuildVer=1802
 ResourceName=ITHelperVersionInfo
 
 [Zipping]
 Enabled=1
-ZipFile={$PROJDRIVE$}\HoylD\Web Page\Zips\integratedtestinghelper.zip
-BasePath={$PROJDRIVE$}\HoylD\RAD Studio\
+ZipFile={$PROJDRIVE$}\Documents\Web Page\Zips\integratedtestinghelper.zip
+BasePath={$PROJDRIVE$}\Documents\RAD Studio\
 ExclusionFiles=
 
 [Post-Compilation]
@@ -26,7 +26,7 @@ dcc32.exe||D:\HoylD|dcc32.exe=0
 [VersionInfo]
 CompanyName=Season's Fall Music Limited (c) 1989
 FileDescription=Unit Tets for the ITHelper project
-FileVersion=1.0.15.1784
+FileVersion=1.0.15.1802
 InternalName=ITHelper
 LegalCopyright=Season's Fall Music Limited (c) 1989
 LegalTrademarks=Season's Fall Music Limited (c) 1989

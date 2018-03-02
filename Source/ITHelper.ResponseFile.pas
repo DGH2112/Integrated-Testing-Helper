@@ -5,7 +5,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    13 Jan 2018
+  @Date    02 Mar 2018
   
 **)
 Unit ITHelper.ResponseFile;
@@ -42,7 +42,7 @@ Type
     Procedure AddAdditionalZipFilesToResponseFile(Const strBasePath: String);
     Procedure AddProjectFilesToResponseFile(Const strBasePath: String);
     Function  AddToList(Const strBasePath, strModuleName: String): Boolean;
-    Procedure BuildResponseFile(Const strBasePath, strProject, strZIPName: String);
+    Function  BuildResponseFile(Const strBasePath, strProject, strZIPName: String) : Boolean;
     Function  CheckResExts(Const slResExts: TStringList; Const strFileName: String): Boolean;
     Procedure CheckSourceForInclude(Const strFileName, strInclude : String; 
       Const slIncludeFiles: TStringList);
@@ -183,9 +183,10 @@ End;
   @param   strBasePath as a String as a constant
   @param   strProject  as a String as a constant
   @param   strZIPName  as a String as a constant
+  @return  a Boolean
 
 **)
-Procedure TITHResponseFile.BuildResponseFile(Const strBasePath, strProject, strZIPName: String);
+Function TITHResponseFile.BuildResponseFile(Const strBasePath, strProject, strZIPName: String) : Boolean;
 
 ResourceString
   strBuildingFilelistFor = 'Building Filelist for %s...';
@@ -197,6 +198,7 @@ Const
   strResponseFileExt = '.response';
 
 Begin
+  Result := False;
   TfrmITHProcessing.ShowProcessing(Format(strBuildingFilelistFor, [ExtractFileName(strProject)]));
   //: @debug AddToList(strBasePath, FProject.FileName);
   //: @debug AddToList(strBasePath, ChangeFileExt(FProject.FileName, strRESExt));
@@ -210,8 +212,9 @@ Begin
   CheckResponseFileAgainExclusions;
   Try
     FResponseFile.SaveToFile(FFileName);
+    Result := True;
   Except
-    On E: EWriteError Do
+    On E: EFileStreamError Do
       FMsgMgr.AddMsg(Format(E.Message + '(%s)', [strProject]), fnHeader, ithfFailure);
   End;
 End;

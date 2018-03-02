@@ -77,9 +77,9 @@ Var
 Begin
   strDrive            := ExtractFileDrive(ParamStr(0));
   Process.FEnabled := True;
-  Process.FEXE     := strDrive + '\HoylD\RAD Studio\Library\Test\SuccessConsoleApp.exe';
+  Process.FEXE     := strDrive + '\Documents\RAD Studio\Library\Test\SuccessConsoleApp.exe';
   Process.FParams  := '';
-  Process.FDir     := strDrive + '\HoylD\RAD Studio\Library\Test\';
+  Process.FDir     := strDrive + '\Documents\RAD Studio\Library\Test\';
   slLines          := TStringList.Create;
   Try
     ProcMsgHndr := TDGHCreateProcessHandler.Create(slLines);

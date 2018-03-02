@@ -10,13 +10,13 @@ CompileWithBRCC32=0
 MajorVer=2
 MinorVer=0
 ReleaseVer=0
-BuildVer=1351
+BuildVer=1357
 ResourceName=ITHelperVersionInfo
 
 [Zipping]
 Enabled=1
-ZipFile={$PROJDRIVE$}\HoylD\Web Page\Zips\integratedtestinghelper.zip
-BasePath={$PROJDRIVE$}\HoylD\RAD Studio\
+ZipFile={$PROJDRIVE$}\Documents\Web Page\Zips\integratedtestinghelper.zip
+BasePath={$PROJDRIVE$}\Documents\RAD Studio\
 ExclusionFiles=
 
 [Pre-Compilation]
@@ -33,15 +33,10 @@ C:\Program Files\JPSoft\TCMD13x64\tcc.exe|BuildIndividualITHelper.btm DXE Both|{
 C:\Program Files\JPSoft\TCMD13x64\tcc.exe|BuildIndividualITHelper.btm DXE2 Package|{$PROJDRIVE$}\HoylD\Borland Studio Projects\IDE Addins\Integrated Testing Helper\|Delphi XE2=0
 {$PROJDRIVE$}\HoylD\Borland Studio Projects\Applications\Update HoylD XML\HoylDXML.exe|ithelperXE2.dll "..\..\..\Web Page\HoylD-Live.xml" ITHelper2006|{$PROJDRIVE$}\HoylD\Borland Studio Projects\IDE Addins\Integrated Testing Helper\|HoylDXML.exe=0
 
-[Additional Zip Files]
-Item0={$PROJDRIVE$}\HoylD\RAD Studio\IDE Addins\Integrated Testing Helper\Images\*.bmp
-Item1={$PROJDRIVE$}\HoylD\RAD Studio\IDE Addins\Integrated Testing Helper\HTML Help\*.h*
-Item2={$PROJDRIVE$}\HoylD\RAD Studio\IDE Addins\Integrated Testing Helper\HTML Help\Images\*.gif
-
 [VersionInfo]
 CompanyName=Season's Fall Music
 FileDescription=Integrated Testing Helper for Embarcadero RAD Studio
-FileVersion=2.0.0.1351
+FileVersion=2.0.0.1357
 InternalName=ITHelper
 LegalCopyright=Season's Fall Music
 LegalTrademarks=Season's Fall Music
@@ -49,4 +44,8 @@ OriginalFilename=ITHelper
 ProductName=ITHelper
 ProductVersion=2.0
 Comments=ITHelper: A RAD Studio IDE adding for automating pre and post compilation processing.
+
+[Additional Zip Files]
+Item0={$PROJDRIVE$}\Documents\RAD Studio\IDE Addins\Integrated Testing Helper\Images\*.bmp
+Item1={$PROJDRIVE$}\Documents\RAD Studio\IDE Addins\Integrated Testing Helper\HTML Help\Images\*.gif
 

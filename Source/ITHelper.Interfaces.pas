@@ -4,7 +4,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    06 Jan 2018
+  @Date    02 Mar 2018
 
 **)
 Unit ITHelper.Interfaces;
@@ -347,7 +347,7 @@ Type
   IITHResponseFile = Interface
   ['{D00061A5-FAC9-41E5-97C2-8F33734623C2}']
     Function  GetFileName : String;
-    Procedure BuildResponseFile(Const strBasePath, strProject, strZIPName: String);
+    Function  BuildResponseFile(Const strBasePath, strProject, strZIPName: String) : Boolean;
     Function  FileList : String;
     (**
       This property returns the filename of the repsonse file for zipping information.

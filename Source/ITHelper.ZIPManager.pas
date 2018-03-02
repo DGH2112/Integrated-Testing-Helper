@@ -4,7 +4,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    05 Jan 2018
+  @Date    02 Mar 2018
   
 **)
 Unit ITHelper.ZIPManager;
@@ -183,24 +183,27 @@ Begin
               Exit;
             End;
           strZIPName := ExpandMacro(strZIPName, FProject.FileName);
-          ResponseFile.BuildResponseFile(strBasePath, strProject, strZIPName);
-          Process.FParams := StringReplace(Process.FParams, strRESPONSEFILE, ResponseFile.FileName, []);
-          Process.FParams := StringReplace(Process.FParams, strFILELIST, ResponseFile.FileList, []);
-          Process.FParams := StringReplace(Process.FParams, strZIPFILE, strZIPName, []);
-          Process.FDir := ExpandMacro(strBasePath, FProject.FileName);
-          FMsgMgr.ParentMsg := FMsgMgr.AddMsg(Format(strRunning,
-            [ExtractFileName(Process.FEXE), strProject, strZipping]), fnHeader, ithfHeader);
-          TfrmITHProcessing.ShowProcessing(Format(strProcessing, [ExtractFileName(Process.FEXE)]));
-          FMsgMgr.Clear;
-          Result := DGHCreateProcess(Process, ProcessMsgHandler, IdleHandler);
-          For iMsg := 0 To FMsgMgr.Count - 1 Do
-            Case Result Of
-              0: FMsgMgr[iMsg].ForeColour := FGlobalOps.FontColour[ithfSuccess];
-            Else
-              FMsgMgr[iMsg].ForeColour := FGlobalOps.FontColour[ithfFailure];
-            End;
-          If Result <> 0 Then
-            FMsgMgr.ParentMsg.ForeColour := FGlobalOps.FontColour[ithfFailure];
+          If ResponseFile.BuildResponseFile(strBasePath, strProject, strZIPName) Then
+            Begin
+              Process.FParams := StringReplace(Process.FParams, strRESPONSEFILE, ResponseFile.FileName, []);
+              Process.FParams := StringReplace(Process.FParams, strFILELIST, ResponseFile.FileList, []);
+              Process.FParams := StringReplace(Process.FParams, strZIPFILE, strZIPName, []);
+              Process.FDir := ExpandMacro(strBasePath, FProject.FileName);
+              FMsgMgr.ParentMsg := FMsgMgr.AddMsg(Format(strRunning,
+                [ExtractFileName(Process.FEXE), strProject, strZipping]), fnHeader, ithfHeader);
+              TfrmITHProcessing.ShowProcessing(Format(strProcessing, [ExtractFileName(Process.FEXE)]));
+              FMsgMgr.Clear;
+              Result := DGHCreateProcess(Process, ProcessMsgHandler, IdleHandler);
+              For iMsg := 0 To FMsgMgr.Count - 1 Do
+                Case Result Of
+                  0: FMsgMgr[iMsg].ForeColour := FGlobalOps.FontColour[ithfSuccess];
+                Else
+                  FMsgMgr[iMsg].ForeColour := FGlobalOps.FontColour[ithfFailure];
+                End;
+              If Result <> 0 Then
+                FMsgMgr.ParentMsg.ForeColour := FGlobalOps.FontColour[ithfFailure];
+            End Else
+              Inc(Result);
         End Else
           FMsgMgr.AddMsg(Format(strZIPFileNotConfigured, [strProject]), fnHeader, ithfFailure);
     End;
