@@ -6,7 +6,7 @@
         <Projects Include="Test\ITHelperTests.dproj">
             <Dependencies/>
         </Projects>
-        <Projects Include="DLL\ITHelperXE102.dproj">
+        <Projects Include="ITHelper.dproj">
             <Dependencies>Test\ITHelperTests.dproj</Dependencies>
         </Projects>
     </ItemGroup>
@@ -26,23 +26,23 @@
     <Target Name="ITHelperTests:Make">
         <MSBuild Projects="Test\ITHelperTests.dproj" Targets="Make"/>
     </Target>
-    <Target Name="ITHelperXE102" DependsOnTargets="ITHelperTests">
-        <MSBuild Projects="DLL\ITHelperXE102.dproj"/>
+    <Target Name="ITHelper" DependsOnTargets="ITHelperTests">
+        <MSBuild Projects="ITHelper.dproj"/>
     </Target>
-    <Target Name="ITHelperXE102:Clean" DependsOnTargets="ITHelperTests:Clean">
-        <MSBuild Projects="DLL\ITHelperXE102.dproj" Targets="Clean"/>
+    <Target Name="ITHelper:Clean" DependsOnTargets="ITHelperTests:Clean">
+        <MSBuild Projects="ITHelper.dproj" Targets="Clean"/>
     </Target>
-    <Target Name="ITHelperXE102:Make" DependsOnTargets="ITHelperTests:Make">
-        <MSBuild Projects="DLL\ITHelperXE102.dproj" Targets="Make"/>
+    <Target Name="ITHelper:Make" DependsOnTargets="ITHelperTests:Make">
+        <MSBuild Projects="ITHelper.dproj" Targets="Make"/>
     </Target>
     <Target Name="Build">
-        <CallTarget Targets="ITHelperTests;ITHelperXE102"/>
+        <CallTarget Targets="ITHelperTests;ITHelper"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="ITHelperTests:Clean;ITHelperXE102:Clean"/>
+        <CallTarget Targets="ITHelperTests:Clean;ITHelper:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="ITHelperTests:Make;ITHelperXE102:Make"/>
+        <CallTarget Targets="ITHelperTests:Make;ITHelper:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>

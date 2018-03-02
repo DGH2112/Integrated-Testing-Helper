@@ -1,8 +1,8 @@
 LANGUAGE LANG_ENGLISH,SUBLANG_ENGLISH_US
 
 1 VERSIONINFO LOADONCALL MOVEABLE DISCARDABLE IMPURE
-FILEVERSION 2, 0, 0, 1361
-PRODUCTVERSION 2, 0, 0, 1361
+FILEVERSION 2, 0, 0, 1363
+PRODUCTVERSION 2, 0, 0, 1363
 FILEFLAGSMASK VS_FFI_FILEFLAGSMASK
 FILEOS VOS__WINDOWS32
 FILETYPE VFT_APP
@@ -13,7 +13,7 @@ FILETYPE VFT_APP
     {
       VALUE "CompanyName", "Season's Fall Music\000"
       VALUE "FileDescription", "Integrated Testing Helper for Embarcadero RAD Studio\000"
-      VALUE "FileVersion", "2.0.0.1361\000"
+      VALUE "FileVersion", "2.0.0.1363\000"
       VALUE "InternalName", "ITHelper\000"
       VALUE "LegalCopyright", "Season's Fall Music\000"
       VALUE "LegalTrademarks", "Season's Fall Music\000"
