@@ -4,7 +4,7 @@
 
   @Version 1.0
   @Author  David Hoyle
-  @Date    05 Jan 2018
+  @Date    19 Mar 2018
 
 **)
 unit ITHelper.TestingHelperUtils;
@@ -70,22 +70,12 @@ Type
   Function  Actions : TObjectList;
   Function  ITHHTMLHelpFile(Const strContext : String = '') : String;
 
-//{$IFNDEF D2005}
-//Const
-//  (** HTML Constant to display a Topic **)
-//  HH_DISPLAY_TOPIC = $0000;
-//  (** HTML Constant to display a the Table of Contents **)
-//  HH_DISPLAY_TOC = $0001;
-//  (** HTML Constant to close all HTML files **)
-//  HH_CLOSE_ALL = $0012;
-//
-//Function HtmlHelp(hwndCaller: HWND; pszFile: PChar; uCommand: UINT;
-//  dwData: DWORD): HWND; StdCall; external 'HHCTRL.OCX' Name 'HtmlHelpA';
-//{$ENDIF}
-//
 Implementation
 
 Uses
+  {$IFDEF DEBUG}
+  CodeSiteLogging,
+  {$ENDIF}
   Forms,
   Controls,
   ActnList,

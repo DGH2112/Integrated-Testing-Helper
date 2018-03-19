@@ -4,7 +4,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    05 Jan 2018
+  @Date    19 Mar 2018
   
 **)
 Unit ITHelper.CommonFunctions;
@@ -692,7 +692,7 @@ Type
     Try
       astrParts := DGHSplit(strLocalPattern, '*');
       For i := Low(astrParts) To High(astrParts) Do
-        sl.Add(astrParts[i]);
+        sl.Add(LowerCase(astrParts[i]));
       If CheckStart(sl, MatchTypes, iStartIndex) Then
         Exit;
       If CheckInBetween(sl, MatchTypes, iStartIndex) Then

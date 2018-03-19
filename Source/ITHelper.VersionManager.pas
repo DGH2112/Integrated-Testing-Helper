@@ -4,7 +4,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    07 Jan 2018
+  @Date    02 Mar 2018
   
 **)
 Unit ITHelper.VersionManager;
@@ -200,10 +200,10 @@ Begin
   sl := TStringList.Create;
   Try
     sl.Text := strVersionTemplate;
-    sl.Text := ExpandMacro(sl.Text, strMajor, FProjectOps.Major.ToString);
-    sl.Text := ExpandMacro(sl.Text, strMinor, FProjectOps.Minor.ToString);
-    sl.Text := ExpandMacro(sl.Text, strRelease, FProjectOps.Release.ToString);
-    sl.Text := ExpandMacro(sl.Text, strBuild, FProjectOps.Build.ToString);
+    sl.Text := ExpandMacro(sl.Text, strMajor, IntToStr(FProjectOps.Major));
+    sl.Text := ExpandMacro(sl.Text, strMinor, IntToStr(FProjectOps.Minor));
+    sl.Text := ExpandMacro(sl.Text, strRelease, IntToStr(FProjectOps.Release));
+    sl.Text := ExpandMacro(sl.Text, strBuild, IntToStr(FProjectOps.Build));
     slDetails := FProjectOps.VerInfo;
     For i := 0 To slDetails.Count - 1 Do
       strDetails := strDetails + Format(strVALUE, [slDetails.Names[i],

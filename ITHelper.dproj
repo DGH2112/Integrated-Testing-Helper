@@ -7,7 +7,7 @@
         <TargetedPlatforms>1</TargetedPlatforms>
         <AppType>Library</AppType>
         <FrameworkType>VCL</FrameworkType>
-        <ProjectVersion>18.3</ProjectVersion>
+        <ProjectVersion>18.4</ProjectVersion>
         <Platform Condition="'$(Platform)'==''">Win32</Platform>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Config)'=='Base' or '$(Base)'!=''">
@@ -56,7 +56,7 @@
         <DCC_SYMBOL_PLATFORM>false</DCC_SYMBOL_PLATFORM>
         <DCC_UNIT_PLATFORM>false</DCC_UNIT_PLATFORM>
         <DCC_DcuOutput>$(Platform)\$(Config)</DCC_DcuOutput>
-        <DCC_ExeOutput>..\</DCC_ExeOutput>
+        <DCC_ExeOutput>.\</DCC_ExeOutput>
         <UsePackages>true</UsePackages>
         <DCC_UsePackage>DesignIDE;VCL;RTL;$(DCC_UsePackage)</DCC_UsePackage>
     </PropertyGroup>
@@ -86,7 +86,7 @@
     <PropertyGroup Condition="'$(Cfg_2_Win32)'!=''">
         <Debugger_RunParams>-rITHelper</Debugger_RunParams>
         <Debugger_HostApplication>C:\Program Files (x86)\Embarcadero\Studio\19.0\bin\bds.exe</Debugger_HostApplication>
-        <DCC_ExeOutput>..\</DCC_ExeOutput>
+        <DCC_ExeOutput>.\</DCC_ExeOutput>
         <VerInfo_Locale>1033</VerInfo_Locale>
         <UsePackages>true</UsePackages>
         <VerInfo_Keys>CompanyName=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductVersion=1.0.0.0;Comments=;ProgramID=com.embarcadero.$(MSBuildProjectName);FileDescription=$(MSBuildProjectName);ProductName=$(MSBuildProjectName)</VerInfo_Keys>

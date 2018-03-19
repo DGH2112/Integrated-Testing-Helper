@@ -2,7 +2,7 @@
     <PropertyGroup>
         <ProjectGuid>{3F853CBA-DBB7-4815-B17F-51295A8F7B86}</ProjectGuid>
         <MainSource>ITHelperTests.dpr</MainSource>
-        <ProjectVersion>18.3</ProjectVersion>
+        <ProjectVersion>18.4</ProjectVersion>
         <Config Condition="'$(Config)'==''">Debug</Config>
         <DCC_DCCCompiler>DCC32</DCC_DCCCompiler>
         <FrameworkType>VCL</FrameworkType>

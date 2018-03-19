@@ -6,7 +6,7 @@
 
   @Version 1.0
   @Author  David Hoyle
-  @Date    05 Jan 2018
+  @Date    02 Mar 2018
 
 **)
 Unit ITHelper.ConfigurationForm;
@@ -29,7 +29,6 @@ Uses
   ToolsAPI,
   ImgList,
   ExtCtrls,
-  System.ImageList,
   ITHelper.ExternalProcessInfo,
   ITHelper.Interfaces;
 
