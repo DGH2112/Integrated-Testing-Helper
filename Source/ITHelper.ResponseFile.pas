@@ -5,7 +5,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    19 Mar 2018
+  @Date    14 Jul 2018
   
 **)
 Unit ITHelper.ResponseFile;
@@ -193,15 +193,12 @@ ResourceString
   strCheckingFilelistForResources = 'Checking Filelist for Resources...';
 
 Const
-  //: @debug strRESExt = '.res';
   strCFGExt = '.cfg';
   strResponseFileExt = '.response';
 
 Begin
   Result := False;
   TfrmITHProcessing.ShowProcessing(Format(strBuildingFilelistFor, [ExtractFileName(strProject)]));
-  //: @debug AddToList(strBasePath, FProject.FileName);
-  //: @debug AddToList(strBasePath, ChangeFileExt(FProject.FileName, strRESExt));
   AddToList(strBasePath, ChangeFileExt(FProject.FileName, strCFGExt));
   BuildTargetFileName(strBasePath);
   AddProjectFilesToResponseFile(strBasePath);
