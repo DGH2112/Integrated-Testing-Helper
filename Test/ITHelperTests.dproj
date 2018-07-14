@@ -61,7 +61,7 @@
         <DCC_ImageBase>00400000</DCC_ImageBase>
         <DCC_SYMBOL_PLATFORM>false</DCC_SYMBOL_PLATFORM>
         <DCC_RangeChecking>true</DCC_RangeChecking>
-        <DCC_Define>CONSOLE_TESTRUNNER;EUREKALOG;EUREKALOG_VER6;USE_JEDI_JCL_;TESTINSIGHT;$(DCC_Define)</DCC_Define>
+        <DCC_Define>CONSOLE_TESTRUNNER;EUREKALOG;USE_JEDI_JCL_;TESTINSIGHT;$(DCC_Define)</DCC_Define>
         <DCC_Optimize>false</DCC_Optimize>
         <DCC_F>false</DCC_F>
         <DCC_E>false</DCC_E>
