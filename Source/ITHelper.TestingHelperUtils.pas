@@ -4,7 +4,7 @@
 
   @Version 1.0
   @Author  David Hoyle
-  @Date    19 Mar 2018
+  @Date    14 Jul 2018
 
 **)
 unit ITHelper.TestingHelperUtils;
@@ -20,7 +20,8 @@ Uses
   Graphics,
   Classes,
   Contnrs,
-  Menus;
+  Menus,
+  ITHelper.Interfaces, ITHelper.Types;
 
 Type
   (** An enumerate to define the type of information to be returned from
@@ -42,6 +43,16 @@ Type
   End;
 
   {$IFNDEF CONSOLE_TESTRUNNER}
+  (** This is a record to encapsulate all the file saving code. **)
+  TITHToolsAPIFunctions = Record
+  Strict Private
+    Class Procedure SaveModule(Const MessageMgr : IITHMessageManager; Const Module : IOTAModule); Static;
+  Public
+    Class Procedure SaveAllModifiedFiles(Const MessageMgr : IITHMessageManager); Static;
+    Class Procedure SaveProjectModifiedFiles(Const MessageMgr : IITHMessageManager;
+      Const Project : IOTAProject); Static;
+  End;
+
   Function  ProjectGroup: IOTAProjectGroup;
   Function  ActiveProject : IOTAProject;
   Function  ProjectModule(Const Project : IOTAProject) : IOTAModule;
@@ -85,14 +96,18 @@ Uses
   ComCtrls, 
   ITHelper.ResourceStrings;
 
-Var
-  (** A private variable to is used to hold action reference so that they
-      can be removed from the IDE. **)
-  FOTAActions : TObjectList;
+ResourceString
+  (** A resource string for the save modified files message. **)
+  strZippingSaved = '[Zipping] %s: Saved!';
 
 Const
   (** A constant string for the build message window page. **)
   strBuild = 'Build';
+
+Var
+  (** A private variable to is used to hold action reference so that they
+      can be removed from the IDE. **)
+  FOTAActions : TObjectList;
 
 {$IFNDEF CONSOLE_TESTRUNNER}
 Function FindMenuItem(Const strParentMenu: String): TMenuItem; Forward;
@@ -1033,6 +1048,102 @@ Begin
         If Module.GetModuleFileEditor(i).QueryInterface(IOTASourceEditor, Result) = S_OK Then
           Break;
     End;
+End;
+
+(**
+
+  This method iterators the editor buffer checking for modified files. If one is modified it save the 
+  file. If Prompt is true then you are prompted to save the file else it is automatically saved.
+
+  @precon  None.
+  @postcon Iterates the files open in the IDE and if they are modified saves the files.
+
+  @param   MessageMgr as an IITHMessageManager as a constant
+
+**)
+Class Procedure TITHToolsAPIFunctions.SaveAllModifiedFiles(Const MessageMgr : IITHMessageManager);
+
+Var
+  ES : IOTAEditorServices;
+  Iterator: IOTAEditBufferIterator;
+  i: Integer;
+  E: IOTAEditBuffer;
+
+Begin
+  If Supports(BorlandIDEServices, IOTAEditorServices, ES) Then
+    Begin
+      If ES.GetEditBufferIterator(Iterator) Then
+        Begin
+          For i := 0 To Iterator.Count - 1 Do
+            Begin
+              E := Iterator.EditBuffers[i];
+              If E.IsModified Then
+                Begin
+                  E.Module.Save(False, True);
+                  MessageMgr.AddMsg(Format(strZippingSaved, [ExtractFileName(E.Module.FileName)]),
+                    fnTools, ithfDefault);
+                End;
+            End;
+        End;
+    End;
+End;
+
+(**
+
+  This method attempts to save the given module is if the module is valid, its current editor are valid 
+  and the editor is modified.
+
+  @precon  None.
+  @postcon If the module has been modified it is saved.
+
+  @param   MessageMgr as an IITHMessageManager as a constant
+  @param   Module     as an IOTAModule as a constant
+
+**)
+Class Procedure TITHToolsAPIFunctions.SaveModule(Const MessageMgr : IITHMessageManager; Const Module : IOTAModule);
+
+Begin
+  If Assigned(Module) And Assigned(Module.CurrentEditor) And Module.CurrentEditor.Modified Then
+    Begin
+      Module.Save(False, True);
+      MessageMgr.AddMsg(Format(strZippingSaved, [ExtractFileName(Module.FileName)]), fnHeader,
+        ithfDefault);
+    End;
+End;
+
+(**
+
+  This method iterate through the files in the project and saves any files that have been modified.
+
+  @precon  None.
+  @postcon An files int he project which have been modified are saved.
+
+  @param   MessageMgr as an IITHMessageManager as a constant
+  @param   Project    as an IOTAProject as a constant
+
+**)
+Class Procedure TITHToolsAPIFunctions.SaveProjectModifiedFiles(Const MessageMgr : IITHMessageManager;
+      Const Project : IOTAProject);
+
+Var
+  iModule: Integer;
+  MI: IOTAModuleInfo;
+  M: IOTAModule;
+  MS: IOTAModuleServices;
+
+Begin
+  If Assigned(Project) Then
+    If Supports(BorlandIDEServices, IOTAModuleServices, MS) Then
+      Begin
+        For iModule := 0 To Project.GetModuleCount - 1 Do
+          Begin
+            MI := Project.GetModule(iModule);
+            M := MS.FindModule(MI.FileName);
+            If Assigned(M) Then
+              SaveModule(MessageMgr, M);
+          End;
+        SaveModule(MessageMgr, Project);
+      End;
 End;
 {$ENDIF}
 

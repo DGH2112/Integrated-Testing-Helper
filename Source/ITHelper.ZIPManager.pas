@@ -4,7 +4,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    02 Mar 2018
+  @Date    14 Jul 2018
   
 **)
 Unit ITHelper.ZIPManager;
@@ -167,6 +167,8 @@ Begin
   strProject := GetProjectName(FProject);
   If FProjectOps.EnableZipping Then
     Begin
+      If FProjectOps.SaveModifiedFiles Then
+        TITHToolsAPIFunctions.SaveProjectModifiedFiles(FMsgMgr, FProject);
       ResponseFile := TITHResponseFile.Create(FProject, FGlobalOps, FProjectOps, FMsgMgr);
       strZIPName := FProjectOps.ZipName;
       If strZIPName <> '' Then
