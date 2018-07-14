@@ -5,7 +5,7 @@
 
   @Author  David Hoyle.
   @Version 1.0
-  @Date    12 Jan 2018
+  @Date    14 Jul 2018
 
 **)
 Unit ITHelper.IDENotifierInterface;
@@ -630,8 +630,7 @@ Begin
                     TfrmITHProcessing.ShowProcessing(Format(strZIPToolFailure,
                       [strProject]), FGlobalOps.FontColour[ithfFailure], True);
                     ShowHelperMessages(FGlobalOps.GroupMessages);
-                    Abort; //: @bug Stop IDE continuing if there was a problem - Change this to
-                           //:      return a signal to pass failure to the IDE notifier methods.
+                    Abort;
                   End;
               End;
             If eoAfter In Ops Then
@@ -643,7 +642,7 @@ Begin
                       (Format(strPostCompilationToolsFailed, [strProject]),
                       FGlobalOps.FontColour[ithfWarning], True);
                     ShowHelperMessages(FGlobalOps.GroupMessages);
-                    Abort; //: @bug Stop IDE continuing if there was a problem.
+                    Abort;
                   End
                 Else If iResult < 0 Then
                   If ProjectOps.WarnAfter Then

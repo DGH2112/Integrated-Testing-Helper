@@ -4,7 +4,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    02 Mar 2018
+  @Date    14 Jul 2018
   
 **)
 Unit ITHelper.VersionManager;
@@ -120,7 +120,7 @@ Begin
         FMsgMgr.ParentMsg.ForeColour := FGlobalOps.FontColour[ithfFailure];
       ShowHelperMessages(FGlobalOps.GroupMessages);
       If iResult > 0 Then
-        Abort; //: @bug Change this!
+        Abort;
       FMsgMgr.AddMsg(Format(strResourceRCCompiledForProject, [
         FProjectOps.ResourceName, GetProjectName(FProject)]), fnHeader, ithfDefault);
     End;
