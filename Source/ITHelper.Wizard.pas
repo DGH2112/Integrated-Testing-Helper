@@ -4,7 +4,7 @@
   external tools before and after the compilation of the current project.
 
   @Version 1.0
-  @Date    05 Jan 2018
+  @Date    14 Jul 2018
   @Author  David Hoyle
 
 **)
@@ -352,11 +352,6 @@ Begin
   FMenuTimer.Free;
   {$ENDIF}
   FTestingHelperMenu.Free;
-  {$IFNDEF DXE20}
-  //: @bug This has been removed from Delphi XE2 as it generates an Access Violation as
-  //: the IDE closes down.
-  ClearMessages([cmCompiler, cmGroup]);
-  {$ENDIF}
   FGlobalOps := Nil;
   If FProjectMgrMenuIndex > -1 Then
     If Supports(BorlandIDEServices, IOTAPRojectManager, PM) Then
