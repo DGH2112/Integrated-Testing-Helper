@@ -4,7 +4,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    02 Mar 2018
+  @Date    14 Jul 2018
 
 **)
 Unit ITHelper.Interfaces;
@@ -43,6 +43,7 @@ Type
     Function  GetExcPatterns: String;
     Function  GetAddZipFiles: TStringList;
     Function  GetIniFile : TMemIniFile;
+    Function  GetSaveModifiedFiles : Boolean;
     Procedure SetResExtExc(Const strValue: String);
     Procedure SetIncOnCompile(Const boolValue: Boolean);
     Procedure SetCopyVerInfo(Const strValue: String);
@@ -60,6 +61,7 @@ Type
     Procedure SetZipName(Const strValue: String);
     Procedure SetBasePath(Const strValue: String);
     Procedure SetExcPatterns(Const strValue: String);
+    Procedure SetSaveModifiedFiles(Const boolValue : Boolean);
   // Properties
     (**
       This property gets and sets the resource extensions to be excluded from checks.
@@ -217,6 +219,13 @@ Type
       @return  a TStringList
     **)
     Property AddZipFiles: TStringList Read GetAddZipFiles;
+    (**
+      This property determines of any modified files in a project should be saved before zipping.
+      @precon  None.
+      @postcon Gets or Sets whether any modified files in a project should be saved before zipping.
+      @return  a Boolean
+    **)
+    Property SaveModifiedFiles : Boolean Read GetSaveModifiedFiles Write SetSaveModifiedFiles;
   End;
 
   (** An interface for the global options. **)

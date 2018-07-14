@@ -3,10 +3,10 @@ object frmITHZIPDialogue: TfrmITHZIPDialogue
   Top = 0
   BorderIcons = []
   Caption = 'ZIP Options'
-  ClientHeight = 336
+  ClientHeight = 445
   ClientWidth = 667
   Color = clBtnFace
-  Constraints.MinHeight = 370
+  Constraints.MinHeight = 480
   Constraints.MinWidth = 640
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -17,12 +17,12 @@ object frmITHZIPDialogue: TfrmITHZIPDialogue
   Position = poDesigned
   DesignSize = (
     667
-    336)
+    445)
   PixelsPerInch = 96
   TextHeight = 16
   object lblZipInfo: TLabel
     Left = 8
-    Top = 271
+    Top = 380
     Width = 575
     Height = 13
     Anchors = [akLeft, akRight, akBottom]
@@ -30,17 +30,19 @@ object frmITHZIPDialogue: TfrmITHZIPDialogue
     Caption = 
       'In order for this to work you need a ZIP command-line tool insta' +
       'lled and on your path.'
+    ExplicitTop = 271
   end
   object lblZIPName: TLabel
     Left = 8
     Top = 37
     Width = 128
     Height = 16
-    Caption = 'ZIP Path and Filename'
+    Caption = 'ZIP Path and File&name'
+    FocusControl = edtZipName
   end
   object lblAdditionalFiles: TLabel
     Left = 8
-    Top = 110
+    Top = 138
     Width = 86
     Height = 16
     Caption = '&Additional Files'
@@ -48,12 +50,21 @@ object frmITHZIPDialogue: TfrmITHZIPDialogue
   end
   object lblFilePatternsToExclude: TLabel
     Left = 8
-    Top = 201
+    Top = 310
     Width = 137
     Height = 16
     Anchors = [akLeft, akBottom]
     Caption = 'File Patterns To &Exclude'
     FocusControl = mmoExclusionPatterns
+    ExplicitTop = 201
+  end
+  object lblZIPBasePath: TLabel
+    Left = 8
+    Top = 86
+    Width = 299
+    Height = 16
+    Caption = 'ZIP &Base Path (used for relative paths in the ZIP file)'
+    FocusControl = edtBasePath
   end
   object cbxEnabledZipping: TCheckBox
     Left = 8
@@ -66,15 +77,15 @@ object frmITHZIPDialogue: TfrmITHZIPDialogue
   end
   object lbAdditionalWildcards: TListBox
     Left = 8
-    Top = 131
+    Top = 160
     Width = 553
-    Height = 64
+    Height = 144
     Anchors = [akLeft, akTop, akRight, akBottom]
     TabOrder = 1
   end
   object btnAddZip: TBitBtn
     Left = 567
-    Top = 131
+    Top = 160
     Width = 92
     Height = 25
     Anchors = [akTop, akRight]
@@ -98,7 +109,7 @@ object frmITHZIPDialogue: TfrmITHZIPDialogue
   end
   object btnEditZip: TBitBtn
     Left = 567
-    Top = 162
+    Top = 191
     Width = 92
     Height = 25
     Anchors = [akTop, akRight]
@@ -122,7 +133,7 @@ object frmITHZIPDialogue: TfrmITHZIPDialogue
   end
   object btnDeleteZip: TBitBtn
     Left = 567
-    Top = 193
+    Top = 222
     Width = 92
     Height = 25
     Anchors = [akTop, akRight]
@@ -164,7 +175,7 @@ object frmITHZIPDialogue: TfrmITHZIPDialogue
   end
   object edtBasePath: TEdit
     Left = 8
-    Top = 83
+    Top = 108
     Width = 553
     Height = 24
     Anchors = [akLeft, akTop, akRight]
@@ -172,7 +183,7 @@ object frmITHZIPDialogue: TfrmITHZIPDialogue
   end
   object btnBrowseBasePath: TButton
     Left = 567
-    Top = 83
+    Top = 108
     Width = 92
     Height = 25
     Anchors = [akTop, akRight]
@@ -182,7 +193,7 @@ object frmITHZIPDialogue: TfrmITHZIPDialogue
   end
   object mmoExclusionPatterns: TMemo
     Left = 8
-    Top = 220
+    Top = 329
     Width = 553
     Height = 45
     Anchors = [akLeft, akRight, akBottom]
@@ -190,35 +201,44 @@ object frmITHZIPDialogue: TfrmITHZIPDialogue
   end
   object btnOK: TBitBtn
     Left = 503
-    Top = 303
+    Top = 412
     Width = 75
     Height = 25
     Anchors = [akRight, akBottom]
     Kind = bkOK
     NumGlyphs = 2
-    TabOrder = 11
+    TabOrder = 12
     OnClick = btnOKClick
   end
   object btnCancel: TBitBtn
     Left = 584
-    Top = 303
+    Top = 412
     Width = 75
     Height = 25
     Anchors = [akRight, akBottom]
     Kind = bkCancel
     NumGlyphs = 2
-    TabOrder = 12
+    TabOrder = 13
   end
   object btnHelp: TBitBtn
     Left = 422
-    Top = 303
+    Top = 412
     Width = 75
     Height = 25
     Anchors = [akRight, akBottom]
     Kind = bkHelp
     NumGlyphs = 2
-    TabOrder = 10
+    TabOrder = 11
     OnClick = btnHelpClick
+  end
+  object chkModifiedFiles: TCheckBox
+    Left = 8
+    Top = 416
+    Width = 408
+    Height = 17
+    Anchors = [akLeft, akRight, akBottom]
+    Caption = '&Save modified files in the project before Zipping'
+    TabOrder = 10
   end
   object dlgOpenZIP: TOpenDialog
     DefaultExt = 'ZIP'

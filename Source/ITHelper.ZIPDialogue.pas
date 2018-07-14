@@ -5,7 +5,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    05 Jan 2018
+  @Date    14 Jul 2018
 
 **)
 Unit ITHelper.ZIPDialogue;
@@ -50,6 +50,8 @@ Type
     btnCancel: TBitBtn;
     dlgOpenZIP: TOpenDialog;
     btnHelp: TBitBtn;
+    chkModifiedFiles: TCheckBox;
+    lblZIPBasePath: TLabel;
     Procedure btnAddZipClick(Sender: TObject);
     Procedure btnBrowseBasePathClick(Sender: TObject);
     Procedure btnBrowseZipClick(Sender: TObject);
@@ -288,6 +290,7 @@ Begin
   lblAdditionalFiles.Enabled       := cbxEnabledZipping.Checked;
   lblFilePatternsToExclude.Enabled := cbxEnabledZipping.Checked;
   mmoExclusionPatterns.Enabled     := cbxEnabledZipping.Checked;
+  chkModifiedFiles.Enabled         := cbxEnabledZipping.Checked;
 End;
 
 (**
@@ -388,6 +391,7 @@ Begin
     edtBasePath.Text          := ProjectOps.BasePath;
     mmoExclusionPatterns.Text := ProjectOps.ExcPatterns;
     lbAdditionalWildcards.Items.Assign(ProjectOps.AddZipFiles);
+    chkModifiedFiles.Checked  := ProjectOps.SaveModifiedFiles;
   Finally
     ProjectOps := Nil;
   End;
@@ -427,6 +431,7 @@ Begin
     ProjectOps.BasePath := edtBasePath.Text;
     ProjectOps.ExcPatterns := mmoExclusionPatterns.Text;
     ProjectOps.AddZipFiles.Assign(lbAdditionalWildcards.Items);
+    ProjectOps.SaveModifiedFiles := chkModifiedFiles.Checked;
   Finally
     ProjectOps := Nil;
   End;
