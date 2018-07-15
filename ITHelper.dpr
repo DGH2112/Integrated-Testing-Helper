@@ -9,8 +9,6 @@
 
   @nocheck EmptyBEGINEND
 
-  @todo    Change DGHCreateProcess to take an IITHMessageManager interface so all process messages are 
-           handled by the interface.
   @todo    Put the project options back into a single tabbed dialogue (remember NOT to use listviews
            to store information).
   @todo    Put global options into the IDEs Options dialogue.

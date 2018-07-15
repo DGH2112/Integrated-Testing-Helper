@@ -6,7 +6,7 @@
 
   @Version 1.0
   @Author  David Hoyle
-  @Date    14 Jul 2018
+  @Date    15 Jul 2018
 
 **)
 Unit ITHelper.ConfigurationForm;
@@ -30,7 +30,7 @@ Uses
   ImgList,
   ExtCtrls,
   ITHelper.ExternalProcessInfo,
-  ITHelper.Interfaces, System.ImageList;
+  ITHelper.Interfaces;
 
 Type
   (** An enumerate to define which set of data the dialogue is to work with. **)
