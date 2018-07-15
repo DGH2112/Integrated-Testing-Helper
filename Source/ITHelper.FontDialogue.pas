@@ -5,7 +5,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    05 Jan 2018
+  @Date    14 Jul 2018
 
 **)
 Unit ITHelper.FontDialogue;
@@ -86,7 +86,7 @@ Const
   strMessageFonts = 'MessageFonts';
 
 Begin
-  HTMLHelp(0, PChar(ITHHTMLHelpFile(strMessageFonts)), HH_DISPLAY_TOPIC, 0);
+  HTMLHelp(0, PChar(TITHToolsAPIFunctions.ITHHTMLHelpFile(strMessageFonts)), HH_DISPLAY_TOPIC, 0);
 End;
 
 (**

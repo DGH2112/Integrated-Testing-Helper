@@ -6,7 +6,7 @@
 
   @Version 1.0
   @Author  David Hoyle
-  @Date    02 Mar 2018
+  @Date    14 Jul 2018
 
 **)
 Unit ITHelper.ConfigurationForm;
@@ -30,7 +30,7 @@ Uses
   ImgList,
   ExtCtrls,
   ITHelper.ExternalProcessInfo,
-  ITHelper.Interfaces;
+  ITHelper.Interfaces, System.ImageList;
 
 Type
   (** An enumerate to define which set of data the dialogue is to work with. **)
@@ -372,7 +372,7 @@ Const
   strCompilationTools = 'CompilationTools';
 
 Begin
-  HTMLHelp(0, PChar(ITHHTMLHelpFile(strCompilationTools)), HH_DISPLAY_TOPIC, 0);
+  HTMLHelp(0, PChar(TITHToolsAPIFunctions.ITHHTMLHelpFile(strCompilationTools)), HH_DISPLAY_TOPIC, 0);
 End;
 
 (**
@@ -434,7 +434,7 @@ Begin
     frm.FGlobalOps := GlobalOps;
     frm.FDlgType := DlgType;
     frm.Caption    := Format(strProgrammesToExecuteCompilation, [DlgTypes[DlgType],
-      GetProjectName(Project)]);
+      TITHToolsAPIFunctions.GetProjectName(Project)]);
     frm.lblCompile.Caption := Format(frm.lblCompile.Caption, [DlgTypes[DlgType]]);
     frm.chkWarn.Caption := Format(frm.chkWarn.Caption, [DlgTypes[DlgType]]);
     frm.InitialiseOptions(Project);

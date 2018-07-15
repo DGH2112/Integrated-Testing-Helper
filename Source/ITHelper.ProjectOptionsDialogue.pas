@@ -5,7 +5,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    05 Jan 2018
+  @Date    14 Jul 2018
 
 **)
 Unit ITHelper.ProjectOptionsDialogue;
@@ -180,7 +180,7 @@ Const
   strProjectOptions = 'ProjectOptions';
 
 Begin
-  HTMLHelp(0, PChar(ITHHTMLHelpFile(strProjectOptions)), HH_DISPLAY_TOPIC, 0);
+  HTMLHelp(0, PChar(TITHToolsAPIFunctions.ITHHTMLHelpFile(strProjectOptions)), HH_DISPLAY_TOPIC, 0);
 End;
 
 (**
@@ -286,7 +286,7 @@ Var
 Begin
   frm := TfrmITHProjectOptionsDialogue.Create(Nil);
   Try
-    frm.Caption := Format(strProjectOptionsFor, [GetProjectName(Project)]);
+    frm.Caption := Format(strProjectOptionsFor, [TITHToolsAPIFunctions.GetProjectName(Project)]);
     frm.FProject := Project;
     frm.InitialiseOptions(GlobalOps, Project);
     frm.chkEnabledClick(Nil);

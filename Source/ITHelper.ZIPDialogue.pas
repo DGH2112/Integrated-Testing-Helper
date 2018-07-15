@@ -140,7 +140,7 @@ Var
 Begin
   strDir := edtBasePath.Text;
   If strDir = '' Then
-    strDir := ExpandMacro(ExtractFilePath(edtZipName.Text), FProject.FileName);
+    strDir := TITHToolsAPIFunctions.ExpandMacro(ExtractFilePath(edtZipName.Text), FProject.FileName);
   If SelectDirectory(strZipBaseDirectory, '', strDir {$IFDEF D2005},
     [sdNewFolder, sdShowShares, sdNewUI, sdValidateDir] {$ENDIF}) Then
     edtBasePath.Text := strDir + '\';
@@ -160,8 +160,8 @@ End;
 Procedure TfrmITHZIPDialogue.btnBrowseZipClick(Sender: TObject);
 
 Begin
-  dlgOpenZIP.FileName := ExtractFileName(ExpandMacro(edtZipName.Text, FProject.FileName));
-  dlgOpenZIP.InitialDir := ExtractFilePath(ExpandMacro(edtZipName.Text, FProject.FileName));
+  dlgOpenZIP.FileName := ExtractFileName(TITHToolsAPIFunctions.ExpandMacro(edtZipName.Text, FProject.FileName));
+  dlgOpenZIP.InitialDir := ExtractFilePath(TITHToolsAPIFunctions.ExpandMacro(edtZipName.Text, FProject.FileName));
   If dlgOpenZIP.Execute Then
     edtZipName.Text := dlgOpenZIP.FileName;
 End;
@@ -225,7 +225,7 @@ Const
   strZIPOptions = 'ZIPOptions';
 
 Begin
-  HtmlHelp(0, PChar(ITHHTMLHelpFile(strZIPOptions)), HH_DISPLAY_TOPIC, 0);
+  HtmlHelp(0, PChar(TITHToolsAPIFunctions.ITHHTMLHelpFile(strZIPOptions)), HH_DISPLAY_TOPIC, 0);
 End;
 
 (**
@@ -246,18 +246,19 @@ ResourceString
   strZipFilePathDirectoryDoesNotExist = 'The zip file path directory "%s" does not exist.';
 
 Begin
-  If cbxEnabledZipping.Checked And Not SysUtils.DirectoryExists(ExpandMacro(edtBasePath.Text,
-      FProject.FileName)) Then
+  If cbxEnabledZipping.Checked And Not SysUtils.DirectoryExists(TITHToolsAPIFunctions.ExpandMacro(
+    edtBasePath.Text, FProject.FileName)) Then
     Begin
       MessageDlg(Format(strZipFileBaseDirectoryDoesNotExist,
-          [ExpandMacro(edtBasePath.Text, FProject.FileName)]), mtError, [mbOK], 0);
+          [TITHToolsAPIFunctions.ExpandMacro(edtBasePath.Text, FProject.FileName)]), mtError, [mbOK], 0);
       ModalResult := mrNone;
     End;
-  If cbxEnabledZipping.Checked And Not SysUtils.DirectoryExists(ExtractFilePath(ExpandMacro(
-    edtZipName.Text, FProject.FileName))) Then
+  If cbxEnabledZipping.Checked And Not SysUtils.DirectoryExists(ExtractFilePath(
+    TITHToolsAPIFunctions.ExpandMacro(edtZipName.Text, FProject.FileName))) Then
     Begin
       MessageDlg(Format(strZipFilePathDirectoryDoesNotExist,
-          [ExpandMacro(ExtractFilePath(edtZipName.Text), FProject.FileName)]), mtError, [mbOK], 0);
+          [TITHToolsAPIFunctions.ExpandMacro(ExtractFilePath(edtZipName.Text), FProject.FileName)]),
+          mtError, [mbOK], 0);
       ModalResult := mrNone;
     End;
 End;
@@ -349,7 +350,7 @@ Begin
     frm.InitialiseOptions(GlobalOps);
     frm.cbxEnabledZippingClick(Nil);
     frm.edtZipEXEExit(Nil);
-    frm.Caption := Format(strZIPOptionsFor, [GetProjectName(Project)]);
+    frm.Caption := Format(strZIPOptionsFor, [TITHToolsAPIFunctions.GetProjectName(Project)]);
     If frm.ShowModal = mrOK Then
       frm.SaveOptions(GlobalOps);
   Finally

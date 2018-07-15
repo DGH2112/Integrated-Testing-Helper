@@ -5,7 +5,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    30 Dec 2017
+  @Date    14 Jul 2018
 
 **)
 Unit ITHelper.ProjectManagerMenuInterface;
@@ -348,18 +348,22 @@ Procedure TITHProjectManagerMenu.OptionsClick(Sender: TObject);
 Var
   Project : IOTAProject;
   strIdent: String;
+  PM : IOTAProjectManager;
 
 Begin
-  Project := (BorlandIDEServices As IOTAProjectManager).GetCurrentSelection(strIdent);
-  If Sender Is TMenuItem Then
-    If (Sender As TMenuItem).Name = strProjectName Then
-      FWizard.ConfigureOptions(Project, seProject)
-    Else If (Sender As TMenuItem).Name = strBeforeName Then
-      FWizard.ConfigureOptions(Project, seBefore)
-    Else If (Sender As TMenuItem).Name = strAfterName Then
-      FWizard.ConfigureOptions(Project, seAfter)
-    Else If (Sender As TMenuItem).Name = strZIPName Then
-      FWizard.ConfigureOptions(Project, seZIP);
+  If Supports(BorlandIDEServices, IOTAProjectManager, PM) Then
+    Begin
+      Project := PM.GetCurrentSelection(strIdent);
+      If Sender Is TMenuItem Then
+        If (Sender As TMenuItem).Name = strProjectName Then
+          FWizard.ConfigureOptions(Project, seProject)
+        Else If (Sender As TMenuItem).Name = strBeforeName Then
+          FWizard.ConfigureOptions(Project, seBefore)
+        Else If (Sender As TMenuItem).Name = strAfterName Then
+          FWizard.ConfigureOptions(Project, seAfter)
+        Else If (Sender As TMenuItem).Name = strZIPName Then
+          FWizard.ConfigureOptions(Project, seZIP);
+    End;
 End;
 
 { TITHelperProjectMenu }

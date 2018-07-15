@@ -129,8 +129,8 @@ End;
 Procedure TITHWizard.AfterCompilationClick(Sender: TObject);
 
 Begin
-  If ActiveProject <> Nil Then
-    AfterCompilation(ActiveProject);
+  If TITHToolsAPIFunctions.ActiveProject <> Nil Then
+    AfterCompilation(TITHToolsAPIFunctions.ActiveProject);
 End;
 
 (**
@@ -158,11 +158,11 @@ Begin
   If Sender Is TAction Then
     Begin
       A := Sender As TAction;
-      P := ActiveProject;
+      P := TITHToolsAPIFunctions.ActiveProject;
       If P <> Nil Then
         Begin
           A.Enabled    := True;
-          strProject := GetProjectName(P);
+          strProject := TITHToolsAPIFunctions.GetProjectName(P);
           A.Caption    := Format(strAfterCompilationOptionsFor, [strProject])
         End
       Else
@@ -205,8 +205,8 @@ End;
 Procedure TITHWizard.BeforeCompilationClick(Sender: TObject);
 
 Begin
-  If ActiveProject <> Nil Then
-    BeforeCompilation(ActiveProject);
+  If TITHToolsAPIFunctions.ActiveProject <> Nil Then
+    BeforeCompilation(TITHToolsAPIFunctions.ActiveProject);
 End;
 
 (**
@@ -234,11 +234,11 @@ Begin
   If Sender Is TAction Then
     Begin
       A := Sender As TAction;
-      P := ActiveProject;
+      P := TITHToolsAPIFunctions.ActiveProject;
       If P <> Nil Then
         Begin
           A.Enabled    := True;
-          strProject := GetProjectName(P);
+          strProject := TITHToolsAPIFunctions.GetProjectName(P);
           A.Caption    := Format(strBeforeCompilationOptionsFor, [strProject])
         End
       Else
@@ -284,6 +284,7 @@ Constructor TITHWizard.Create;
 
 Var
   PM : IOTAProjectManager;
+  S : IOTAServices;
 
 Begin
   Inherited Create;
@@ -299,8 +300,8 @@ Begin
     {$ENDIF}
   CreateMenus;
   FGlobalOps := TITHGlobalOptions.Create;
-  FIDENotifierIndex := (BorlandIDEServices As IOTAServices).AddNotifier(
-    TITHelperIDENotifier.Create(FGlobalOps));
+  If Supports(BorlandIDEServices, IOTAServices, S) Then
+    FIDENotifierIndex := S.AddNotifier(TITHelperIDENotifier.Create(FGlobalOps));
   //FHTMLHelpCookie := HTMLHelp(Application.Handle, Nil, HH_INITIALIZE, 0);
 End;
 
@@ -317,17 +318,17 @@ End;
 Procedure TITHWizard.CreateMenus;
 
 Begin
-  FTestingHelperMenu := CreateMenuItem('ITHTestingHelper', '&Testing Helper', 'Tools', Nil, Nil, True, False, '');
-  CreateMenuItem('ITHEnabled', 'Oops...', 'ITHTestingHelper', ToggleEnabled, UpdateEnabled, False, True, 'Ctrl+Shift+Alt+F9', clFuchsia);
-  CreateMenuItem('ITHSeparator1', '', 'ITHTestingHelper', Nil, Nil, False, True, '');
-  CreateMenuItem('ITHGlobalOptions', '&Global Options...', 'ITHTestingHelper', GlobalOptionDialogueClick, Nil, False, True, '', clFuchsia);
-  CreateMenuItem('ITHProjectOptions', '&Project Options...', 'ITHTestingHelper', ProjectOptionsClick, ProjectOptionsUpdate, False, True, '', clFuchsia);
-  CreateMenuItem('ITHBeforeCompilation', '&Before Compilation Tools...', 'ITHTestingHelper', BeforeCompilationClick, BeforeCompilationUpdate, False, True, '', clFuchsia);
-  CreateMenuItem('ITHAfterCompilation', '&After Compilation Tools...', 'ITHTestingHelper', AfterCompilationClick, AfterCompilationUpdate, False, True, '', clFuchsia);
-  CreateMenuItem('ITHZIPDlg', '&ZIP Options...', 'ITHTestingHelper', ZIPDialogueClick, ZIPDialogueUpdate, False, True, '', clFuchsia);
-  CreateMenuItem('ITHFontDlg', 'Message &Fonts...', 'ITHTestingHelper', FontDialogueClick, Nil, False, True, '', clOlive);
-  CreateMenuItem('ITHSeparator2', '', 'ITHTestingHelper', Nil, Nil, False, True, '');
-  CreateMenuItem('ITHHelp', '&Help...', 'ITHTestingHelper', HelpClick, Nil, False, True, '');
+  FTestingHelperMenu := TITHToolsAPIFunctions.CreateMenuItem('ITHTestingHelper', '&Testing Helper', 'Tools', Nil, Nil, True, False, '');
+  TITHToolsAPIFunctions.CreateMenuItem('ITHEnabled', 'Oops...', 'ITHTestingHelper', ToggleEnabled, UpdateEnabled, False, True, 'Ctrl+Shift+Alt+F9', clFuchsia);
+  TITHToolsAPIFunctions.CreateMenuItem('ITHSeparator1', '', 'ITHTestingHelper', Nil, Nil, False, True, '');
+  TITHToolsAPIFunctions.CreateMenuItem('ITHGlobalOptions', '&Global Options...', 'ITHTestingHelper', GlobalOptionDialogueClick, Nil, False, True, '', clFuchsia);
+  TITHToolsAPIFunctions.CreateMenuItem('ITHProjectOptions', '&Project Options...', 'ITHTestingHelper', ProjectOptionsClick, ProjectOptionsUpdate, False, True, '', clFuchsia);
+  TITHToolsAPIFunctions.CreateMenuItem('ITHBeforeCompilation', '&Before Compilation Tools...', 'ITHTestingHelper', BeforeCompilationClick, BeforeCompilationUpdate, False, True, '', clFuchsia);
+  TITHToolsAPIFunctions.CreateMenuItem('ITHAfterCompilation', '&After Compilation Tools...', 'ITHTestingHelper', AfterCompilationClick, AfterCompilationUpdate, False, True, '', clFuchsia);
+  TITHToolsAPIFunctions.CreateMenuItem('ITHZIPDlg', '&ZIP Options...', 'ITHTestingHelper', ZIPDialogueClick, ZIPDialogueUpdate, False, True, '', clFuchsia);
+  TITHToolsAPIFunctions.CreateMenuItem('ITHFontDlg', 'Message &Fonts...', 'ITHTestingHelper', FontDialogueClick, Nil, False, True, '', clOlive);
+  TITHToolsAPIFunctions.CreateMenuItem('ITHSeparator2', '', 'ITHTestingHelper', Nil, Nil, False, True, '');
+  TITHToolsAPIFunctions.CreateMenuItem('ITHHelp', '&Help...', 'ITHTestingHelper', HelpClick, Nil, False, True, '');
 End;
 
 (**
@@ -342,12 +343,14 @@ Destructor TITHWizard.Destroy;
 
 Var
   PM : IOTAProjectManager;
+  S : IOTAServices;
   
 Begin
   HTMLHelp(0, Nil, HH_CLOSE_ALL, 0);
   //HTMLHelp(Application.Handle, Nil, HH_UNINITIALIZE, FHTMLHelpCookie);
   If FIDENotifierIndex > iWizardFailState Then
-    (BorlandIDEServices As IOTAServices).RemoveNotifier(FIDENotifierIndex);
+    If Supports(BorlandIDEServices, IOTAServices, S) Then
+      S.RemoveNotifier(FIDENotifierIndex);
   {$IFNDEF D2005}
   FMenuTimer.Free;
   {$ENDIF}
@@ -482,7 +485,7 @@ Const
   strHelpStartPage = 'Welcome';
 
 Begin
-  HTMLHelp(0, PChar(ITHHTMLHelpFile(strHelpStartPage)), HH_DISPLAY_TOC, 0);
+  HTMLHelp(0, PChar(TITHToolsAPIFunctions.ITHHTMLHelpFile(strHelpStartPage)), HH_DISPLAY_TOC, 0);
 End;
 
 (**
@@ -514,8 +517,8 @@ End;
 Procedure TITHWizard.ProjectOptionsClick(Sender: TObject);
 
 Begin
-  If ActiveProject <> Nil Then
-    ProjectOptions(ActiveProject);
+  If TITHToolsAPIFunctions.ActiveProject <> Nil Then
+    ProjectOptions(TITHToolsAPIFunctions.ActiveProject);
 End;
 
 (**
@@ -543,11 +546,11 @@ Begin
   If Sender Is TAction Then
     Begin
       A := Sender As TAction;
-      P := ActiveProject;
+      P := TITHToolsAPIFunctions.ActiveProject;
       If P <> Nil Then
         Begin
           A.Enabled    := True;
-          strProject := GetProjectName(P);
+          strProject := TITHToolsAPIFunctions.GetProjectName(P);
           A.Caption    := Format(strProjectOptionsFor, [strProject])
         End
       Else
@@ -579,7 +582,7 @@ Var
   Ops            : TITHEnabledOptions;
 
 Begin
-  PG := ProjectGroup;
+  PG := TITHToolsAPIFunctions.ProjectGroup;
   If PG <> Nil Then
     Begin
       Ops := FGlobalOps.ProjectGroupOps;
@@ -615,7 +618,7 @@ Begin
   If Sender Is TAction Then
     Begin
       A := Sender As TAction;
-      PG := ProjectGroup;
+      PG := TITHToolsAPIFunctions.ProjectGroup;
       If PG <> Nil Then
         Begin
           A.Enabled         := True;
@@ -643,8 +646,8 @@ End;
 Procedure TITHWizard.ZIPDialogueClick(Sender: TObject);
 
 Begin
-  If ActiveProject <> Nil Then
-    ZIPOptions(ActiveProject);
+  If TITHToolsAPIFunctions.ActiveProject <> Nil Then
+    ZIPOptions(TITHToolsAPIFunctions.ActiveProject);
 End;
 
 (**
@@ -672,11 +675,11 @@ Begin
   If Sender Is TAction Then
     Begin
       A := Sender As TAction;
-      P := ActiveProject;
+      P := TITHToolsAPIFunctions.ActiveProject;
       If P <> Nil Then
         Begin
           A.Enabled    := True;
-          strProject := GetProjectName(P);
+          strProject := TITHToolsAPIFunctions.GetProjectName(P);
           A.Caption    := Format(strZIPOptionsFor, [strProject])
         End
       Else

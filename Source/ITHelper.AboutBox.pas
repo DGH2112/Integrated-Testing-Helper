@@ -4,7 +4,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    03 Jan 2018
+  @Date    14 Jul 2018
   
 **)
 Unit ITHelper.AboutBox;
@@ -62,8 +62,11 @@ Begin
   bmSplashScreen := LoadBitmap(hInstance, strITHelperSplashScreen48x48);
   If Supports(BorlandIDEServices, IOTAAboutBoxServices, ABS) Then
     Begin
-      Result := (BorlandIDEServices As IOTAAboutBoxServices).AddPluginInfo(
-        Format(strSplashScreenName, [iMajor, iMinor, Copy(strRevisions, iBugFix + 1, 1),
+      Result := ABS.AddPluginInfo(
+        Format(strSplashScreenName, [
+          iMajor,
+          iMinor,
+          Copy(strRevisions, iBugFix + 1, 1),
           Application.Title]),
         strPluginDescription,
         bmSplashScreen,
@@ -85,9 +88,13 @@ End;
 **)
 Procedure RemoveAboutBoxEntry(Const iAboutBoxIndex : Integer);
 
+Var
+  ABS : IOTAAboutBoxServices;
+  
 Begin
   If iAboutBoxIndex > -1 Then
-    (BorlandIDEServices As IOTAAboutBoxServices).RemovePluginInfo(iAboutBoxIndex);
+    If Supports(BorlandIDEServices, IOTAAboutBoxServices, ABS) Then
+      ABS.RemovePluginInfo(iAboutBoxIndex);
 End;
 
 End.

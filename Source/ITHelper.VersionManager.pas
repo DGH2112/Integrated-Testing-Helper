@@ -105,7 +105,7 @@ Begin
       Process.FDir := GetCurrentDir;
       FMsgMgr.ParentMsg :=
         FMsgMgr.AddMsg(Format(strRunning,
-        [ExtractFileName(Process.FTitle), GetProjectName(FProject)]), fnHeader, ithfHeader);
+        [ExtractFileName(Process.FTitle), TITHToolsAPIFunctions.GetProjectName(FProject)]), fnHeader, ithfHeader);
       TfrmITHProcessing.ShowProcessing(Format(strProcessing,
         [ExtractFileName(Process.FTitle)]));
       FMsgMgr.Clear;
@@ -118,11 +118,11 @@ Begin
         End;
       If iResult <> 0 Then
         FMsgMgr.ParentMsg.ForeColour := FGlobalOps.FontColour[ithfFailure];
-      ShowHelperMessages(FGlobalOps.GroupMessages);
+      TITHToolsAPIFunctions.ShowHelperMessages(FGlobalOps.GroupMessages);
       If iResult > 0 Then
         Abort;
       FMsgMgr.AddMsg(Format(strResourceRCCompiledForProject, [
-        FProjectOps.ResourceName, GetProjectName(FProject)]), fnHeader, ithfDefault);
+        FProjectOps.ResourceName, TITHToolsAPIFunctions.GetProjectName(FProject)]), fnHeader, ithfDefault);
     End;
 End;
 
@@ -274,7 +274,7 @@ Var
 
 Begin
   FMsgMgr.AddMsg(Format(strVerInfoRRCCreated, [
-    FProjectOps.ResourceName, GetProjectName(FProject)]), fnHeader, ithfDefault);
+    FProjectOps.ResourceName, TITHToolsAPIFunctions.GetProjectName(FProject)]), fnHeader, ithfDefault);
   If FProjectOps.IncResInProj Then
     Begin
       boolFound := False;
@@ -288,7 +288,7 @@ Begin
         Begin
           FProject.AddFile(strFileName, True);
           FMsgMgr.AddMsg(Format(strResourceRCAdded, [
-            FProjectOps.ResourceName, GetProjectName(FProject)]), fnHeader, ithfDefault);
+            FProjectOps.ResourceName, TITHToolsAPIFunctions.GetProjectName(FProject)]), fnHeader, ithfDefault);
         End;
     End;
 End;

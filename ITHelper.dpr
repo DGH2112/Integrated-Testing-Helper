@@ -4,12 +4,11 @@
   implement an IDE wizard.
 
   @Author  David Hoyle
-  @Date    02 Mar 2018
+  @Date    15 Jul 2018
   @Version 2.0
 
   @nocheck EmptyBEGINEND
 
-  @todo    Change ALL (BorlandIDEServices As Xxxx) for Supports()
   @todo    Change DGHCreateProcess to take an IITHMessageManager interface so all process messages are 
            handled by the interface.
   @todo    Put the project options back into a single tabbed dialogue (remember NOT to use listviews

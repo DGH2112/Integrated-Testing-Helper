@@ -88,7 +88,7 @@ Var
 Begin
   slWildcards := FProjectOps.AddZipFiles;
   For iModule := 0 To slWildcards.Count - 1 Do
-    AddToList(strBasePath, ExpandMacro(slWildcards[iModule], FProject.FileName));
+    AddToList(strBasePath, TITHToolsAPIFunctions.ExpandMacro(slWildcards[iModule], FProject.FileName));
 End;
 
 (**
@@ -246,7 +246,7 @@ Begin
   strExt := ExtractFileExt(FProject.ProjectOptions.TargetName);
   sl := TStringList.Create;
   Try
-    sl.LoadFromFile(ExtractFilePath(FProject.FileName) + GetProjectName(FProject));
+    sl.LoadFromFile(ExtractFilePath(FProject.FileName) + TITHToolsAPIFunctions.GetProjectName(FProject));
     For i := 0 To sl.Count - 1 Do
       Begin
         // Search for alternate extension

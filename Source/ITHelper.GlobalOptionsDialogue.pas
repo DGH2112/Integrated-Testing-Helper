@@ -5,7 +5,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    05 Jan 2018
+  @Date    14 Jul 2018
 
 **)
 Unit ITHelper.GlobalOptionsDialogue;
@@ -128,7 +128,7 @@ Const
   strGlobalOptions = 'GlobalOptions';
 
 Begin
-  HTMLHelp(0, PChar(ITHHTMLHelpFile(strGlobalOptions)), HH_DISPLAY_TOPIC, 0);
+  HTMLHelp(0, PChar(TITHToolsAPIFunctions.ITHHTMLHelpFile(strGlobalOptions)), HH_DISPLAY_TOPIC, 0);
 End;
 
 (**
@@ -182,10 +182,10 @@ Begin
   edtZipEXE.Text                := GlobalOps.ZipEXE;
   edtZipParams.Text             := GlobalOps.ZipParameters;
   chkSwitchToMessages.Checked   := GlobalOps.SwitchToMessages;
-  For i := 0 To Actions.Count - 1 Do
-    If Actions[i] Is TAction Then
+  For i := 0 To TITHToolsAPIFunctions.Actions.Count - 1 Do
+    If TITHToolsAPIFunctions.Actions[i] Is TAction Then
       Begin
-        A := Actions[i] As TAction;
+        A := TITHToolsAPIFunctions.Actions[i] As TAction;
         Item := lvShortcuts.Items.Add;
         Item.Caption := A.Name;
         Item.SubItems.Add(ShortCutToText(A.ShortCut));
@@ -236,10 +236,10 @@ Begin
   GlobalOps.ZipEXE             := edtZipEXE.Text;
   GlobalOps.ZipParameters      := edtZipParams.Text;
   GlobalOps.SwitchToMessages   := chkSwitchToMessages.Checked;
-  For i := 0 To Actions.Count - 1 Do
-    If Actions[i] Is TAction Then
+  For i := 0 To TITHToolsAPIFunctions.Actions.Count - 1 Do
+    If TITHToolsAPIFunctions.Actions[i] Is TAction Then
       Begin
-        A := Actions[i] As TAction;
+        A := TITHToolsAPIFunctions.Actions[i] As TAction;
         A.ShortCut := TextToShortCut(lvShortcuts.Items[i].SubItems[0]);
       End;
 End;

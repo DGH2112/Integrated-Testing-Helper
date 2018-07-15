@@ -229,7 +229,7 @@ Begin
     iInterval := FGlobalOps.ClearMessages;
     If iInterval > 0 Then
       If FMsgMgr.LastMessage < GetTickCount - iInterval * iMilliSecInSec Then
-        ClearMessages([cmCompiler, cmGroup]);
+        TITHToolsAPIFunctions.ClearMessages([cmCompiler, cmGroup]);
     If Project.ProjectBuilder.ShouldBuild Then
       Begin
         FShouldBuildList.Add(Project.FileName);
@@ -237,7 +237,7 @@ Begin
         If eoGroupEnabled In Ops Then
           Begin
             Try
-              strProject := GetProjectName(Project);
+              strProject := TITHToolsAPIFunctions.GetProjectName(Project);
               If eoCopyVersionInfo In Ops Then
                 CopyVersionInfoFromDependency(Project, strProject, ProjectOps);
               If eoBefore In Ops Then
@@ -250,14 +250,14 @@ Begin
                         TfrmITHProcessing.ShowProcessing
                           (Format(strPreCompilationToolsFailed, [strProject]),
                           FGlobalOps.FontColour[ithfWarning], True);
-                        ShowHelperMessages(FGlobalOps.GroupMessages);
+                        TITHToolsAPIFunctions.ShowHelperMessages(FGlobalOps.GroupMessages);
                       End
                     Else If iResult < 0 Then
                       If ProjectOps.WarnBefore Then
                         Begin
                           FMsgMgr.AddMsg(Format(strBeforeCompileWARNING, [strProject]), fnHeader,
                             ithfWarning);
-                          ShowHelperMessages(FGlobalOps.GroupMessages);
+                          TITHToolsAPIFunctions.ShowHelperMessages(FGlobalOps.GroupMessages);
                         End;
                   End;
               If eoBuildVersionResource In Ops Then
@@ -337,10 +337,10 @@ Var
   {$ENDIF}
   
 Begin
-  Group := ProjectGroup;
+  Group := TITHToolsAPIFunctions.ProjectGroup;
   If Group = Nil Then
     Exit;
-  strTargetName := ExpandMacro(ProjectOps.CopyVerInfo, Project.FileName);
+  strTargetName := TITHToolsAPIFunctions.ExpandMacro(ProjectOps.CopyVerInfo, Project.FileName);
   If strTargetName <> '' Then
     Begin
       FMsgMgr.AddMsg(Format(strVersionDependencyFoundForProject,
@@ -390,7 +390,7 @@ Begin
             On E: EITHException Do
               FMsgMgr.AddMsg(Format(E.Message + ' (%s)', [strProject]), fnHeader, ithfWarning);
           End;
-          ShowHelperMessages(FGlobalOps.GroupMessages);
+          TITHToolsAPIFunctions.ShowHelperMessages(FGlobalOps.GroupMessages);
         End
       Else
         FMsgMgr.AddMsg(Format(strDependencyWasNotFound,
@@ -466,9 +466,9 @@ Begin
   For i := 0 To Processes.Count - 1 Do
     Begin
       P := Processes[i];
-      P.FEXE := ExpandMacro(P.FEXE, Project.FileName);
-      P.FParams := ExpandMacro(P.FParams, Project.FileName);
-      P.FDir := ExpandMacro(P.FDir, Project.FileName);
+      P.FEXE := TITHToolsAPIFunctions.ExpandMacro(P.FEXE, Project.FileName);
+      P.FParams := TITHToolsAPIFunctions.ExpandMacro(P.FParams, Project.FileName);
+      P.FDir := TITHToolsAPIFunctions.ExpandMacro(P.FDir, Project.FileName);
       Processes[i] := P;
     End;
 End;
@@ -618,7 +618,7 @@ Begin
         Ops := FGlobalOps.ProjectGroupOps;
         If eoGroupEnabled In Ops Then
           Try
-            strProject := GetProjectName(Project);
+            strProject := TITHToolsAPIFunctions.GetProjectName(Project);
             If eoIncrementBuild In Ops Then
               IncrementBuild(ProjectOps, Project, strProject);
             If eoZip In Ops Then
@@ -629,7 +629,7 @@ Begin
                   Begin
                     TfrmITHProcessing.ShowProcessing(Format(strZIPToolFailure,
                       [strProject]), FGlobalOps.FontColour[ithfFailure], True);
-                    ShowHelperMessages(FGlobalOps.GroupMessages);
+                    TITHToolsAPIFunctions.ShowHelperMessages(FGlobalOps.GroupMessages);
                     Abort;
                   End;
               End;
@@ -641,7 +641,7 @@ Begin
                     TfrmITHProcessing.ShowProcessing
                       (Format(strPostCompilationToolsFailed, [strProject]),
                       FGlobalOps.FontColour[ithfWarning], True);
-                    ShowHelperMessages(FGlobalOps.GroupMessages);
+                    TITHToolsAPIFunctions.ShowHelperMessages(FGlobalOps.GroupMessages);
                     Abort;
                   End
                 Else If iResult < 0 Then
@@ -649,7 +649,7 @@ Begin
                     Begin
                       FMsgMgr.AddMsg(Format(strAfterCompileWARNING, [strProject]),
                         fnHeader, ithfWarning);
-                      ShowHelperMessages(FGlobalOps.GroupMessages);
+                      TITHToolsAPIFunctions.ShowHelperMessages(FGlobalOps.GroupMessages);
                     End;
               End;
             FLastSuccessfulCompile := GetTickCount;
@@ -693,7 +693,7 @@ Var
 
 Begin
   Result := -1; // Signifies no tools configured.
-  strProject := GetProjectName(Project);
+  strProject := TITHToolsAPIFunctions.GetProjectName(Project);
   Processes := TITHProcessCollection.Create;
   Try
     Processes.LoadFromINI(ProjectOps.INIFile, strWhere);
@@ -719,7 +719,7 @@ Begin
               End;
             If Result <> 0 Then
               FMsgMgr.ParentMsg.ForeColour := FGlobalOps.FontColour[ithfFailure];
-            ShowHelperMessages(FGlobalOps.GroupMessages);
+            TITHToolsAPIFunctions.ShowHelperMessages(FGlobalOps.GroupMessages);
             If Result > 0 Then
                 Break;
           End;
@@ -767,7 +767,7 @@ Begin
     Begin
       FLastSuccessfulCompile := 0;
       If FGlobalOps.SwitchToMessages Then
-        ShowHelperMessages(FGlobalOps.GroupMessages);
+        TITHToolsAPIFunctions.ShowHelperMessages(FGlobalOps.GroupMessages);
     End;
 End;
 

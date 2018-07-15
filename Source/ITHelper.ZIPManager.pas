@@ -164,7 +164,7 @@ Var
 
 Begin
   Result := 0;
-  strProject := GetProjectName(FProject);
+  strProject := TITHToolsAPIFunctions.GetProjectName(FProject);
   If FProjectOps.EnableZipping Then
     Begin
       If FProjectOps.SaveModifiedFiles Then
@@ -173,10 +173,10 @@ Begin
       strZIPName := FProjectOps.ZipName;
       If strZIPName <> '' Then
         Begin
-          strBasePath := ExpandMacro(FProjectOps.BasePath, FProject.FileName);
+          strBasePath := TITHToolsAPIFunctions.ExpandMacro(FProjectOps.BasePath, FProject.FileName);
           Process.FEnabled := True;
-          Process.FEXE := ExpandMacro(FGlobalOps.ZipEXE, FProject.FileName);
-          Process.FParams := ExpandMacro(FGlobalOps.ZipParameters, FProject.FileName);
+          Process.FEXE := TITHToolsAPIFunctions.ExpandMacro(FGlobalOps.ZipEXE, FProject.FileName);
+          Process.FParams := TITHToolsAPIFunctions.ExpandMacro(FGlobalOps.ZipParameters, FProject.FileName);
           If Not FileExists(Process.FEXE) Then
             Begin
               Inc(Result);
@@ -184,13 +184,13 @@ Begin
                 fnHeader, ithfFailure);
               Exit;
             End;
-          strZIPName := ExpandMacro(strZIPName, FProject.FileName);
+          strZIPName := TITHToolsAPIFunctions.ExpandMacro(strZIPName, FProject.FileName);
           If ResponseFile.BuildResponseFile(strBasePath, strProject, strZIPName) Then
             Begin
               Process.FParams := StringReplace(Process.FParams, strRESPONSEFILE, ResponseFile.FileName, []);
               Process.FParams := StringReplace(Process.FParams, strFILELIST, ResponseFile.FileList, []);
               Process.FParams := StringReplace(Process.FParams, strZIPFILE, strZIPName, []);
-              Process.FDir := ExpandMacro(strBasePath, FProject.FileName);
+              Process.FDir := TITHToolsAPIFunctions.ExpandMacro(strBasePath, FProject.FileName);
               FMsgMgr.ParentMsg := FMsgMgr.AddMsg(Format(strRunning,
                 [ExtractFileName(Process.FEXE), strProject, strZipping]), fnHeader, ithfHeader);
               TfrmITHProcessing.ShowProcessing(Format(strProcessing, [ExtractFileName(Process.FEXE)]));

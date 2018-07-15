@@ -5,7 +5,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    04 Jan 2018
+  @Date    14 Jul 2018
 
 **)
 Unit ITHelper.EnabledOptions;
@@ -75,7 +75,7 @@ Const
   strEnabledOptions = 'EnabledOptions';
 
 Begin
-  HtmlHelp(0, PChar(ITHHTMLHelpFile(strEnabledOptions)), HH_DISPLAY_TOPIC, 0);
+  HtmlHelp(0, PChar(TITHToolsAPIFunctions.ITHHTMLHelpFile(strEnabledOptions)), HH_DISPLAY_TOPIC, 0);
 End;
 
 (**

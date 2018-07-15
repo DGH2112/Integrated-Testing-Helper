@@ -7,7 +7,7 @@
             <Dependencies/>
         </Projects>
         <Projects Include="ITHelper.dproj">
-            <Dependencies>Test\ITHelperTests.dproj</Dependencies>
+            <Dependencies/>
         </Projects>
     </ItemGroup>
     <ProjectExtensions>
@@ -26,13 +26,13 @@
     <Target Name="ITHelperTests:Make">
         <MSBuild Projects="Test\ITHelperTests.dproj" Targets="Make"/>
     </Target>
-    <Target Name="ITHelper" DependsOnTargets="ITHelperTests">
+    <Target Name="ITHelper">
         <MSBuild Projects="ITHelper.dproj"/>
     </Target>
-    <Target Name="ITHelper:Clean" DependsOnTargets="ITHelperTests:Clean">
+    <Target Name="ITHelper:Clean">
         <MSBuild Projects="ITHelper.dproj" Targets="Clean"/>
     </Target>
-    <Target Name="ITHelper:Make" DependsOnTargets="ITHelperTests:Make">
+    <Target Name="ITHelper:Make">
         <MSBuild Projects="ITHelper.dproj" Targets="Make"/>
     </Target>
     <Target Name="Build">
