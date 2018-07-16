@@ -89,7 +89,6 @@ Uses
   ITHelper.AboutBox, 
   ITHelper.IDENotifierInterface, 
   ITHelper.Types, 
-  ITHelper.ConfigurationForm, 
   ITHelper.TestingHelperUtils, 
   ITHelper.GlobalOptions;
 

@@ -107,9 +107,6 @@
             <Form>ITHelperMenuIcons.res</Form>
         </RcCompile>
         <DCCReference Include="Source\ITHelper.Wizard.pas"/>
-        <DCCReference Include="Source\ITHelper.ConfigurationForm.pas">
-            <Form>frmITHConfigureDlg</Form>
-        </DCCReference>
         <DCCReference Include="Source\ITHelper.TestingHelperUtils.pas"/>
         <DCCReference Include="Source\ITHelper.AdditionalZipFilesForm.pas">
             <Form>frmITHAdditionalZipFiles</Form>

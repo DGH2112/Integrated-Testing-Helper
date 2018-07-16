@@ -4,7 +4,7 @@
   implement an IDE wizard.
 
   @Author  David Hoyle
-  @Date    15 Jul 2018
+  @Date    16 Jul 2018
   @Version 2.0
 
   @nocheck EmptyBEGINEND
@@ -29,7 +29,6 @@ uses
   SysUtils,
   Classes,
   ITHelper.Wizard in 'Source\ITHelper.Wizard.pas',
-  ITHelper.ConfigurationForm in 'Source\ITHelper.ConfigurationForm.pas' {frmITHConfigureDlg},
   ITHelper.TestingHelperUtils in 'Source\ITHelper.TestingHelperUtils.pas',
   ITHelper.AdditionalZipFilesForm in 'Source\ITHelper.AdditionalZipFilesForm.pas' {frmITHAdditionalZipFiles},
   ITHelper.EnabledOptions in 'Source\ITHelper.EnabledOptions.pas' {frmITHEnabledOptions},
