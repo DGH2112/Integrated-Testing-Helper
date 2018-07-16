@@ -131,9 +131,6 @@ Begin
     frm.Caption := Format(strProjectOptionsFor, [TITHToolsAPIFunctions.GetProjectName(Project)]);
     frm.LoadSettings(GlobalOps);
     frm.FProjectOptions.InitialiseOptions(GlobalOps, Project);
-
-    frm.FProjectOptions.chkEnabledClick(Nil);
-
     frm.FBeforeCompileTools.InitialiseOptions(GlobalOps, Project, dtBefore);
     frm.FAfterCompileTools.InitialiseOptions(GlobalOps, Project, dtAfter);
     Case ProjectOptionType Of

@@ -257,6 +257,7 @@ Begin
   Finally
     ProjectOps := Nil;
   End;
+  chkEnabledClick(Nil);
 End;
 
 (**
