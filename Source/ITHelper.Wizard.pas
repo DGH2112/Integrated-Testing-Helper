@@ -82,7 +82,6 @@ Uses
   ITHelper.ExternalProcessInfo,
   ITHelper.ProjectManagerMenuInterface,
   ITHelper.FontDialogue,
-  ITHelper.ZIPDialogue,
   ITHelper.GlobalOptionsDialogue,
   ITHelper.ProjectOptionsDialogue, 
   ITHelper.SplashScreen, 
@@ -112,7 +111,6 @@ Procedure TITHWizard.AfterCompilation(Const Project: IOTAProject);
 
 Begin
   TfrmITHProjectOptionsDialogue.Execute(potAfterCompile, FGlobalOps, Project);
-  //: @debug   FGlobalOps.Save;
 End;
 
 (**
@@ -188,7 +186,6 @@ Procedure TITHWizard.BeforeCompilation(Const Project: IOTAProject);
 
 Begin
   TfrmITHProjectOptionsDialogue.Execute(potBeforeCompile, FGlobalOps, Project);
-  //: @debug   FGlobalOps.Save;
 End;
 
 (**
@@ -704,7 +701,7 @@ End;
 Procedure TITHWizard.ZIPOptions(Const Project: IOTAProject);
 
 Begin
-  TfrmITHZIPDialogue.Execute(Project, FGlobalOps);
+  TfrmITHProjectOptionsDialogue.Execute(potZipping, FGlobalOps, Project);
 End;
 
 End.

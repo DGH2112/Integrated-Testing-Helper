@@ -32,7 +32,8 @@ Uses
   ValEdit,
   ComCtrls,
   ITHelper.ProjectOptionsFrame,
-  ITHelper.ExternalToolsFrame;
+  ITHelper.ExternalToolsFrame,
+  ITHelper.ZIPFrame;
 
 Type
   (** An enumerate to define the page to display on opening. **)
@@ -47,12 +48,15 @@ Type
     tabProjectOptions: TTabSheet;
     tabBeforeCompileTools: TTabSheet;
     tabAfterCompileTools: TTabSheet;
+    tabZipping: TTabSheet;
     procedure btnHelpClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+    procedure btnOKClick(Sender: TObject);
   Strict Private
     FProjectOptions     : TframeProjectOptions;
     FBeforeCompileTools : TframeExternalTools;
-    FAfterCompileTools : TframeExternalTools;
+    FAfterCompileTools  : TframeExternalTools;
+    FZipping            : TframeZipping;
   Strict Protected
     Procedure LoadSettings(Const GlobalOps: IITHGlobalOptions);
     Procedure SaveSettings(Const GlobalOps: IITHGlobalOptions);
@@ -98,10 +102,29 @@ Const
 Procedure TfrmITHProjectOptionsDialogue.btnHelpClick(Sender: TObject);
 
 Const
-  strProjectOptions = 'ProjectOptions';
+  strProjectOptions = 'ProjectOptions'; //: @todo Fix Help for the active tab.
+  strZIPOptions = 'ZIPOptions';
 
 Begin
   HTMLHelp(0, PChar(TITHToolsAPIFunctions.ITHHTMLHelpFile(strProjectOptions)), HH_DISPLAY_TOPIC, 0);
+  HtmlHelp(0, PChar(TITHToolsAPIFunctions.ITHHTMLHelpFile(strZIPOptions)), HH_DISPLAY_TOPIC, 0);
+End;
+
+(**
+
+  This is an on click event handler for the OK button.
+
+  @precon  None.
+  @postcon Validates the frames in the form.
+
+  @param   Sender as a TObject
+
+**)
+Procedure TfrmITHProjectOptionsDialogue.btnOKClick(Sender: TObject);
+
+Begin
+  If Not FZipping.Isvalidated Then //: @todo Validate ALL frames!
+    ModalResult := mrNone;
 End;
 
 (**
@@ -133,11 +156,12 @@ Begin
     frm.FProjectOptions.InitialiseOptions(GlobalOps, Project);
     frm.FBeforeCompileTools.InitialiseOptions(GlobalOps, Project, dtBefore);
     frm.FAfterCompileTools.InitialiseOptions(GlobalOps, Project, dtAfter);
+    frm.FZipping.InitialiseOptions(GlobalOps, Project);
     Case ProjectOptionType Of
       potProjectOptions: frm.pgcProjectOptions.ActivePage := frm.tabProjectOptions;
       potBeforeCompile: frm.pgcProjectOptions.ActivePage := frm.tabBeforeCompileTools;
       potAfterCompile: frm.pgcProjectOptions.ActivePage := frm.tabAfterCompileTools;
-      //: @todo potZipping: ;
+      potZipping: frm.pgcProjectOptions.ActivePage := frm.tabZipping;
     End;
     If frm.ShowModal = mrOK Then
       Begin
@@ -145,6 +169,7 @@ Begin
         frm.FProjectOptions.SaveOptions(GlobalOps, Project);
         frm.FBeforeCompileTools.SaveOptions(Project, dtBefore);
         frm.FAfterCompileTools.SaveOptions(Project, dtAfter);
+        frm.FZipping.SaveOptions(GlobalOps);
       End;
   Finally
     frm.Free;
@@ -164,9 +189,10 @@ End;
 Procedure TfrmITHProjectOptionsDialogue.FormCreate(Sender: TObject);
 
 Const
-  strProjectOptionsFrameName = 'ProjectOptionsFrame';
-  strBeforeCompileToolsName = 'BeforeCompileTools';
-  strAfterCompileToolsName = 'AfterCompileTools';
+  strProjectOptionsFrameName = 'frameProjectOptionsFrame';
+  strBeforeCompileToolsName = 'frameBeforeCompileTools';
+  strAfterCompileToolsName = 'frameAfterCompileTools';
+  strZippingName = 'frameZipping';
 
 Begin
   FProjectOptions := TframeProjectOptions.Create(Self);
@@ -181,6 +207,10 @@ Begin
   FAfterCompileTools.Name := strAfterCompileToolsName;
   FAfterCompileTools.Parent := tabAfterCompileTools;
   FAfterCompileTools.Align := alClient;
+  FZipping := TframeZipping.Create(Self);
+  FZipping.Name := strZippingName;
+  FZipping.Parent := tabZipping;
+  FZipping.Align := alClient;
 End;
 
 (**

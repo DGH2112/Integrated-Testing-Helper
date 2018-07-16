@@ -9,10 +9,9 @@
 
   @nocheck EmptyBEGINEND
 
-  @todo    Put the project options back into a single tabbed dialogue (remember NOT to use listviews
-           to store information).
   @todo    Put global options into the IDEs Options dialogue.
   @todo    Create a wrapper for the ziplibrary and use that instead of an external zip programme.
+  @todo    Consider adding a Project Notifier to handle rename / save as for the project .ITHelper file.
 
 **)
 Library ITHelper;
@@ -37,7 +36,6 @@ uses
   ITHelper.IDENotifierInterface in 'Source\ITHelper.IDENotifierInterface.pas',
   ITHelper.GlobalOptions in 'Source\ITHelper.GlobalOptions.pas',
   ITHelper.FontDialogue in 'Source\ITHelper.FontDialogue.pas' {frmITHFontDialogue},
-  ITHelper.ZIPDialogue in 'Source\ITHelper.ZIPDialogue.pas' {frmITHZIPDialogue},
   ITHelper.GlobalOptionsDialogue in 'Source\ITHelper.GlobalOptionsDialogue.pas' {frmITHGlobalOptionsDialogue},
   ITHelper.ProjectOptionsDialogue in 'Source\ITHelper.ProjectOptionsDialogue.pas' {frmITHProjectOptionsDialogue},
   ITHelper.SplashScreen in 'Source\ITHelper.SplashScreen.pas',
@@ -58,7 +56,8 @@ uses
   ITHelper.MessageManager in 'Source\ITHelper.MessageManager.pas',
   ITHelper.VersionManager in 'Source\ITHelper.VersionManager.pas',
   ITHelper.ProjectOptionsFrame in 'Source\ITHelper.ProjectOptionsFrame.pas' {frameProjectOptions: TFrame},
-  ITHelper.ExternalToolsFrame in 'Source\ITHelper.ExternalToolsFrame.pas' {frameExternalTools: TFrame};
+  ITHelper.ExternalToolsFrame in 'Source\ITHelper.ExternalToolsFrame.pas' {frameExternalTools: TFrame},
+  ITHelper.ZIPFrame in 'Source\ITHelper.ZIPFrame.pas' {frameZipping: TFrame};
 
 {$R *.res}
 

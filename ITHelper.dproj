@@ -121,9 +121,6 @@
         <DCCReference Include="Source\ITHelper.FontDialogue.pas">
             <Form>frmITHFontDialogue</Form>
         </DCCReference>
-        <DCCReference Include="Source\ITHelper.ZIPDialogue.pas">
-            <Form>frmITHZIPDialogue</Form>
-        </DCCReference>
         <DCCReference Include="Source\ITHelper.GlobalOptionsDialogue.pas">
             <Form>frmITHGlobalOptionsDialogue</Form>
         </DCCReference>
@@ -158,6 +155,11 @@
         </DCCReference>
         <DCCReference Include="Source\ITHelper.ExternalToolsFrame.pas">
             <Form>frameExternalTools</Form>
+            <FormType>dfm</FormType>
+            <DesignClass>TFrame</DesignClass>
+        </DCCReference>
+        <DCCReference Include="Source\ITHelper.ZIPFrame.pas">
+            <Form>frameZipping</Form>
             <FormType>dfm</FormType>
             <DesignClass>TFrame</DesignClass>
         </DCCReference>

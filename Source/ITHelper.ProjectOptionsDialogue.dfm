@@ -30,8 +30,7 @@ object frmITHProjectOptionsDialogue: TfrmITHProjectOptionsDialogue
     Kind = bkOK
     NumGlyphs = 2
     TabOrder = 2
-    ExplicitLeft = 602
-    ExplicitTop = 626
+    OnClick = btnOKClick
   end
   object btnCancel: TBitBtn
     Left = 701
@@ -42,8 +41,6 @@ object frmITHProjectOptionsDialogue: TfrmITHProjectOptionsDialogue
     Kind = bkCancel
     NumGlyphs = 2
     TabOrder = 3
-    ExplicitLeft = 683
-    ExplicitTop = 626
   end
   object btnHelp: TBitBtn
     Left = 539
@@ -55,38 +52,29 @@ object frmITHProjectOptionsDialogue: TfrmITHProjectOptionsDialogue
     NumGlyphs = 2
     TabOrder = 1
     OnClick = btnHelpClick
-    ExplicitLeft = 521
-    ExplicitTop = 626
   end
   object pgcProjectOptions: TPageControl
     Left = 8
     Top = 8
     Width = 768
     Height = 518
-    ActivePage = tabAfterCompileTools
+    ActivePage = tabZipping
     Anchors = [akLeft, akTop, akRight, akBottom]
     TabOrder = 0
-    ExplicitWidth = 750
-    ExplicitHeight = 612
     object tabProjectOptions: TTabSheet
       Caption = '&Project Options'
-      ExplicitTop = 24
-      ExplicitWidth = 742
-      ExplicitHeight = 584
     end
     object tabBeforeCompileTools: TTabSheet
       Caption = '&Before Compile Tools'
       ImageIndex = 1
-      ExplicitTop = 24
-      ExplicitWidth = 742
-      ExplicitHeight = 584
     end
     object tabAfterCompileTools: TTabSheet
       Caption = '&After Compile Tools'
       ImageIndex = 2
-      ExplicitTop = 24
-      ExplicitWidth = 742
-      ExplicitHeight = 584
+    end
+    object tabZipping: TTabSheet
+      Caption = '&Zipping'
+      ImageIndex = 3
     end
   end
 end
