@@ -39,6 +39,9 @@ Type
   (** An enumerate to define the page to display on opening. **)
   TITHProjectOptionType = (potProjectOptions, potBeforeCompile, potAfterCompile, potZipping);
 
+  (** An enumerate to describe the pages of the options dialogue. **)
+  TITHOptionsPage = (opProjectOptions, opBeforeCompileTools, opAfterCompileTools, opZipping);
+  
   (** A class to represent the project options form. **)
   TfrmITHProjectOptionsDialogue = Class(TForm)
     btnOK: TBitBtn;
@@ -102,12 +105,20 @@ Const
 Procedure TfrmITHProjectOptionsDialogue.btnHelpClick(Sender: TObject);
 
 Const
-  strProjectOptions = 'ProjectOptions'; //: @todo Fix Help for the active tab.
+  strProjectOptions = 'ProjectOptions';
+  strCompilationTools = 'CompilationTools';
   strZIPOptions = 'ZIPOptions';
 
+Var
+  strTopic : String;
+
 Begin
-  HTMLHelp(0, PChar(TITHToolsAPIFunctions.ITHHTMLHelpFile(strProjectOptions)), HH_DISPLAY_TOPIC, 0);
-  HtmlHelp(0, PChar(TITHToolsAPIFunctions.ITHHTMLHelpFile(strZIPOptions)), HH_DISPLAY_TOPIC, 0);
+  Case TITHOptionsPage(pgcProjectOptions.ActivePageIndex) Of
+    opProjectOptions:                          strTopic := strProjectOptions;
+    opBeforeCompileTools, opAfterCompileTools: strTopic := strCompilationTools;
+    opZipping:                                 strTopic := strZIPOptions;  
+  End;
+  HtmlHelp(0, PChar(TITHToolsAPIFunctions.ITHHTMLHelpFile(strTopic)), HH_DISPLAY_TOPIC, 0);
 End;
 
 (**
