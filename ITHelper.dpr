@@ -57,7 +57,8 @@ uses
   ITHelper.ZIPManager in 'Source\ITHelper.ZIPManager.pas',
   ITHelper.ResponseFile in 'Source\ITHelper.ResponseFile.pas',
   ITHelper.MessageManager in 'Source\ITHelper.MessageManager.pas',
-  ITHelper.VersionManager in 'Source\ITHelper.VersionManager.pas';
+  ITHelper.VersionManager in 'Source\ITHelper.VersionManager.pas',
+  ITHelper.ProjectOptionsFrame in 'Source\ITHelper.ProjectOptionsFrame.pas' {frameProjectOptions: TFrame};
 
 {$R *.res}
 
