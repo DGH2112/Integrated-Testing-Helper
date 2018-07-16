@@ -31,7 +31,8 @@ Uses
   Grids,
   ValEdit,
   ComCtrls,
-  ITHelper.ProjectOptionsFrame;
+  ITHelper.ProjectOptionsFrame,
+  ITHelper.ExternalToolsFrame;
 
 Type
   (** An enumerate to define the page to display on opening. **)
@@ -44,10 +45,14 @@ Type
     btnHelp: TBitBtn;
     pgcProjectOptions: TPageControl;
     tabProjectOptions: TTabSheet;
+    tabBeforeCompileTools: TTabSheet;
+    tabAfterCompileTools: TTabSheet;
     procedure btnHelpClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
   Strict Private
-    FProjectOptions : TframeProjectOptions;
+    FProjectOptions     : TframeProjectOptions;
+    FBeforeCompileTools : TframeExternalTools;
+    FAfterCompileTools : TframeExternalTools;
   Strict Protected
     Procedure LoadSettings(Const GlobalOps: IITHGlobalOptions);
     Procedure SaveSettings(Const GlobalOps: IITHGlobalOptions);
@@ -126,17 +131,23 @@ Begin
     frm.Caption := Format(strProjectOptionsFor, [TITHToolsAPIFunctions.GetProjectName(Project)]);
     frm.LoadSettings(GlobalOps);
     frm.FProjectOptions.InitialiseOptions(GlobalOps, Project);
+
     frm.FProjectOptions.chkEnabledClick(Nil);
+
+    frm.FBeforeCompileTools.InitialiseOptions(GlobalOps, Project, dtBefore);
+    frm.FAfterCompileTools.InitialiseOptions(GlobalOps, Project, dtAfter);
     Case ProjectOptionType Of
       potProjectOptions: frm.pgcProjectOptions.ActivePage := frm.tabProjectOptions;
-      //: @todo potBeforeCompile: ;
-      //: @todo potAfterCompile: ;
+      potBeforeCompile: frm.pgcProjectOptions.ActivePage := frm.tabBeforeCompileTools;
+      potAfterCompile: frm.pgcProjectOptions.ActivePage := frm.tabAfterCompileTools;
       //: @todo potZipping: ;
     End;
     If frm.ShowModal = mrOK Then
       Begin
         frm.SaveSettings(GlobalOps);
         frm.FProjectOptions.SaveOptions(GlobalOps, Project);
+        frm.FBeforeCompileTools.SaveOptions(Project, dtBefore);
+        frm.FAfterCompileTools.SaveOptions(Project, dtAfter);
       End;
   Finally
     frm.Free;
@@ -155,10 +166,24 @@ End;
 **)
 Procedure TfrmITHProjectOptionsDialogue.FormCreate(Sender: TObject);
 
+Const
+  strProjectOptionsFrameName = 'ProjectOptionsFrame';
+  strBeforeCompileToolsName = 'BeforeCompileTools';
+  strAfterCompileToolsName = 'AfterCompileTools';
+
 Begin
   FProjectOptions := TframeProjectOptions.Create(Self);
+  FProjectOptions.Name := strProjectOptionsFrameName;
   FProjectOptions.Parent := tabProjectOptions;
   FProjectOptions.Align := alClient;
+  FBeforeCompileTools := TframeExternalTools.Create(Self);
+  FBeforeCompileTools.Name := strBeforeCompileToolsName;
+  FBeforeCompileTools.Parent := tabBeforeCompileTools;
+  FBeforeCompileTools.Align := alClient;
+  FAfterCompileTools := TframeExternalTools.Create(Self);
+  FAfterCompileTools.Name := strAfterCompileToolsName;
+  FAfterCompileTools.Parent := tabAfterCompileTools;
+  FAfterCompileTools.Align := alClient;
 End;
 
 (**

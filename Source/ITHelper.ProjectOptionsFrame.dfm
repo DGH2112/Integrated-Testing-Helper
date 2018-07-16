@@ -3,6 +3,12 @@ object frameProjectOptions: TframeProjectOptions
   Top = 0
   Width = 603
   Height = 467
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -13
+  Font.Name = 'Tahoma'
+  Font.Style = []
+  ParentFont = False
   TabOrder = 0
   DesignSize = (
     603
@@ -10,8 +16,8 @@ object frameProjectOptions: TframeProjectOptions
   object lblResExts: TLabel
     Left = 8
     Top = 8
-    Width = 592
-    Height = 13
+    Width = 225
+    Height = 16
     Anchors = [akLeft, akTop, akRight]
     Caption = '&Resource Extension Warning Exclusions'
     FocusControl = edtResExts
@@ -19,8 +25,8 @@ object frameProjectOptions: TframeProjectOptions
   object lblVersionInfo: TLabel
     Left = 8
     Top = 80
-    Width = 147
-    Height = 13
+    Width = 176
+    Height = 16
     Caption = '&Copy Version Information from'
     FocusControl = edtVersionInfo
   end
@@ -33,7 +39,6 @@ object frameProjectOptions: TframeProjectOptions
     Caption = '...'
     TabOrder = 3
     OnClick = btnOpenEXEClick
-    ExplicitLeft = 801
   end
   object chkIncrementBuildOnCompile: TCheckBox
     Left = 8
@@ -47,20 +52,18 @@ object frameProjectOptions: TframeProjectOptions
     Left = 8
     Top = 27
     Width = 592
-    Height = 21
+    Height = 24
     Anchors = [akLeft, akTop, akRight]
     TabOrder = 0
     Text = 'edtResExts'
-    ExplicitWidth = 827
   end
   object edtVersionInfo: TEdit
-    Left = 168
+    Left = 204
     Top = 77
-    Width = 392
-    Height = 21
+    Width = 356
+    Height = 24
     Anchors = [akLeft, akTop, akRight]
     TabOrder = 2
-    ExplicitWidth = 627
   end
   object gbxVersionInfo: TGroupBox
     Left = 8
@@ -70,47 +73,44 @@ object frameProjectOptions: TframeProjectOptions
     Anchors = [akLeft, akTop, akRight, akBottom]
     Caption = 'Version Info'
     TabOrder = 5
-    ExplicitWidth = 827
-    ExplicitHeight = 477
     DesignSize = (
       592
       335)
     object lblMajor: TLabel
       Left = 8
       Top = 37
-      Width = 27
-      Height = 13
+      Width = 33
+      Height = 16
       Caption = '&Major'
     end
     object lblMinor: TLabel
       Left = 150
       Top = 37
-      Width = 26
-      Height = 13
+      Width = 32
+      Height = 16
       Caption = 'Mi&nor'
     end
     object lblRelease: TLabel
       Left = 285
       Top = 37
-      Width = 38
-      Height = 13
+      Width = 45
+      Height = 16
       Caption = '&Release'
     end
     object lblBuild: TLabel
       Left = 429
       Top = 37
-      Width = 22
-      Height = 13
+      Width = 27
+      Height = 16
       Caption = '&Build'
     end
     object lblResourceName: TLabel
       Left = 8
       Top = 307
-      Width = 150
-      Height = 13
+      Width = 177
+      Height = 16
       Anchors = [akLeft, akBottom]
       Caption = 'Resource Path & &Name (exc Ext)'
-      ExplicitTop = 370
     end
     object vleVersionInfo: TValueListEditor
       Left = 8
@@ -124,8 +124,6 @@ object frameProjectOptions: TframeProjectOptions
       Strings.Strings = (
         '')
       TabOrder = 8
-      ExplicitWidth = 546
-      ExplicitHeight = 185
       ColWidths = (
         150
         420)
@@ -137,7 +135,7 @@ object frameProjectOptions: TframeProjectOptions
       Left = 56
       Top = 34
       Width = 58
-      Height = 21
+      Height = 24
       ReadOnly = True
       TabOrder = 0
       Text = '0'
@@ -155,7 +153,7 @@ object frameProjectOptions: TframeProjectOptions
       Left = 196
       Top = 34
       Width = 58
-      Height = 21
+      Height = 24
       ReadOnly = True
       TabOrder = 2
       Text = '0'
@@ -173,7 +171,7 @@ object frameProjectOptions: TframeProjectOptions
       Left = 331
       Top = 34
       Width = 58
-      Height = 21
+      Height = 24
       ReadOnly = True
       TabOrder = 4
       Text = '0'
@@ -191,7 +189,7 @@ object frameProjectOptions: TframeProjectOptions
       Left = 475
       Top = 34
       Width = 58
-      Height = 21
+      Height = 24
       ReadOnly = True
       TabOrder = 6
       Text = '0'
@@ -215,8 +213,6 @@ object frameProjectOptions: TframeProjectOptions
       Caption = '&Get IDE Version Info'
       TabOrder = 12
       OnClick = btnGetVersionInfoClick
-      ExplicitLeft = 474
-      ExplicitTop = 365
     end
     object chkIncludeInProject: TCheckBox
       Left = 8
@@ -226,8 +222,6 @@ object frameProjectOptions: TframeProjectOptions
       Anchors = [akLeft, akRight, akBottom]
       Caption = '&Include Resource in Project'
       TabOrder = 9
-      ExplicitTop = 321
-      ExplicitWidth = 600
     end
     object chkCompileWithBRCC32: TCheckBox
       Left = 8
@@ -237,19 +231,15 @@ object frameProjectOptions: TframeProjectOptions
       Anchors = [akLeft, akRight, akBottom]
       Caption = 'Compile Resource with BRCC32'
       TabOrder = 10
-      ExplicitTop = 344
-      ExplicitWidth = 600
     end
     object edtResourceName: TEdit
-      Left = 164
+      Left = 196
       Top = 304
-      Width = 280
-      Height = 21
+      Width = 248
+      Height = 24
       Anchors = [akLeft, akRight, akBottom]
       TabOrder = 11
       Text = 'edtResourceName'
-      ExplicitTop = 367
-      ExplicitWidth = 304
     end
   end
   object chkEnabled: TCheckBox

@@ -112,8 +112,8 @@ Const
 Procedure TITHWizard.AfterCompilation(Const Project: IOTAProject);
 
 Begin
-  If TfrmITHConfigureDlg.Execute(Project, FGlobalOps, dtAfter) Then
-    FGlobalOps.Save;
+  TfrmITHProjectOptionsDialogue.Execute(potAfterCompile, FGlobalOps, Project);
+  //: @debug   FGlobalOps.Save;
 End;
 
 (**
@@ -188,8 +188,8 @@ End;
 Procedure TITHWizard.BeforeCompilation(Const Project: IOTAProject);
 
 Begin
-  If TfrmITHConfigureDlg.Execute(Project, FGlobalOps, dtBefore) Then
-    FGlobalOps.Save;
+  TfrmITHProjectOptionsDialogue.Execute(potBeforeCompile, FGlobalOps, Project);
+  //: @debug   FGlobalOps.Save;
 End;
 
 (**

@@ -58,7 +58,8 @@ uses
   ITHelper.ResponseFile in 'Source\ITHelper.ResponseFile.pas',
   ITHelper.MessageManager in 'Source\ITHelper.MessageManager.pas',
   ITHelper.VersionManager in 'Source\ITHelper.VersionManager.pas',
-  ITHelper.ProjectOptionsFrame in 'Source\ITHelper.ProjectOptionsFrame.pas' {frameProjectOptions: TFrame};
+  ITHelper.ProjectOptionsFrame in 'Source\ITHelper.ProjectOptionsFrame.pas' {frameProjectOptions: TFrame},
+  ITHelper.ExternalToolsFrame in 'Source\ITHelper.ExternalToolsFrame.pas' {frameExternalTools: TFrame};
 
 {$R *.res}
 
