@@ -4,7 +4,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    16 Jul 2018
+  @Date    17 Jul 2018
   
 **)
 Unit ITHelper.ZIPFrame;
@@ -23,11 +23,12 @@ Uses
   Vcl.StdCtrls,
   Vcl.Buttons,
   ToolsAPI,
+  ITHelper.Types,
   ITHelper.Interfaces;
 
 Type
   (** A frame to represent the zipping configuration. **)
-  TframeZipping = Class(TFrame)
+  TframeZipping = Class(TFrame, IITHOptionsFrame)
     chkModifiedFiles: TCheckBox;
     dlgOpenZIP: TOpenDialog;
     mmoExclusionPatterns: TMemo;
@@ -56,10 +57,12 @@ Type
     FProject : IOTAProject;
     FFileName: String;
   Strict Protected
+    Procedure InitialiseOptions(Const GlobalOps: IITHGlobalOptions; Const Project : IOTAProject;
+      Const DlgType : TITHDlgType);
+    Procedure SaveOptions(Const GlobalOps: IITHGlobalOptions; Const Project : IOTAProject;
+      Const DlgType : TITHDlgType);
+    Function  IsValidated : Boolean;
   Public
-    Procedure InitialiseOptions(Const GlobalOps: IITHGlobalOptions; Const Project : IOTAProject);
-    Procedure SaveOptions(Const GlobalOps: IITHGlobalOptions);
-    Function IsValidated : Boolean;
   End;
 
 Implementation
@@ -254,12 +257,15 @@ End;
   @precon  None.
   @postcon Initialises the project options in the dialogue.
 
+  @nohint  DlgType
+
   @param   GlobalOps as an IITHGlobalOptions as a constant
   @param   Project   as an IOTAProject as a constant
+  @param   DlgType   as a TITHDlgType as a constant
 
 **)
 Procedure TframeZipping.InitialiseOptions(Const GlobalOps: IITHGlobalOptions;
-  Const Project : IOTAProject);
+  Const Project : IOTAProject; Const DlgType : TITHDlgType);
 
 Var
   ProjectOps: IITHProjectOptions;
@@ -325,16 +331,21 @@ End;
   @precon  None.
   @postcon Saves the project options to the ini file.
 
-  @param   GlobalOps as a IITHGlobalOptions as a constant
+  @nohint  DlgType
+
+  @param   GlobalOps as an IITHGlobalOptions as a constant
+  @param   Project   as an IOTAProject as a constant
+  @param   DlgType   as a TITHDlgType as a constant
 
 **)
-Procedure TframeZipping.SaveOptions(Const GlobalOps: IITHGlobalOptions);
+Procedure TframeZipping.SaveOptions(Const GlobalOps: IITHGlobalOptions; Const Project : IOTAProject;
+  Const DlgType : TITHDlgType);
 
 Var
   ProjectOps: IITHProjectOptions;
 
 Begin
-  ProjectOps := GlobalOps.ProjectOptions(FProject);
+  ProjectOps := GlobalOps.ProjectOptions(Project);
   Try
     ProjectOps.EnableZipping := cbxEnabledZipping.Checked;
     ProjectOps.ZipName := edtZipName.Text;

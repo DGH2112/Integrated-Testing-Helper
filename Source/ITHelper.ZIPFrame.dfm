@@ -83,7 +83,6 @@ object frameZipping: TframeZipping
     Caption = 'Browse &Path'
     TabOrder = 2
     OnClick = btnBrowseBasePathClick
-    ExplicitLeft = 780
   end
   object edtBasePath: TEdit
     Left = 8
@@ -92,7 +91,6 @@ object frameZipping: TframeZipping
     Height = 24
     Anchors = [akLeft, akTop, akRight]
     TabOrder = 3
-    ExplicitWidth = 766
   end
   object btnBrowseZip: TButton
     Left = 551
@@ -103,7 +101,6 @@ object frameZipping: TframeZipping
     Caption = 'Browse &File'
     TabOrder = 4
     OnClick = btnBrowseZipClick
-    ExplicitLeft = 780
   end
   object edtZipName: TEdit
     Left = 8
@@ -113,7 +110,6 @@ object frameZipping: TframeZipping
     Anchors = [akLeft, akTop, akRight]
     TabOrder = 5
     OnExit = edtZipEXEExit
-    ExplicitWidth = 766
   end
   object btnDeleteZip: TBitBtn
     Left = 551
@@ -138,7 +134,6 @@ object frameZipping: TframeZipping
     NumGlyphs = 2
     TabOrder = 6
     OnClick = btnDeleteZipClick
-    ExplicitLeft = 780
   end
   object btnEditZip: TBitBtn
     Left = 551
@@ -163,7 +158,6 @@ object frameZipping: TframeZipping
     NumGlyphs = 2
     TabOrder = 7
     OnClick = btnEditZipClick
-    ExplicitLeft = 780
   end
   object btnAddZip: TBitBtn
     Left = 551
@@ -188,7 +182,6 @@ object frameZipping: TframeZipping
     NumGlyphs = 2
     TabOrder = 8
     OnClick = btnAddZipClick
-    ExplicitLeft = 780
   end
   object lbAdditionalWildcards: TListBox
     Left = 8

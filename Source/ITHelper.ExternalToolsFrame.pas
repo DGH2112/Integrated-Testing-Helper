@@ -4,7 +4,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    16 Jul 2018
+  @Date    17 Jul 2018
   
 **)
 Unit ITHelper.ExternalToolsFrame;
@@ -27,15 +27,13 @@ Uses
   Vcl.StdCtrls,
   Vcl.Buttons,
   ToolsAPI,
+  ITHelper.Types,
   ITHelper.Interfaces,
   ITHelper.ExternalProcessInfo;
 
 Type
-  (** An enumerate to define which set of data the dialogue is to work with. **)
-  TITHDlgType = (dtBefore, dtAfter);
-
   (** This is a frame for representing the before or after compile tools to be run. **)
-  TframeExternalTools = Class(TFrame)
+  TframeExternalTools = Class(TFrame, IITHOptionsFrame)
     chkWarn: TCheckBox;
     lblCompile: TLabel;
     btnDown: TBitBtn;
@@ -61,19 +59,19 @@ Type
   Strict Private
     FGlobalOps: IITHGlobalOptions;
     FProcesses : TITHProcessCollection;
-    //FProject  : IOTAProject;
-    //FDlgType  : TITHDlgType;
   Strict Protected
     Procedure AddListItem(Const Item: TListItem; Const Process: TITHProcessInfo);
     Procedure AddProcesses(Const strSection: String; Const Project: IOTAProject);
     Procedure SaveProcesses(Const strSection: String; Const Project: IOTAProject);
     Procedure PopulateListView;
+    Procedure InitialiseOptions(Const GlobalOps: IITHGlobalOptions; Const Project: IOTAProject;
+      Const DlgType : TITHDlgType);
+    Procedure SaveOptions(Const GlobalOps: IITHGlobalOptions; Const Project: IOTAProject;
+      Const DlgType : TITHDlgType);
+    Function  IsValidated : Boolean;
   Public
     Constructor Create(AOwner : TComponent); Override;
     Destructor Destroy; Override;
-    Procedure InitialiseOptions(Const GlobalOps: IITHGlobalOptions; Const Project: IOTAProject;
-      Const DlgType : TITHDlgType);
-    Procedure SaveOptions(Const Project: IOTAProject; Const DlgType : TITHDlgType);
   End;
 
 Implementation
@@ -95,10 +93,10 @@ Type
 Const
   (** A constant arrant to distinguish between before and after compilation tools. **)
   strSection : Array[Low(TITHDlgType)..High(TITHDlgType)] Of String = (
-    'Pre-Compilation', 'Post-Compilation');
+    'Not Applicable', 'Pre-Compilation', 'Post-Compilation');
   (** A constant array of string representing the data type the dialogue is to work
       with. **)
-  DlgTypes : Array[Low(TITHDlgType)..High(TITHDlgType)] of String = ('Before', 'After');
+  DlgTypes : Array[Low(TITHDlgType)..High(TITHDlgType)] of String = ('NA', 'Before', 'After');
 
 (**
 
@@ -413,6 +411,22 @@ End;
 
 (**
 
+  This is an implementation of the frame intertfaces IsValidated method.
+
+  @precon  None.
+  @postcon No validation is required here at the moment so True is returned.
+
+  @return  a Boolean
+
+**)
+Function TframeExternalTools.IsValidated: Boolean;
+
+Begin
+  Result := True;
+End;
+
+(**
+
   This is an on change event handler for the Compile Listview control.
 
   @precon  None.
@@ -673,17 +687,19 @@ End;
   @precon  None.
   @postcon Saves the project options to the ini file.
 
-  @param   Project as an IOTAProject as a constant
-  @param   DlgType as a TITHDlgType as a constant
+  @param   GlobalOps as an IITHGlobalOptions as a constant
+  @param   Project   as an IOTAProject as a constant
+  @param   DlgType   as a TITHDlgType as a constant
 
 **)
-Procedure TframeExternalTools.SaveOptions(Const Project: IOTAProject; Const DlgType : TITHDlgType);
+Procedure TframeExternalTools.SaveOptions(Const GlobalOps: IITHGlobalOptions; Const Project: IOTAProject;
+  Const DlgType : TITHDlgType);
 
 Var
   ProjectOps: IITHProjectOptions;
 
 Begin
-  ProjectOps := FGlobalOps.ProjectOptions(Project);
+  ProjectOps := GlobalOps.ProjectOptions(Project);
   Try
     If DlgType = dtBefore Then
       ProjectOps.WarnBefore := chkWarn.Checked

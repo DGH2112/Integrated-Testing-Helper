@@ -5,7 +5,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    16 Jul 2018
+  @Date    17 Jul 2018
 
 **)
 Unit ITHelper.ProjectOptionsDialogue;
@@ -56,10 +56,10 @@ Type
     procedure FormCreate(Sender: TObject);
     procedure btnOKClick(Sender: TObject);
   Strict Private
-    FProjectOptions     : TframeProjectOptions;
-    FBeforeCompileTools : TframeExternalTools;
-    FAfterCompileTools  : TframeExternalTools;
-    FZipping            : TframeZipping;
+    FProjectOptions     : IITHOptionsFrame;
+    FBeforeCompileTools : IITHOptionsFrame;
+    FAfterCompileTools  : IITHOptionsFrame;
+    FZipping            : IITHOptionsFrame;
   Strict Protected
     Procedure LoadSettings(Const GlobalOps: IITHGlobalOptions);
     Procedure SaveSettings(Const GlobalOps: IITHGlobalOptions);
@@ -78,6 +78,7 @@ Uses
   {$IFDEF DXE20}
   CommonOptionStrs,
   {$ENDIF}
+  ITHelper.Types,
   ITHelper.TestingHelperUtils;
 
 Const
@@ -134,7 +135,11 @@ End;
 Procedure TfrmITHProjectOptionsDialogue.btnOKClick(Sender: TObject);
 
 Begin
-  If Not FZipping.Isvalidated Then //: @todo Validate ALL frames!
+  If Not (
+    FProjectOptions.IsValidated And
+    FBeforeCompileTools.IsValidated And
+    FAfterCompileTools.IsValidated And
+    FZipping.Isvalidated) Then
     ModalResult := mrNone;
 End;
 
@@ -164,10 +169,10 @@ Begin
   Try
     frm.Caption := Format(strProjectOptionsFor, [TITHToolsAPIFunctions.GetProjectName(Project)]);
     frm.LoadSettings(GlobalOps);
-    frm.FProjectOptions.InitialiseOptions(GlobalOps, Project);
+    frm.FProjectOptions.InitialiseOptions(GlobalOps, Project, dtNA);
     frm.FBeforeCompileTools.InitialiseOptions(GlobalOps, Project, dtBefore);
     frm.FAfterCompileTools.InitialiseOptions(GlobalOps, Project, dtAfter);
-    frm.FZipping.InitialiseOptions(GlobalOps, Project);
+    frm.FZipping.InitialiseOptions(GlobalOps, Project, dtNA);
     Case ProjectOptionType Of
       potProjectOptions: frm.pgcProjectOptions.ActivePage := frm.tabProjectOptions;
       potBeforeCompile: frm.pgcProjectOptions.ActivePage := frm.tabBeforeCompileTools;
@@ -177,10 +182,10 @@ Begin
     If frm.ShowModal = mrOK Then
       Begin
         frm.SaveSettings(GlobalOps);
-        frm.FProjectOptions.SaveOptions(GlobalOps, Project);
-        frm.FBeforeCompileTools.SaveOptions(Project, dtBefore);
-        frm.FAfterCompileTools.SaveOptions(Project, dtAfter);
-        frm.FZipping.SaveOptions(GlobalOps);
+        frm.FProjectOptions.SaveOptions(GlobalOps, Project, dtNA);
+        frm.FBeforeCompileTools.SaveOptions(GlobalOps, Project, dtBefore);
+        frm.FAfterCompileTools.SaveOptions(GlobalOps, Project, dtAfter);
+        frm.FZipping.SaveOptions(GlobalOps, Project, dtNA);
       End;
   Finally
     frm.Free;
@@ -199,29 +204,43 @@ End;
 **)
 Procedure TfrmITHProjectOptionsDialogue.FormCreate(Sender: TObject);
 
+ResourceString
+  strIITHOptionsFrameNotSupported = 'IITHOptionsFrame not supported!';
+
 Const
   strProjectOptionsFrameName = 'frameProjectOptionsFrame';
   strBeforeCompileToolsName = 'frameBeforeCompileTools';
   strAfterCompileToolsName = 'frameAfterCompileTools';
   strZippingName = 'frameZipping';
 
+Var
+  F: Tframe;
+
 Begin
-  FProjectOptions := TframeProjectOptions.Create(Self);
-  FProjectOptions.Name := strProjectOptionsFrameName;
-  FProjectOptions.Parent := tabProjectOptions;
-  FProjectOptions.Align := alClient;
-  FBeforeCompileTools := TframeExternalTools.Create(Self);
-  FBeforeCompileTools.Name := strBeforeCompileToolsName;
-  FBeforeCompileTools.Parent := tabBeforeCompileTools;
-  FBeforeCompileTools.Align := alClient;
-  FAfterCompileTools := TframeExternalTools.Create(Self);
-  FAfterCompileTools.Name := strAfterCompileToolsName;
-  FAfterCompileTools.Parent := tabAfterCompileTools;
-  FAfterCompileTools.Align := alClient;
-  FZipping := TframeZipping.Create(Self);
-  FZipping.Name := strZippingName;
-  FZipping.Parent := tabZipping;
-  FZipping.Align := alClient;
+  F := TframeProjectOptions.Create(Self);
+  F.Name := strProjectOptionsFrameName;
+  F.Parent := tabProjectOptions;
+  F.Align := alClient;
+  If Not Supports(F, IITHOptionsFrame, FProjectOptions) Then
+    Raise Exception.Create(strIITHOptionsFrameNotSupported);
+  F := TframeExternalTools.Create(Self);
+  F.Name := strBeforeCompileToolsName;
+  F.Parent := tabBeforeCompileTools;
+  F.Align := alClient;
+  If Not Supports(F, IITHOptionsFrame, FBeforeCompileTools) Then
+    Raise Exception.Create(strIITHOptionsFrameNotsupported);
+  F := TframeExternalTools.Create(Self);
+  F.Name := strAfterCompileToolsName;
+  F.Parent := tabAfterCompileTools;
+  F.Align := alClient;
+  If Not Supports(F, IITHOptionsFrame, FAfterCompileTools) Then
+    Raise Exception.Create(strIITHOptionsFrameNotSupported);
+  F := TframeZipping.Create(Self);
+  F.Name := strZippingName;
+  F.Parent := tabZipping;
+  F.Align := alClient;
+  If Not Supports(F, IITHOptionsFrame, FZipping) Then
+    Raise Exception.Create(strIITHOptionsFrameNotSupported);
 End;
 
 (**

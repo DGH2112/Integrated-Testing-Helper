@@ -16,7 +16,7 @@ object frameExternalTools: TframeExternalTools
   object lblCompile: TLabel
     Left = 8
     Top = 8
-    Width = 225
+    Width = 207
     Height = 16
     Caption = 'Programmes to Run %s Compilation'
   end
@@ -28,7 +28,6 @@ object frameExternalTools: TframeExternalTools
     Anchors = [akLeft, akBottom]
     Caption = 'Warn of missing %s Compilation tools.'
     TabOrder = 7
-    ExplicitTop = 594
   end
   object btnDown: TBitBtn
     Left = 586
@@ -53,7 +52,6 @@ object frameExternalTools: TframeExternalTools
     NumGlyphs = 2
     TabOrder = 5
     OnClick = btnDownClick
-    ExplicitLeft = 805
   end
   object btnUp: TBitBtn
     Left = 586
@@ -78,7 +76,6 @@ object frameExternalTools: TframeExternalTools
     NumGlyphs = 2
     TabOrder = 4
     OnClick = btnUpClick
-    ExplicitLeft = 805
   end
   object btnCopy: TBitBtn
     Left = 586
@@ -103,7 +100,6 @@ object frameExternalTools: TframeExternalTools
     NumGlyphs = 2
     TabOrder = 6
     OnClick = btnCopyClick
-    ExplicitLeft = 805
   end
   object lvCompile: TListView
     Left = 8
@@ -137,8 +133,6 @@ object frameExternalTools: TframeExternalTools
     OnChange = lvCompileChange
     OnDblClick = lvCompileDblClick
     OnResize = lvResize
-    ExplicitWidth = 791
-    ExplicitHeight = 558
   end
   object btnAdd: TBitBtn
     Left = 586
@@ -163,7 +157,6 @@ object frameExternalTools: TframeExternalTools
     NumGlyphs = 2
     TabOrder = 1
     OnClick = btnAddClick
-    ExplicitLeft = 805
   end
   object btnDelete: TBitBtn
     Left = 586
@@ -188,7 +181,6 @@ object frameExternalTools: TframeExternalTools
     NumGlyphs = 2
     TabOrder = 3
     OnClick = btnDeleteClick
-    ExplicitLeft = 805
   end
   object btnEdit: TBitBtn
     Left = 586
@@ -213,13 +205,12 @@ object frameExternalTools: TframeExternalTools
     NumGlyphs = 2
     TabOrder = 2
     OnClick = btnEditClick
-    ExplicitLeft = 805
   end
   object ilStatus: TImageList
     Left = 73
     Top = 136
     Bitmap = {
-      494C010102000400000110001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010102000400040110001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000001000000001002000000000000010
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000

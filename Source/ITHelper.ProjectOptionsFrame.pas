@@ -5,7 +5,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    16 Jul 2018
+  @Date    17 Jul 2018
   
 **)
 Unit ITHelper.ProjectOptionsFrame;
@@ -28,11 +28,12 @@ Uses
   Vcl.ValEdit,
   Vcl.StdCtrls,
   ToolsAPI,
+  ITHelper.Types,
   ITHelper.Interfaces;
 
 Type
   (** A frame to contain the project options. **)
-  TframeProjectOptions = Class(TFrame)
+  TframeProjectOptions = Class(TFrame, IITHOptionsFrame)
     lblResExts: TLabel;
     lblVersionInfo: TLabel;
     btnOpenEXE: TButton;
@@ -67,9 +68,12 @@ Type
   Strict Private
     FProject : IOTAProject;
   Strict Protected
+    Procedure InitialiseOptions(Const GlobalOps: IITHGlobalOptions; Const Project: IOTAProject;
+      Const DlgType : TITHDlgType);
+    Procedure SaveOptions(Const GlobalOps: IITHGlobalOptions; Const Project: IOTAProject;
+      Const DlgType : TITHDlgType);
+    Function  IsValidated : Boolean;
   Public
-    Procedure InitialiseOptions(Const GlobalOps: IITHGlobalOptions; Const Project: IOTAProject);
-    Procedure SaveOptions(Const GlobalOps: IITHGlobalOptions; Const Project: IOTAProject);
   End;
 
 Implementation
@@ -229,12 +233,15 @@ End;
   @postcon Initialises the dialogue controls with information from the global options and the project 
            options.
 
-  @param   GlobalOps as a IITHGlobalOptions as a constant
+  @nohint  DlgType
+
+  @param   GlobalOps as an IITHGlobalOptions as a constant
   @param   Project   as an IOTAProject as a constant
+  @param   DlgType   as a TITHDlgType as a constant
 
 **)
 Procedure TframeProjectOptions.InitialiseOptions(Const GlobalOps: IITHGlobalOptions;
-  Const Project: IOTAProject);
+  Const Project: IOTAProject; Const DlgType : TITHDlgType);
 
 Var
   ProjectOps: IITHProjectOptions;
@@ -262,17 +269,36 @@ End;
 
 (**
 
+  This method implements the IsValidated interfac method for the frame.
+
+  @precon  None.
+  @postcon No validation is currently required to true is returned.
+
+  @return  a Boolean
+
+**)
+Function TframeProjectOptions.IsValidated: Boolean;
+
+Begin
+  Result := True;
+End;
+
+(**
+
   This method saves the project options to the ini file.
 
   @precon  None.
   @postcon Saves the project options to the ini file.
 
-  @param   GlobalOps as a IITHGlobalOptions as a constant
+  @nohint  DlgType
+
+  @param   GlobalOps as an IITHGlobalOptions as a constant
   @param   Project   as an IOTAProject as a constant
+  @param   DlgType   as a TITHDlgType as a constant
 
 **)
 Procedure TframeProjectOptions.SaveOptions(Const GlobalOps: IITHGlobalOptions;
-  Const Project: IOTAProject);
+  Const Project: IOTAProject; Const DlgType : TITHDlgType);
 
 Var
   ProjectOps: IITHProjectOptions;

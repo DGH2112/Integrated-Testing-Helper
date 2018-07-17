@@ -63,18 +63,34 @@ object frmITHProjectOptionsDialogue: TfrmITHProjectOptionsDialogue
     TabOrder = 0
     object tabProjectOptions: TTabSheet
       Caption = '&Project Options'
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
     end
     object tabBeforeCompileTools: TTabSheet
       Caption = '&Before Compile Tools'
       ImageIndex = 1
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
     end
     object tabAfterCompileTools: TTabSheet
       Caption = '&After Compile Tools'
       ImageIndex = 2
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
     end
     object tabZipping: TTabSheet
       Caption = '&Zipping'
       ImageIndex = 3
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
     end
   end
 end
