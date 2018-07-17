@@ -1,57 +1,51 @@
 (**
-
-  This module contains code which represents a form for configuring the zipping of
-  projects during the compilation cycle.
+  
+  This module contains a frame to contain the zipping configuration information.
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    14 Jul 2018
-
+  @Date    17 Jul 2018
+  
 **)
-Unit ITHelper.ZIPDialogue;
+Unit ITHelper.ZIPFrame;
 
 Interface
 
 Uses
-  Windows,
-  Messages,
-  SysUtils,
-  Variants,
-  Classes,
-  Graphics,
-  Controls,
-  Forms,
-  Dialogs,
-  StdCtrls,
-  Buttons,
+  Winapi.Windows,
+  Winapi.Messages,
+  System.Variants,
+  System.Classes,
+  Vcl.Graphics,
+  Vcl.Controls,
+  Vcl.Forms,
+  Vcl.Dialogs,
+  Vcl.StdCtrls,
+  Vcl.Buttons,
   ToolsAPI,
+  ITHelper.Types,
   ITHelper.Interfaces;
 
-{$INCLUDE 'CompilerDefinitions.inc'}
-
 Type
-  (** A class to represent the form. **)
-  TfrmITHZIPDialogue = Class(TForm)
-    lblZipInfo: TLabel;
-    lblZIPName: TLabel;
-    lblAdditionalFiles: TLabel;
-    lblFilePatternsToExclude: TLabel;
-    cbxEnabledZipping: TCheckBox;
-    lbAdditionalWildcards: TListBox;
-    btnAddZip: TBitBtn;
-    btnEditZip: TBitBtn;
-    btnDeleteZip: TBitBtn;
-    edtZipName: TEdit;
-    btnBrowseZip: TButton;
-    edtBasePath: TEdit;
-    btnBrowseBasePath: TButton;
-    mmoExclusionPatterns: TMemo;
-    btnOK: TBitBtn;
-    btnCancel: TBitBtn;
-    dlgOpenZIP: TOpenDialog;
-    btnHelp: TBitBtn;
+  (** A frame to represent the zipping configuration. **)
+  TframeZipping = Class(TFrame, IITHOptionsFrame)
     chkModifiedFiles: TCheckBox;
+    dlgOpenZIP: TOpenDialog;
+    mmoExclusionPatterns: TMemo;
+    btnBrowseBasePath: TButton;
+    edtBasePath: TEdit;
+    btnBrowseZip: TButton;
+    edtZipName: TEdit;
+    btnDeleteZip: TBitBtn;
+    btnEditZip: TBitBtn;
+    btnAddZip: TBitBtn;
+    lbAdditionalWildcards: TListBox;
+    cbxEnabledZipping: TCheckBox;
     lblZIPBasePath: TLabel;
+    lblFilePatternsToExclude: TLabel;
+    lblAdditionalFiles: TLabel;
+    lblZIPName: TLabel;
+    lblZipInfo: TLabel;
     Procedure btnAddZipClick(Sender: TObject);
     Procedure btnBrowseBasePathClick(Sender: TObject);
     Procedure btnBrowseZipClick(Sender: TObject);
@@ -59,17 +53,16 @@ Type
     Procedure btnEditZipClick(Sender: TObject);
     Procedure cbxEnabledZippingClick(Sender: TObject);
     Procedure edtZipEXEExit(Sender: TObject);
-    Procedure btnOKClick(Sender: TObject);
-    Procedure InitialiseOptions(Const GlobalOps: IITHGlobalOptions);
-    Procedure SaveOptions(Const GlobalOps: IITHGlobalOptions);
-    procedure btnHelpClick(Sender: TObject);
   Strict Private
-    { Private declarations }
     FProject : IOTAProject;
     FFileName: String;
+  Strict Protected
+    Procedure InitialiseOptions(Const GlobalOps: IITHGlobalOptions; Const Project : IOTAProject;
+      Const DlgType : TITHDlgType);
+    Procedure SaveOptions(Const GlobalOps: IITHGlobalOptions; Const Project : IOTAProject;
+      Const DlgType : TITHDlgType);
+    Function  IsValidated : Boolean;
   Public
-    { Public declarations }
-    Class Procedure Execute(Const Project: IOTAProject; Const GlobalOps: IITHGlobalOptions);
   End;
 
 Implementation
@@ -77,23 +70,11 @@ Implementation
 {$R *.dfm}
 
 Uses
+  System.SysUtils,
+  VCL.FileCtrl,
   ITHelper.AdditionalZipFilesForm,
-  FileCtrl,
   ITHelper.TestingHelperUtils,
-  IniFiles, 
   ITHelper.CommonFunctions;
-
-Const
-  (** An INI Section for the dialogues size and position. **)
-  strZIPDlgSection = 'ZIP Dlg';
-  (** An INI Key for the top **)
-  strTopKey = 'Top';
-  (** An INI Key for the left **)
-  strLeftLey = 'Left';
-  (** An INI Key for the height **)
-  strHeightKey = 'Height';
-  (** An INI Key for the width **)
-  strWidthKey = 'Width';
 
 (**
 
@@ -105,7 +86,7 @@ Const
   @param   Sender as a TObject
 
 **)
-Procedure TfrmITHZIPDialogue.btnAddZipClick(Sender: TObject);
+Procedure TframeZipping.btnAddZipClick(Sender: TObject);
 
 Var
   strWildcard: String;
@@ -129,7 +110,7 @@ End;
   @param   Sender as a TObject
 
 **)
-Procedure TfrmITHZIPDialogue.btnBrowseBasePathClick(Sender: TObject);
+Procedure TframeZipping.btnBrowseBasePathClick(Sender: TObject);
 
 ResourceString
   strZipBaseDirectory = 'Zip Base Directory';
@@ -157,7 +138,7 @@ End;
   @param   Sender as a TObject
 
 **)
-Procedure TfrmITHZIPDialogue.btnBrowseZipClick(Sender: TObject);
+Procedure TframeZipping.btnBrowseZipClick(Sender: TObject);
 
 Begin
   dlgOpenZIP.FileName := ExtractFileName(TITHToolsAPIFunctions.ExpandMacro(edtZipName.Text, FProject.FileName));
@@ -176,7 +157,7 @@ End;
   @param   Sender as a TObject
 
 **)
-Procedure TfrmITHZIPDialogue.btnDeleteZipClick(Sender: TObject);
+Procedure TframeZipping.btnDeleteZipClick(Sender: TObject);
 
 Begin
   If lbAdditionalWildcards.ItemIndex > -1 Then
@@ -193,7 +174,7 @@ End;
   @param   Sender as a TObject
 
 **)
-Procedure TfrmITHZIPDialogue.btnEditZipClick(Sender: TObject);
+Procedure TframeZipping.btnEditZipClick(Sender: TObject);
 
 Var
   strWildcard: String;
@@ -211,60 +192,6 @@ End;
 
 (**
 
-  This is an on click event handler for the Help button.
-
-  @precon  None.
-  @postcon Displays the ZIP Options help page.
-
-  @param   Sender as a TObject
-
-**)
-Procedure TfrmITHZIPDialogue.btnHelpClick(Sender: TObject);
-
-Const
-  strZIPOptions = 'ZIPOptions';
-
-Begin
-  HtmlHelp(0, PChar(TITHToolsAPIFunctions.ITHHTMLHelpFile(strZIPOptions)), HH_DISPLAY_TOPIC, 0);
-End;
-
-(**
-
-  This is an on click event handler for the OK button.
-
-  @precon  None.
-  @postcon Checks the paths of the zip file and base directory and then confirms the
-           dialogue.
-
-  @param   Sender as a TObject
-
-**)
-Procedure TfrmITHZIPDialogue.btnOKClick(Sender: TObject);
-
-ResourceString
-  strZipFileBaseDirectoryDoesNotExist = 'The zip file base directory "%s" does not exist.';
-  strZipFilePathDirectoryDoesNotExist = 'The zip file path directory "%s" does not exist.';
-
-Begin
-  If cbxEnabledZipping.Checked And Not SysUtils.DirectoryExists(TITHToolsAPIFunctions.ExpandMacro(
-    edtBasePath.Text, FProject.FileName)) Then
-    Begin
-      MessageDlg(Format(strZipFileBaseDirectoryDoesNotExist,
-          [TITHToolsAPIFunctions.ExpandMacro(edtBasePath.Text, FProject.FileName)]), mtError, [mbOK], 0);
-      ModalResult := mrNone;
-    End;
-  If cbxEnabledZipping.Checked And Not SysUtils.DirectoryExists(ExtractFilePath(
-    TITHToolsAPIFunctions.ExpandMacro(edtZipName.Text, FProject.FileName))) Then
-    Begin
-      MessageDlg(Format(strZipFilePathDirectoryDoesNotExist,
-          [TITHToolsAPIFunctions.ExpandMacro(ExtractFilePath(edtZipName.Text), FProject.FileName)]),
-          mtError, [mbOK], 0);
-      ModalResult := mrNone;
-    End;
-End;
-
-(**
-
   This method enabled or disabled the zip controls depend on whether the user
   wishes to use this facility.
 
@@ -275,7 +202,7 @@ End;
   @param   Sender as a TObject
 
 **)
-Procedure TfrmITHZIPDialogue.cbxEnabledZippingClick(Sender: TObject);
+Procedure TframeZipping.cbxEnabledZippingClick(Sender: TObject);
 
 Begin
   lblZIPName.Enabled               := cbxEnabledZipping.Checked;
@@ -304,7 +231,7 @@ End;
   @param   Sender as a TObject
 
 **)
-Procedure TfrmITHZIPDialogue.edtZipEXEExit(Sender: TObject);
+Procedure TframeZipping.edtZipEXEExit(Sender: TObject);
 
 ResourceString
   strCorrect = 'The zip executable "%s" has been found!';
@@ -325,65 +252,26 @@ End;
 
 (**
 
-  This is the forms main interface method for editing a projects zipping opions..
-
-  @precon  Project and GlobalOps must be valid instances.
-  @postcon Dislays the dialogue.
-
-  @param   Project   as an IOTAProject as a constant
-  @param   GlobalOps as a IITHGlobalOptions as a constant
-
-**)
-Class Procedure TfrmITHZIPDialogue.Execute(Const Project: IOTAProject;
-  Const GlobalOps: IITHGlobalOptions);
-
-ResourceString
-  strZIPOptionsFor = 'ZIP Options for %s';
-
-Var
-  frm: TfrmITHZIPDialogue;
-
-Begin
-  frm := TfrmITHZIPDialogue.Create(Nil);
-  Try
-    frm.FProject := Project;
-    frm.InitialiseOptions(GlobalOps);
-    frm.cbxEnabledZippingClick(Nil);
-    frm.edtZipEXEExit(Nil);
-    frm.Caption := Format(strZIPOptionsFor, [TITHToolsAPIFunctions.GetProjectName(Project)]);
-    If frm.ShowModal = mrOK Then
-      frm.SaveOptions(GlobalOps);
-  Finally
-    frm.Free;
-  End;
-End;
-
-(**
-
   This method initialises the project options in the dialogue.
 
   @precon  None.
   @postcon Initialises the project options in the dialogue.
 
-  @param   GlobalOps as a IITHGlobalOptions as a constant
+  @nohint  DlgType
+
+  @param   GlobalOps as an IITHGlobalOptions as a constant
+  @param   Project   as an IOTAProject as a constant
+  @param   DlgType   as a TITHDlgType as a constant
 
 **)
-Procedure TfrmITHZIPDialogue.InitialiseOptions(Const GlobalOps: IITHGlobalOptions);
+Procedure TframeZipping.InitialiseOptions(Const GlobalOps: IITHGlobalOptions;
+  Const Project : IOTAProject; Const DlgType : TITHDlgType);
 
 Var
-  iniFile: TMemIniFile;
   ProjectOps: IITHProjectOptions;
 
 Begin
-  iniFile := TMemIniFile.Create(GlobalOps.INIFileName);
-  Try
-    Top    := iniFile.ReadInteger(strZIPDlgSection, strTopKey, (Screen.Height - Height) Div 2);
-    Left   := iniFile.ReadInteger(strZIPDlgSection, strLeftLey, (Screen.Width -  Width) Div 2);
-    Height := iniFile.ReadInteger(strZIPDlgSection, strHeightKey, Height);
-    Width  := iniFile.ReadInteger(strZIPDlgSection, strWidthKey, Width);
-  Finally
-    iniFile.Free;
-  End;
+  FProject := Project;
   FFileName := GlobalOps.ZipEXE;
   ProjectOps := GlobalOps.ProjectOptions(FProject);
   Try
@@ -396,6 +284,44 @@ Begin
   Finally
     ProjectOps := Nil;
   End;
+  cbxEnabledZippingClick(Nil);
+  edtZipEXEExit(Nil);
+End;
+
+(**
+
+  This method returns true if the frame information is valid.
+
+  @precon  None.
+  @postcon Returns true if the frame information is valid.
+
+  @return  a Boolean
+
+**)
+Function TframeZipping.IsValidated: Boolean;
+
+ResourceString
+  strZipFileBaseDirectoryDoesNotExist = 'The zip file base directory "%s" does not exist.';
+  strZipFilePathDirectoryDoesNotExist = 'The zip file path directory "%s" does not exist.';
+
+Begin
+  Result := True;
+  If cbxEnabledZipping.Checked And Not
+    System.SysUtils.DirectoryExists(TITHToolsAPIFunctions.ExpandMacro(edtBasePath.Text, FProject.FileName)) Then
+    Begin
+      MessageDlg(Format(strZipFileBaseDirectoryDoesNotExist,
+          [TITHToolsAPIFunctions.ExpandMacro(edtBasePath.Text, FProject.FileName)]), mtError, [mbOK], 0);
+      Result := False;
+    End;
+  If cbxEnabledZipping.Checked And Not
+    System.SysUtils.DirectoryExists(ExtractFilePath(TITHToolsAPIFunctions.ExpandMacro(edtZipName.Text,
+    FProject.FileName))) Then
+    Begin
+      MessageDlg(Format(strZipFilePathDirectoryDoesNotExist,
+          [TITHToolsAPIFunctions.ExpandMacro(ExtractFilePath(edtZipName.Text), FProject.FileName)]),
+          mtError, [mbOK], 0);
+      Result := False;
+    End;
 End;
 
 (**
@@ -405,27 +331,21 @@ End;
   @precon  None.
   @postcon Saves the project options to the ini file.
 
-  @param   GlobalOps as a IITHGlobalOptions as a constant
+  @nohint  DlgType
+
+  @param   GlobalOps as an IITHGlobalOptions as a constant
+  @param   Project   as an IOTAProject as a constant
+  @param   DlgType   as a TITHDlgType as a constant
 
 **)
-Procedure TfrmITHZIPDialogue.SaveOptions(Const GlobalOps: IITHGlobalOptions);
+Procedure TframeZipping.SaveOptions(Const GlobalOps: IITHGlobalOptions; Const Project : IOTAProject;
+  Const DlgType : TITHDlgType);
 
 Var
-  iniFile: TMemIniFile;
   ProjectOps: IITHProjectOptions;
 
 Begin
-  iniFile := TMemIniFile.Create(GlobalOps.INIFileName);
-  Try
-    iniFile.WriteInteger(strZIPDlgSection, strTopKey, Top);
-    iniFile.WriteInteger(strZIPDlgSection, strLeftLey, Left);
-    iniFile.WriteInteger(strZIPDlgSection, strHeightKey, Height);
-    iniFile.WriteInteger(strZIPDlgSection, strWidthKey, Width);
-    iniFile.UpdateFile;
-  Finally
-    iniFile.Free;
-  End;
-  ProjectOps := GlobalOps.ProjectOptions(FProject);
+  ProjectOps := GlobalOps.ProjectOptions(Project);
   Try
     ProjectOps.EnableZipping := cbxEnabledZipping.Checked;
     ProjectOps.ZipName := edtZipName.Text;

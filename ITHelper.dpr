@@ -4,15 +4,14 @@
   implement an IDE wizard.
 
   @Author  David Hoyle
-  @Date    15 Jul 2018
+  @Date    16 Jul 2018
   @Version 2.0
 
   @nocheck EmptyBEGINEND
 
-  @todo    Put the project options back into a single tabbed dialogue (remember NOT to use listviews
-           to store information).
   @todo    Put global options into the IDEs Options dialogue.
   @todo    Create a wrapper for the ziplibrary and use that instead of an external zip programme.
+  @todo    Consider adding a Project Notifier to handle rename / save as for the project .ITHelper file.
 
 **)
 Library ITHelper;
@@ -29,7 +28,6 @@ uses
   SysUtils,
   Classes,
   ITHelper.Wizard in 'Source\ITHelper.Wizard.pas',
-  ITHelper.ConfigurationForm in 'Source\ITHelper.ConfigurationForm.pas' {frmITHConfigureDlg},
   ITHelper.TestingHelperUtils in 'Source\ITHelper.TestingHelperUtils.pas',
   ITHelper.AdditionalZipFilesForm in 'Source\ITHelper.AdditionalZipFilesForm.pas' {frmITHAdditionalZipFiles},
   ITHelper.EnabledOptions in 'Source\ITHelper.EnabledOptions.pas' {frmITHEnabledOptions},
@@ -38,7 +36,6 @@ uses
   ITHelper.IDENotifierInterface in 'Source\ITHelper.IDENotifierInterface.pas',
   ITHelper.GlobalOptions in 'Source\ITHelper.GlobalOptions.pas',
   ITHelper.FontDialogue in 'Source\ITHelper.FontDialogue.pas' {frmITHFontDialogue},
-  ITHelper.ZIPDialogue in 'Source\ITHelper.ZIPDialogue.pas' {frmITHZIPDialogue},
   ITHelper.GlobalOptionsDialogue in 'Source\ITHelper.GlobalOptionsDialogue.pas' {frmITHGlobalOptionsDialogue},
   ITHelper.ProjectOptionsDialogue in 'Source\ITHelper.ProjectOptionsDialogue.pas' {frmITHProjectOptionsDialogue},
   ITHelper.SplashScreen in 'Source\ITHelper.SplashScreen.pas',
@@ -57,7 +54,10 @@ uses
   ITHelper.ZIPManager in 'Source\ITHelper.ZIPManager.pas',
   ITHelper.ResponseFile in 'Source\ITHelper.ResponseFile.pas',
   ITHelper.MessageManager in 'Source\ITHelper.MessageManager.pas',
-  ITHelper.VersionManager in 'Source\ITHelper.VersionManager.pas';
+  ITHelper.VersionManager in 'Source\ITHelper.VersionManager.pas',
+  ITHelper.ProjectOptionsFrame in 'Source\ITHelper.ProjectOptionsFrame.pas' {frameProjectOptions: TFrame},
+  ITHelper.ExternalToolsFrame in 'Source\ITHelper.ExternalToolsFrame.pas' {frameExternalTools: TFrame},
+  ITHelper.ZIPFrame in 'Source\ITHelper.ZIPFrame.pas' {frameZipping: TFrame};
 
 {$R *.res}
 

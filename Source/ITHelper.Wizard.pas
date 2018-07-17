@@ -4,7 +4,7 @@
   external tools before and after the compilation of the current project.
 
   @Version 1.0
-  @Date    14 Jul 2018
+  @Date    16 Jul 2018
   @Author  David Hoyle
 
 **)
@@ -82,14 +82,12 @@ Uses
   ITHelper.ExternalProcessInfo,
   ITHelper.ProjectManagerMenuInterface,
   ITHelper.FontDialogue,
-  ITHelper.ZIPDialogue,
   ITHelper.GlobalOptionsDialogue,
   ITHelper.ProjectOptionsDialogue, 
   ITHelper.SplashScreen, 
   ITHelper.AboutBox, 
   ITHelper.IDENotifierInterface, 
   ITHelper.Types, 
-  ITHelper.ConfigurationForm, 
   ITHelper.TestingHelperUtils, 
   ITHelper.GlobalOptions;
 
@@ -112,8 +110,7 @@ Const
 Procedure TITHWizard.AfterCompilation(Const Project: IOTAProject);
 
 Begin
-  If TfrmITHConfigureDlg.Execute(Project, FGlobalOps, dtAfter) Then
-    FGlobalOps.Save;
+  TfrmITHProjectOptionsDialogue.Execute(potAfterCompile, FGlobalOps, Project);
 End;
 
 (**
@@ -188,8 +185,7 @@ End;
 Procedure TITHWizard.BeforeCompilation(Const Project: IOTAProject);
 
 Begin
-  If TfrmITHConfigureDlg.Execute(Project, FGlobalOps, dtBefore) Then
-    FGlobalOps.Save;
+  TfrmITHProjectOptionsDialogue.Execute(potBeforeCompile, FGlobalOps, Project);
 End;
 
 (**
@@ -501,7 +497,7 @@ End;
 Procedure TITHWizard.ProjectOptions(Const Project: IOTAProject);
 
 Begin
-  TfrmITHProjectOptionsDialogue.Execute(FGlobalOps, Project);
+  TfrmITHProjectOptionsDialogue.Execute(potProjectOptions, FGlobalOps, Project);
 End;
 
 (**
@@ -705,7 +701,7 @@ End;
 Procedure TITHWizard.ZIPOptions(Const Project: IOTAProject);
 
 Begin
-  TfrmITHZIPDialogue.Execute(Project, FGlobalOps);
+  TfrmITHProjectOptionsDialogue.Execute(potZipping, FGlobalOps, Project);
 End;
 
 End.

@@ -1,54 +1,37 @@
-object frmITHConfigureDlg: TfrmITHConfigureDlg
-  Left = 392
-  Top = 473
-  Caption = 'Testing Helper Configuration Information'
-  ClientHeight = 375
-  ClientWidth = 804
-  Color = clBtnFace
-  Constraints.MinHeight = 410
-  Constraints.MinWidth = 820
+object frameExternalTools: TframeExternalTools
+  Left = 0
+  Top = 0
+  Width = 664
+  Height = 283
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -13
   Font.Name = 'Tahoma'
   Font.Style = []
-  OldCreateOrder = False
-  Position = poDesigned
+  ParentFont = False
+  TabOrder = 0
   DesignSize = (
-    804
-    375)
-  PixelsPerInch = 96
-  TextHeight = 16
+    664
+    283)
   object lblCompile: TLabel
     Left = 8
     Top = 8
-    Width = 707
+    Width = 207
     Height = 16
     Caption = 'Programmes to Run %s Compilation'
   end
-  object btnOK: TBitBtn
-    Left = 640
-    Top = 342
-    Width = 75
-    Height = 25
-    Anchors = [akRight, akBottom]
-    Kind = bkOK
-    NumGlyphs = 2
-    TabOrder = 9
-  end
-  object btnCancel: TBitBtn
-    Left = 721
-    Top = 343
-    Width = 75
-    Height = 25
-    Anchors = [akRight, akBottom]
-    Kind = bkCancel
-    NumGlyphs = 2
-    TabOrder = 10
+  object chkWarn: TCheckBox
+    Left = 8
+    Top = 263
+    Width = 246
+    Height = 17
+    Anchors = [akLeft, akBottom]
+    Caption = 'Warn of missing %s Compilation tools.'
+    TabOrder = 7
   end
   object btnDown: TBitBtn
-    Left = 721
-    Top = 151
+    Left = 586
+    Top = 154
     Width = 75
     Height = 25
     Anchors = [akTop, akRight]
@@ -71,8 +54,8 @@ object frmITHConfigureDlg: TfrmITHConfigureDlg
     OnClick = btnDownClick
   end
   object btnUp: TBitBtn
-    Left = 721
-    Top = 120
+    Left = 586
+    Top = 123
     Width = 75
     Height = 25
     Anchors = [akTop, akRight]
@@ -94,18 +77,9 @@ object frmITHConfigureDlg: TfrmITHConfigureDlg
     TabOrder = 4
     OnClick = btnUpClick
   end
-  object chkWarn: TCheckBox
-    Left = 8
-    Top = 346
-    Width = 246
-    Height = 17
-    Anchors = [akLeft, akBottom]
-    Caption = 'Warn of missing %s Compilation tools.'
-    TabOrder = 7
-  end
   object btnCopy: TBitBtn
-    Left = 721
-    Top = 182
+    Left = 586
+    Top = 185
     Width = 75
     Height = 25
     Anchors = [akTop, akRight]
@@ -129,9 +103,9 @@ object frmITHConfigureDlg: TfrmITHConfigureDlg
   end
   object lvCompile: TListView
     Left = 8
-    Top = 27
-    Width = 707
-    Height = 306
+    Top = 30
+    Width = 572
+    Height = 227
     Anchors = [akLeft, akTop, akRight, akBottom]
     Checkboxes = True
     Columns = <
@@ -156,14 +130,13 @@ object frmITHConfigureDlg: TfrmITHConfigureDlg
     RowSelect = True
     TabOrder = 0
     ViewStyle = vsReport
-    OnCustomDrawItem = lvFileListCustomDrawItem
+    OnChange = lvCompileChange
     OnDblClick = lvCompileDblClick
     OnResize = lvResize
-    OnSelectItem = lvCompileSelectItem
   end
   object btnAdd: TBitBtn
-    Left = 721
-    Top = 27
+    Left = 586
+    Top = 30
     Width = 75
     Height = 25
     Anchors = [akTop, akRight]
@@ -186,8 +159,8 @@ object frmITHConfigureDlg: TfrmITHConfigureDlg
     OnClick = btnAddClick
   end
   object btnDelete: TBitBtn
-    Left = 721
-    Top = 89
+    Left = 586
+    Top = 92
     Width = 75
     Height = 25
     Anchors = [akTop, akRight]
@@ -210,8 +183,8 @@ object frmITHConfigureDlg: TfrmITHConfigureDlg
     OnClick = btnDeleteClick
   end
   object btnEdit: TBitBtn
-    Left = 721
-    Top = 58
+    Left = 586
+    Top = 61
     Width = 75
     Height = 25
     Anchors = [akTop, akRight]
@@ -233,22 +206,11 @@ object frmITHConfigureDlg: TfrmITHConfigureDlg
     TabOrder = 2
     OnClick = btnEditClick
   end
-  object btnHelp: TBitBtn
-    Left = 559
-    Top = 342
-    Width = 75
-    Height = 25
-    Anchors = [akRight, akBottom]
-    Kind = bkHelp
-    NumGlyphs = 2
-    TabOrder = 8
-    OnClick = btnHelpClick
-  end
   object ilStatus: TImageList
     Left = 73
-    Top = 181
+    Top = 136
     Bitmap = {
-      494C010102000400D80010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010102000400040110001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000001000000001002000000000000010
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000

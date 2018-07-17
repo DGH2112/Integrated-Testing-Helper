@@ -4,7 +4,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    14 Jul 2018
+  @Date    17 Jul 2018
 
 **)
 Unit ITHelper.Interfaces;
@@ -438,6 +438,16 @@ Type
   IITHVersionManager = Interface
   ['{F230054C-67E1-48D7-ACDA-5BC1AC19E04B}']
     Procedure BuildProjectVersionResource();
+  End;
+
+  (** An interface to specify the methods that need to be implemented by a Project Options frame. **)
+  IITHOptionsFrame = Interface
+  ['{277C1FF5-DA63-4936-84C1-CF21E88BE474}']
+    Procedure InitialiseOptions(Const GlobalOps: IITHGlobalOptions; Const Project : IOTAProject;
+      Const DlgType : TITHDlgType);
+    Procedure SaveOptions(Const GlobalOps: IITHGlobalOptions; Const Project: IOTAProject;
+      Const DlgType : TITHDlgType);
+    Function  IsValidated : Boolean;
   End;
 
 Implementation
