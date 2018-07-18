@@ -202,8 +202,8 @@ End;
   @param   DlgType   as a TITHDlgType as a constant
 
 **)
-Procedure TframeFonts.InitialiseOptions(Const GlobalOps: IITHGlobalOptions; Const Project: IOTAProject;
-  Const DlgType: TITHDlgType);
+Procedure TframeFonts.InitialiseOptions(Const GlobalOps: IITHGlobalOptions; Const Project: IOTAProject; //FI:O804
+  Const DlgType: TITHDlgType); //FI:O804
 
 Const
   strFontDescriptions: Array [Low(TITHFonts) .. High(TITHFonts)
@@ -259,8 +259,8 @@ End;
   @param   DlgType   as a TITHDlgType as a constant
 
 **)
-Procedure TframeFonts.SaveOptions(Const GlobalOps: IITHGlobalOptions; Const Project: IOTAProject;
-  Const DlgType: TITHDlgType);
+Procedure TframeFonts.SaveOptions(Const GlobalOps: IITHGlobalOptions; Const Project: IOTAProject; //FI:O804
+  Const DlgType: TITHDlgType); //FI:O804
 
 Var
   iMessageType: TITHFonts;

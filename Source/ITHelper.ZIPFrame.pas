@@ -305,7 +305,7 @@ End;
 
 **)
 Procedure TframeZipping.InitialiseOptions(Const GlobalOps: IITHGlobalOptions;
-  Const Project : IOTAProject; Const DlgType : TITHDlgType);
+  Const Project : IOTAProject; Const DlgType : TITHDlgType); //FI:O804
 
 Var
   ProjectOps: IITHProjectOptions;
@@ -379,7 +379,7 @@ End;
 
 **)
 Procedure TframeZipping.SaveOptions(Const GlobalOps: IITHGlobalOptions; Const Project : IOTAProject;
-  Const DlgType : TITHDlgType);
+  Const DlgType : TITHDlgType); //FI:O804
 
 Var
   ProjectOps: IITHProjectOptions;

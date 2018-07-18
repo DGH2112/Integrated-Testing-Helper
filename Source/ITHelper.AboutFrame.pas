@@ -111,8 +111,8 @@ End;
   @param   DlgType   as a TITHDlgType as a constant
 
 **)
-Procedure TframeAboutITHelper.InitialiseOptions(Const GlobalOps: IITHGlobalOptions;
-  Const Project: IOTAProject; Const DlgType: TITHDlgType);
+Procedure TframeAboutITHelper.InitialiseOptions(Const GlobalOps: IITHGlobalOptions; //FI:O804
+  Const Project: IOTAProject; Const DlgType: TITHDlgType); //FI:O804
 
 Const
   strBrowseAndDocIt = 'Integrated Testing Helper %d.%d%s';
@@ -200,7 +200,7 @@ End;
 Procedure TframeAboutITHelper.SaveOptions(Const GlobalOps: IITHGlobalOptions; Const Project: IOTAProject;
   Const DlgType: TITHDlgType);
 
-Begin
+Begin //FI:W519
 End;
 
 End.
