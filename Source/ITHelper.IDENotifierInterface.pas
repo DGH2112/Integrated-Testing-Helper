@@ -5,7 +5,7 @@
 
   @Author  David Hoyle.
   @Version 1.0
-  @Date    16 Jul 2018
+  @Date    18 Jul 2018
 
 **)
 Unit ITHelper.IDENotifierInterface;
@@ -327,7 +327,7 @@ ResourceString
   strDependencyWasNotFound = 'The dependency "%s" was not found. (%s)';
 
 Var
-  iMajor, iMinor, iBugfix, iBuild: Integer;
+  recVersionInfo : TITHVersionInfo;
   Group: IOTAProjectGroup;
   strTargetName: String;
   {$IFDEF DXE20}
@@ -347,9 +347,15 @@ Begin
       If FileExists(strTargetName) Then
         Begin
           Try
-            BuildNumber(strTargetName, iMajor, iMinor, iBugfix, iBuild);
-            FMsgMgr.AddMsg(Format(strDependentBuild,
-              [iMajor, iMinor, strBugFix[iBugfix + 1], iMajor, iMinor, iBugfix, iBuild]),
+            BuildNumber(strTargetName, recVersionInfo);
+            FMsgMgr.AddMsg(Format(strDependentBuild, [
+              recVersionInfo.FMajor,
+              recVersionInfo.FMinor,
+              strBugFix[recVersionInfo.FBugfix + 1],
+              recVersionInfo.FMajor,
+              recVersionInfo.FMinor,
+              recVersionInfo.FBugfix,
+              recVersionInfo.FBuild]),
               fnHeader, ithfDefault);
             {$IFDEF DXE20}
             If Project.ProjectOptions.QueryInterface(IOTAProjectOptionsConfigurations, POC) = S_OK Then
@@ -376,14 +382,14 @@ Begin
             {$ENDIF}
               If ProjectOps.IncITHVerInfo Then
                 Begin
-                  If ProjectOps.Major <> iMajor Then
-                    ProjectOps.Major := iMajor;
-                  If ProjectOps.Minor <> iMinor Then
-                    ProjectOps.Minor := iMinor;
-                  If ProjectOps.Release <> iBugfix Then
-                    ProjectOps.Release := iBugfix;
-                  If ProjectOps.Build <> iBuild Then
-                    ProjectOps.Build := iBuild;
+                  If ProjectOps.Major <> recVersionInfo.FMajor Then
+                    ProjectOps.Major := recVersionInfo.FMajor;
+                  If ProjectOps.Minor <> recVersionInfo.FMinor Then
+                    ProjectOps.Minor := recVersionInfo.FMinor;
+                  If ProjectOps.Release <> recVersionInfo.FBugfix Then
+                    ProjectOps.Release := recVersionInfo.FBugfix;
+                  If ProjectOps.Build <> recVersionInfo.FBuild Then
+                    ProjectOps.Build := recVersionInfo.FBuild;
                 End;
           Except
             On E: EITHException Do

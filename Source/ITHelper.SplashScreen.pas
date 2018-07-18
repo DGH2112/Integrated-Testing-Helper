@@ -4,7 +4,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    03 Jan 2018
+  @Date    18 Jul 2018
   
 **)
 Unit ITHelper.SplashScreen;
@@ -45,7 +45,7 @@ Const
 
 Var
   bmSplashScreen : HBITMAP;
-  iMajor, iMinor, iBugFix, iBuild : Integer;
+  recVersionInfo : TITHVersionInfo;
   SS : IOTASplashScreenServices;
   strModuleName: String;
   iSize: Cardinal;
@@ -55,15 +55,22 @@ Begin
   SetLength(strModuleName, MAX_PATH);
   iSize := GetModuleFileName(hInstance, PChar(strModuleName), MAX_PATH);
   SetLength(strModuleName, iSize);
-  BuildNumber(strModuleName, iMajor, iMinor, iBugFix, iBuild);
+  BuildNumber(strModuleName, recVersionInfo);
   If Supports(SplashScreenServices, IOTASplashScreenServices, SS) Then
     Begin
       SS.AddPluginBitmap(
-        Format(strSplashScreenName, [iMajor, iMinor, Copy(strRevisions, iBugFix + 1, 1),
+        Format(strSplashScreenName, [
+          recVersionInfo.FMajor,
+          recVersionInfo.FMinor,
+          Copy(strRevisions, recVersionInfo.FBugFix + 1, 1),
           Application.Title]),
         bmSplashScreen,
         {$IFDEF DEBUG} True {$ELSE} False {$ENDIF},
-        Format(strSplashScreenBuild, [iMajor, iMinor, iBugfix, iBuild]));
+        Format(strSplashScreenBuild, [
+          recVersionInfo.FMajor,
+          recVersionInfo.FMinor,
+          recVersionInfo.FBugfix,
+          recVersionInfo.FBuild]));
     End;
 End;
 
