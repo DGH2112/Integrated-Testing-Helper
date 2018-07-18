@@ -4,7 +4,7 @@
   external tools before and after the compilation of the current project.
 
   @Version 1.0
-  @Date    16 Jul 2018
+  @Date    18 Jul 2018
   @Author  David Hoyle
 
 **)
@@ -89,7 +89,7 @@ Uses
   ITHelper.IDENotifierInterface, 
   ITHelper.Types, 
   ITHelper.TestingHelperUtils, 
-  ITHelper.GlobalOptions;
+  ITHelper.GlobalOptions, ITHelper.CommonFunctions, ITHelper.Constants;
 
 Const
   (** A constant to define the failed state of a wizard / notifier interface. **)
@@ -308,23 +308,77 @@ End;
   @precon  None.
   @postcon The menus are created.
 
-  @nocheck HardCodedString
-
 **)
 Procedure TITHWizard.CreateMenus;
 
+ResourceString
+  {$IFDEF DEBUG}
+  strTestingHelper = '&Testing Helper %d.%d%s (DEBUG Build %d.%d.%d.%d)';
+  {$ELSE}
+  strTestingHelper = '&Testing Helper %d.%d%s';
+  {$ENDIF}
+  strOops = 'Oops...';
+  strGlobalOptions = '&Global Options...';
+  strProjectOptions = '&Project Options...';
+  strBeforeCompilationTools = '&Before Compilation Tools...';
+  strAfterCompilationTools = '&After Compilation Tools...';
+  strZIPOptions = '&ZIP Options...';
+  strMessageFonts = 'Message &Fonts...';
+  strHelp = '&Help...';
+
+Const
+  strITHTestingHelper = 'ITHTestingHelper';
+  strITHEnabled = 'ITHEnabled';
+  strITHSeparator1 = 'ITHSeparator1';
+  strITHGlobalOptions = 'ITHGlobalOptions';
+  strITHProjectOptions = 'ITHProjectOptions';
+  strITHBeforeCompilation = 'ITHBeforeCompilation';
+  strITHAfterCompilation = 'ITHAfterCompilation';
+  strITHZIPDlg = 'ITHZIPDlg';
+  strITHFontDlg = 'ITHFontDlg';
+  strITHSeparator2 = 'ITHSeparator2';
+  strITHHelp = 'ITHHelp';
+  strTools = 'Tools';
+  strCtrlShiftAlt = 'Ctrl+Shift+Alt+F9';
+
+Var
+  strModuleName : String;
+  iSize, iMajor, iMinor, iBugFix, iBuild : Integer;
+
 Begin
-  FTestingHelperMenu := TITHToolsAPIFunctions.CreateMenuItem('ITHTestingHelper', '&Testing Helper', 'Tools', Nil, Nil, True, False, '');
-  TITHToolsAPIFunctions.CreateMenuItem('ITHEnabled', 'Oops...', 'ITHTestingHelper', ToggleEnabled, UpdateEnabled, False, True, 'Ctrl+Shift+Alt+F9', clFuchsia);
-  TITHToolsAPIFunctions.CreateMenuItem('ITHSeparator1', '', 'ITHTestingHelper', Nil, Nil, False, True, '');
-  TITHToolsAPIFunctions.CreateMenuItem('ITHGlobalOptions', '&Global Options...', 'ITHTestingHelper', GlobalOptionDialogueClick, Nil, False, True, '', clFuchsia);
-  TITHToolsAPIFunctions.CreateMenuItem('ITHProjectOptions', '&Project Options...', 'ITHTestingHelper', ProjectOptionsClick, ProjectOptionsUpdate, False, True, '', clFuchsia);
-  TITHToolsAPIFunctions.CreateMenuItem('ITHBeforeCompilation', '&Before Compilation Tools...', 'ITHTestingHelper', BeforeCompilationClick, BeforeCompilationUpdate, False, True, '', clFuchsia);
-  TITHToolsAPIFunctions.CreateMenuItem('ITHAfterCompilation', '&After Compilation Tools...', 'ITHTestingHelper', AfterCompilationClick, AfterCompilationUpdate, False, True, '', clFuchsia);
-  TITHToolsAPIFunctions.CreateMenuItem('ITHZIPDlg', '&ZIP Options...', 'ITHTestingHelper', ZIPDialogueClick, ZIPDialogueUpdate, False, True, '', clFuchsia);
-  TITHToolsAPIFunctions.CreateMenuItem('ITHFontDlg', 'Message &Fonts...', 'ITHTestingHelper', FontDialogueClick, Nil, False, True, '', clOlive);
-  TITHToolsAPIFunctions.CreateMenuItem('ITHSeparator2', '', 'ITHTestingHelper', Nil, Nil, False, True, '');
-  TITHToolsAPIFunctions.CreateMenuItem('ITHHelp', '&Help...', 'ITHTestingHelper', HelpClick, Nil, False, True, '');
+  SetLength(strModuleName, MAX_PATH);
+  iSize := GetModuleFileName(hInstance, PChar(strModuleName), MAX_PATH);
+  SetLength(strModuleName, iSize);
+  BuildNumber(strModuleName, iMajor, iMinor, iBugFix, iBuild);
+  {$IFDEF DEBUG}
+  FTestingHelperMenu := TITHToolsAPIFunctions.CreateMenuItem(strITHTestingHelper,
+    Format(strTestingHelper, [iMajor, iMinor, strRevisions[Succ(iBugFix)], iMajor, iMinor, iBugfix, iBuild]),
+    strTools, Nil, Nil, True, False, '');
+  {$ELSE}
+  FTestingHelperMenu := TITHToolsAPIFunctions.CreateMenuItem(strITHTestingHelper,
+    Format(strTestingHelper, [iMajor, iMinor, strRevisions[Succ(iBugFix)]]),
+    strTools, Nil, Nil, True, False, '');
+  {$ENDIF}
+  TITHToolsAPIFunctions.CreateMenuItem(strITHEnabled, strOops, strITHTestingHelper, ToggleEnabled,
+    UpdateEnabled, False, True, strCtrlShiftAlt, clFuchsia);
+  TITHToolsAPIFunctions.CreateMenuItem(strITHSeparator1, '', strITHTestingHelper, Nil, Nil, False, True,
+    '');
+  TITHToolsAPIFunctions.CreateMenuItem(strITHGlobalOptions, strGlobalOptions, strITHTestingHelper,
+    GlobalOptionDialogueClick, Nil, False, True, '', clFuchsia);
+  TITHToolsAPIFunctions.CreateMenuItem(strITHProjectOptions, strProjectOptions, strITHTestingHelper,
+    ProjectOptionsClick, ProjectOptionsUpdate, False, True, '', clFuchsia);
+  TITHToolsAPIFunctions.CreateMenuItem(strITHBeforeCompilation, strBeforeCompilationTools,
+    strITHTestingHelper, BeforeCompilationClick, BeforeCompilationUpdate, False, True, '', clFuchsia);
+  TITHToolsAPIFunctions.CreateMenuItem(strITHAfterCompilation, strAfterCompilationTools,
+    strITHTestingHelper, AfterCompilationClick, AfterCompilationUpdate, False, True, '', clFuchsia);
+  TITHToolsAPIFunctions.CreateMenuItem(strITHZIPDlg, strZIPOptions, strITHTestingHelper, 
+    ZIPDialogueClick, ZIPDialogueUpdate, False, True, '', clFuchsia);
+  TITHToolsAPIFunctions.CreateMenuItem(strITHFontDlg, strMessageFonts, strITHTestingHelper,
+    FontDialogueClick, Nil, False, True, '', clOlive);
+  TITHToolsAPIFunctions.CreateMenuItem(strITHSeparator2, '', strITHTestingHelper, Nil, Nil, False, True,
+    '');
+  TITHToolsAPIFunctions.CreateMenuItem(strITHHelp, strHelp, strITHTestingHelper, HelpClick, Nil, False,
+    True, '');
 End;
 
 (**
