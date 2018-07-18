@@ -1,79 +1,74 @@
 (**
+  
+  This module contains a frame for the Global Options for ITHelper.
 
-  This module contains a class to represent a form for editing the applications
-  global options.
-
-  @Author  David Hoyle
   @Version 1.0
-  @Date    14 Jul 2018
-
+  @Author  David Hoyle
+  @Date    18 Jul 2018
+  
 **)
-Unit ITHelper.GlobalOptionsDialogue;
+Unit ITHelper.GlobalOptionsFrame;
 
 Interface
 
 Uses
-  Windows,
-  Messages,
-  SysUtils,
-  Variants,
-  Classes,
-  Graphics,
-  Controls,
-  Forms,
-  Dialogs,
-  Buttons,
-  ComCtrls,
-  StdCtrls,
+  Winapi.Windows,
+  Winapi.Messages,
+  System.SysUtils,
+  System.Variants,
+  System.Classes,
+  Vcl.Graphics,
+  Vcl.Controls,
+  Vcl.Forms,
+  Vcl.Dialogs,
+  Vcl.StdCtrls,
+  Vcl.ComCtrls,
+  Vcl.Buttons,
+  ToolsAPI,
+  ITHelper.Types,
   ITHelper.Interfaces;
 
 Type
-  (** A class which represents a form **)
-  TfrmITHGlobalOptionsDialogue = Class(TForm)
-    lblZIPEXE: TLabel;
-    lblZipParams: TLabel;
+  (** A frame to hold the global options. **)
+  TframeGlobalOptions = Class(TFrame, IITHOptionsFrame)
+    btnAssign: TBitBtn;
+    dlgOpenEXE: TOpenDialog;
+    lvShortcuts: TListView;
+    hkShortcut: THotKey;
+    edtZipParams: TEdit;
+    edtZipEXE: TEdit;
+    chkSwitchToMessages: TCheckBox;
     chkGroupMessages: TCheckBox;
     chkAutoScrollMessages: TCheckBox;
-    edtZipEXE: TEdit;
     btnBrowseZipEXE: TButton;
-    edtZipParams: TEdit;
-    chkSwitchToMessages: TCheckBox;
-    lblClearMessagesAfter: TLabel;
-    edtClearMessages: TEdit;
     udClearMessages: TUpDown;
-    btnOK: TBitBtn;
-    btnCancel: TBitBtn;
-    dlgOpenEXE: TOpenDialog;
+    edtClearMessages: TEdit;
     lblShortcuts: TLabel;
-    hkShortcut: THotKey;
-    btnAssign: TBitBtn;
-    lvShortcuts: TListView;
-    btnHelp: TBitBtn;
+    lblZipParams: TLabel;
+    lblZIPEXE: TLabel;
+    lblClearMessagesAfter: TLabel;
     Procedure btnBrowseZipEXEClick(Sender: TObject);
     Procedure lvShortcutsSelectItem(Sender: TObject; Item: TListItem; Selected: Boolean);
     Procedure btnAssignClick(Sender: TObject);
-    Procedure btnHelpClick(Sender: TObject);
-  Private
-    { Private declarations }
-    FGlobalOps: IITHGlobalOptions;
-    Procedure InitialiseOptions(Const GlobalOps: IITHGlobalOptions);
-    Procedure SaveOptions(Const GlobalOps: IITHGlobalOptions);
+  Strict Private
+  Strict Protected
+    Procedure InitialiseOptions(Const GlobalOps: IITHGlobalOptions; Const Project : IOTAProject;
+      Const DlgType : TITHDlgType);
+    Procedure SaveOptions(Const GlobalOps: IITHGlobalOptions; Const Project : IOTAProject;
+      Const DlgType : TITHDlgType);
+    Function IsValidated: Boolean;
   Public
     { Public declarations }
-    Class Procedure Execute(Const GlobalOps: IITHGlobalOptions);
   End;
 
 Implementation
 
-{$R *.dfm}
-
 Uses
-  IniFiles,
-  ActnList,
-  ITHelper.TestingHelperUtils,
-  Menus;
+  VCL.Menus,
+  VCL.ActnList,
+  ITHelper.TestingHelperUtils;
 
-{ TfrmGlobalOptionsDialogue }
+{$R *.dfm}
 
 (**
 
@@ -85,7 +80,7 @@ Uses
   @param   Sender as a TObject
 
 **)
-procedure TfrmITHGlobalOptionsDialogue.btnAssignClick(Sender: TObject);
+procedure TframeGlobalOptions.btnAssignClick(Sender: TObject);
 
 begin
   If lvShortcuts.ItemIndex >  -1 Then
@@ -103,7 +98,7 @@ end;
   @param   Sender as a TObject
 
 **)
-Procedure TfrmITHGlobalOptionsDialogue.btnBrowseZipEXEClick(Sender: TObject);
+Procedure TframeGlobalOptions.btnBrowseZipEXEClick(Sender: TObject);
 
 Begin
   dlgOpenEXE.InitialDir := ExtractFilePath(edtZipEXE.Text);
@@ -114,61 +109,20 @@ End;
 
 (**
 
-  This is an on click event handler for the Help button.
-
-  @precon  None.
-  @postcon Displays the HTML Help Global Options page.
-
-  @param   Sender as a TObject
-
-**)
-Procedure TfrmITHGlobalOptionsDialogue.btnHelpClick(Sender: TObject);
-
-Const
-  strGlobalOptions = 'GlobalOptions';
-
-Begin
-  HTMLHelp(0, PChar(TITHToolsAPIFunctions.ITHHTMLHelpFile(strGlobalOptions)), HH_DISPLAY_TOPIC, 0);
-End;
-
-(**
-
-  This is the forms main interface method for displaying the global options.
-
-  @precon  GlobalOps must be a valid instance.
-  @postcon Displays the dialogue
-
-  @param   GlobalOps as a IITHGlobalOptions as a constant
-
-**)
-Class Procedure TfrmITHGlobalOptionsDialogue.Execute(Const GlobalOps: IITHGlobalOptions);
-
-Var
-  frm: TfrmITHGlobalOptionsDialogue;
-
-Begin
-  frm := TfrmITHGlobalOptionsDialogue.Create(Nil);
-  Try
-    frm.FGlobalOps := GlobalOps;
-    frm.InitialiseOptions(GlobalOps);
-    If frm.ShowModal = mrOK Then
-      frm.SaveOptions(GlobalOps);
-  Finally
-    frm.Free;
-  End;
-End;
-
-(**
-
   This method initialises the project options in the dialogue.
 
   @precon  GlobalOps must be a valid instance.
   @postcon Initialises the project options in the dialogue.
 
-  @param   GlobalOps as a IITHGlobalOptions as a constant
+  @nohint  Project DlgType
+
+  @param   GlobalOps as an IITHGlobalOptions as a constant
+  @param   Project   as an IOTAProject as a constant
+  @param   DlgType   as a TITHDlgType as a constant
 
 **)
-Procedure TfrmITHGlobalOptionsDialogue.InitialiseOptions(Const GlobalOps: IITHGlobalOptions);
+Procedure TframeGlobalOptions.InitialiseOptions(Const GlobalOps: IITHGlobalOptions;
+  Const Project : IOTAProject; Const DlgType : TITHDlgType);
 
 Var
   i: Integer;
@@ -195,6 +149,22 @@ End;
 
 (**
 
+  This method validates the dialogue.
+
+  @precon  None.
+  @postcon There is no validation currently needed.
+
+  @return  a Boolean
+
+**)
+Function TframeGlobalOptions.IsValidated: Boolean;
+
+Begin
+  Result := True;
+End;
+
+(**
+
   This is an on select item event handler for the list view.
 
   @precon  None.
@@ -205,10 +175,11 @@ End;
   @param   Selected as a Boolean
 
 **)
-procedure TfrmITHGlobalOptionsDialogue.lvShortcutsSelectItem(Sender: TObject;
+procedure TframeGlobalOptions.lvShortcutsSelectItem(Sender: TObject;
   Item: TListItem; Selected: Boolean);
 
 begin
+  btnAssign.Enabled := Selected;
   If Selected Then
     hkShortcut.HotKey := TextToShortCut(Item.SubItems[0]);
 end;
@@ -220,10 +191,15 @@ end;
   @precon  GlobalOps must be a valid instance.
   @postcon Saves the project options to the ini file.
 
-  @param   GlobalOps as a IITHGlobalOptions as a constant
+  @nohint  Project DlgType
+
+  @param   GlobalOps as an IITHGlobalOptions as a constant
+  @param   Project   as an IOTAProject as a constant
+  @param   DlgType   as a TITHDlgType as a constant
 
 **)
-Procedure TfrmITHGlobalOptionsDialogue.SaveOptions(Const GlobalOps: IITHGlobalOptions);
+Procedure TframeGlobalOptions.SaveOptions(Const GlobalOps: IITHGlobalOptions;
+  Const Project : IOTAProject; Const DlgType : TITHDlgType);
 
 Var
   i: Integer;

@@ -33,6 +33,7 @@ Type
     FProjectMgrMenuIndex    : Integer;
     FProjectMgrMenuNotifier : IOTAProjectMenuItemCreatorNotifier;
     FIDENotifierIndex       : Integer;
+    FGlobalOptionsAddin     : INTAAddInOptions;
     //FHTMLHelpCookie         : THandle;
   Strict Protected
     // IOTAWizard
@@ -82,14 +83,21 @@ Uses
   ITHelper.ExternalProcessInfo,
   ITHelper.ProjectManagerMenuInterface,
   ITHelper.FontDialogue,
-  ITHelper.GlobalOptionsDialogue,
   ITHelper.ProjectOptionsDialogue, 
   ITHelper.SplashScreen, 
   ITHelper.AboutBox, 
   ITHelper.IDENotifierInterface, 
   ITHelper.Types, 
   ITHelper.TestingHelperUtils, 
-  ITHelper.GlobalOptions, ITHelper.CommonFunctions, ITHelper.Constants;
+  ITHelper.GlobalOptions,
+  ITHelper.CommonFunctions,
+  ITHelper.Constants,
+  ITHelper.AddInOptions,
+  ITHelper.GlobalOptionsFrame;
+
+ResourceString
+  (** A string path to the Global Options in the IDEs options dialogue. **)
+  strGlobalOptionsPath = 'ITHelper.Global Options';
 
 Const
   (** A constant to define the failed state of a wizard / notifier interface. **)
@@ -296,9 +304,10 @@ Begin
     {$ENDIF}
   CreateMenus;
   FGlobalOps := TITHGlobalOptions.Create;
+  FGlobalOptionsAddin := TITHAddInOptions.Create(FGlobalOps, TframeGlobalOptions, strGlobalOptionsPath);
   If Supports(BorlandIDEServices, IOTAServices, S) Then
     FIDENotifierIndex := S.AddNotifier(TITHelperIDENotifier.Create(FGlobalOps));
-  //FHTMLHelpCookie := HTMLHelp(Application.Handle, Nil, HH_INITIALIZE, 0);
+  //: @debug FHTMLHelpCookie := HTMLHelp(Application.Handle, Nil, HH_INITIALIZE, 0);
 End;
 
 (**
@@ -416,6 +425,7 @@ Begin
   FMenuTimer.Free;
   {$ENDIF}
   FTestingHelperMenu.Free;
+  FGlobalOptionsAddin := Nil;
   FGlobalOps := Nil;
   If FProjectMgrMenuIndex > -1 Then
     If Supports(BorlandIDEServices, IOTAPRojectManager, PM) Then
@@ -526,8 +536,12 @@ End;
 **)
 Procedure TITHWizard.GlobalOptionDialogueClick(Sender: TObject);
 
+Var
+  S : IOTAServices;
+  
 Begin
-  TfrmITHGlobalOptionsDialogue.Execute(FGlobalOps);
+  If Supports(BorlandIDEServices, IOTAServices, S) Then
+    S.GetEnvironmentOptions.EditOptions('', strGlobalOptionsPath);
 End;
 
 (**

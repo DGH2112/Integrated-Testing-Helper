@@ -144,7 +144,7 @@ object frameProjectOptions: TframeProjectOptions
       Left = 114
       Top = 34
       Width = 16
-      Height = 21
+      Height = 24
       Associate = edtMajor
       TabOrder = 1
       OnClick = BuildChange
@@ -162,7 +162,7 @@ object frameProjectOptions: TframeProjectOptions
       Left = 254
       Top = 34
       Width = 16
-      Height = 21
+      Height = 24
       Associate = edtMinor
       TabOrder = 3
       OnClick = BuildChange
@@ -180,7 +180,7 @@ object frameProjectOptions: TframeProjectOptions
       Left = 389
       Top = 34
       Width = 16
-      Height = 21
+      Height = 24
       Associate = edtRelease
       TabOrder = 5
       OnClick = BuildChange
@@ -198,7 +198,7 @@ object frameProjectOptions: TframeProjectOptions
       Left = 533
       Top = 34
       Width = 16
-      Height = 21
+      Height = 24
       Associate = edtBuild
       Max = 10000
       TabOrder = 7

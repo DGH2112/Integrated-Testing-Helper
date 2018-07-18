@@ -5,7 +5,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    17 Jul 2018
+  @Date    18 Jul 2018
 
 **)
 Unit ITHelper.ProjectOptionsDialogue;
@@ -169,10 +169,10 @@ Begin
   Try
     frm.Caption := Format(strProjectOptionsFor, [TITHToolsAPIFunctions.GetProjectName(Project)]);
     frm.LoadSettings(GlobalOps);
-    frm.FProjectOptions.InitialiseOptions(GlobalOps, Project, dtNA);
+    frm.FProjectOptions.InitialiseOptions(GlobalOps, Project);
     frm.FBeforeCompileTools.InitialiseOptions(GlobalOps, Project, dtBefore);
     frm.FAfterCompileTools.InitialiseOptions(GlobalOps, Project, dtAfter);
-    frm.FZipping.InitialiseOptions(GlobalOps, Project, dtNA);
+    frm.FZipping.InitialiseOptions(GlobalOps, Project);
     Case ProjectOptionType Of
       potProjectOptions: frm.pgcProjectOptions.ActivePage := frm.tabProjectOptions;
       potBeforeCompile: frm.pgcProjectOptions.ActivePage := frm.tabBeforeCompileTools;
@@ -182,10 +182,10 @@ Begin
     If frm.ShowModal = mrOK Then
       Begin
         frm.SaveSettings(GlobalOps);
-        frm.FProjectOptions.SaveOptions(GlobalOps, Project, dtNA);
+        frm.FProjectOptions.SaveOptions(GlobalOps, Project);
         frm.FBeforeCompileTools.SaveOptions(GlobalOps, Project, dtBefore);
         frm.FAfterCompileTools.SaveOptions(GlobalOps, Project, dtAfter);
-        frm.FZipping.SaveOptions(GlobalOps, Project, dtNA);
+        frm.FZipping.SaveOptions(GlobalOps, Project);
       End;
   Finally
     frm.Free;

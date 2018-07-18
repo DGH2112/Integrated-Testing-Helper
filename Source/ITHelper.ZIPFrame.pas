@@ -4,7 +4,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    17 Jul 2018
+  @Date    18 Jul 2018
   
 **)
 Unit ITHelper.ZIPFrame;
@@ -57,10 +57,10 @@ Type
     FProject : IOTAProject;
     FFileName: String;
   Strict Protected
-    Procedure InitialiseOptions(Const GlobalOps: IITHGlobalOptions; Const Project : IOTAProject;
-      Const DlgType : TITHDlgType);
-    Procedure SaveOptions(Const GlobalOps: IITHGlobalOptions; Const Project : IOTAProject;
-      Const DlgType : TITHDlgType);
+    Procedure InitialiseOptions(Const GlobalOps: IITHGlobalOptions; Const Project : IOTAProject = Nil;
+      Const DlgType : TITHDlgType = dtNA);
+    Procedure SaveOptions(Const GlobalOps: IITHGlobalOptions; Const Project : IOTAProject = Nil;
+      Const DlgType : TITHDlgType = dtNA);
     Function  IsValidated : Boolean;
   Public
   End;

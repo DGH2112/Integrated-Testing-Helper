@@ -4,7 +4,7 @@
   implement an IDE wizard.
 
   @Author  David Hoyle
-  @Date    16 Jul 2018
+  @Date    18 Jul 2018
   @Version 2.0
 
   @nocheck EmptyBEGINEND
@@ -12,6 +12,8 @@
   @todo    Put global options into the IDEs Options dialogue.
   @todo    Create a wrapper for the ziplibrary and use that instead of an external zip programme.
   @todo    Consider adding a Project Notifier to handle rename / save as for the project .ITHelper file.
+
+  @bug     Shortcuts not remembered (actual Global options are not saved)! Reference count not zero?
 
 **)
 Library ITHelper;
@@ -36,7 +38,6 @@ uses
   ITHelper.IDENotifierInterface in 'Source\ITHelper.IDENotifierInterface.pas',
   ITHelper.GlobalOptions in 'Source\ITHelper.GlobalOptions.pas',
   ITHelper.FontDialogue in 'Source\ITHelper.FontDialogue.pas' {frmITHFontDialogue},
-  ITHelper.GlobalOptionsDialogue in 'Source\ITHelper.GlobalOptionsDialogue.pas' {frmITHGlobalOptionsDialogue},
   ITHelper.ProjectOptionsDialogue in 'Source\ITHelper.ProjectOptionsDialogue.pas' {frmITHProjectOptionsDialogue},
   ITHelper.SplashScreen in 'Source\ITHelper.SplashScreen.pas',
   ITHelper.CommonFunctions in 'Source\ITHelper.CommonFunctions.pas',
@@ -57,7 +58,9 @@ uses
   ITHelper.VersionManager in 'Source\ITHelper.VersionManager.pas',
   ITHelper.ProjectOptionsFrame in 'Source\ITHelper.ProjectOptionsFrame.pas' {frameProjectOptions: TFrame},
   ITHelper.ExternalToolsFrame in 'Source\ITHelper.ExternalToolsFrame.pas' {frameExternalTools: TFrame},
-  ITHelper.ZIPFrame in 'Source\ITHelper.ZIPFrame.pas' {frameZipping: TFrame};
+  ITHelper.ZIPFrame in 'Source\ITHelper.ZIPFrame.pas' {frameZipping: TFrame},
+  ITHelper.GlobalOptionsFrame in 'Source\ITHelper.GlobalOptionsFrame.pas' {frameGlobalOptions: TFrame},
+  ITHelper.AddInOptions in 'Source\ITHelper.AddInOptions.pas';
 
 {$R *.res}
 
