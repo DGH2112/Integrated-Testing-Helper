@@ -5,7 +5,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    14 Jul 2018
+  @Date    18 Jul 2018
 
 **)
 Unit ITHelper.EnabledOptions;
@@ -13,6 +13,9 @@ Unit ITHelper.EnabledOptions;
 Interface
 
 Uses
+  {$IFDEF DEBUG}
+  CodeSiteLogging,
+  {$ENDIF}
   Windows,
   Messages,
   SysUtils,
@@ -47,7 +50,8 @@ Type
     Procedure btnHelpClick(Sender: TObject);
   Private
   Public
-    { Public declarations }
+    Constructor Create(AOwner : TComponent); Override;
+    Destructor Destroy; Override;
     Class Function Execute(Const strProjectGroup: String; Var Options: TITHEnabledOptions) : Boolean;
   End;
 
@@ -76,6 +80,41 @@ Const
 
 Begin
   HtmlHelp(0, PChar(TITHToolsAPIFunctions.ITHHTMLHelpFile(strEnabledOptions)), HH_DISPLAY_TOPIC, 0);
+End;
+
+(**
+
+  A constructor for the TfrmITHEnabledOptions class.
+
+  @precon  None.
+  @postcon Does nothing but used for codesite tracing.
+
+  @nocheck MissingCONSTInParam
+  @nohint  AOwner
+  
+  @param   AOwner as a TComponent
+
+**)
+Constructor TfrmITHEnabledOptions.Create(AOwner: TComponent);
+
+Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Create', tmoTiming); {$ENDIF}
+  Inherited Create(AOwner);
+End;
+
+(**
+
+  A destructor for the TfrmITHEnabledOptions class.
+
+  @precon  None.
+  @postcon Does nothing but used for codesite tracing.
+
+**)
+Destructor TfrmITHEnabledOptions.Destroy;
+
+Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Destroy', tmoTiming); {$ENDIF}
+  Inherited;
 End;
 
 (**

@@ -45,17 +45,57 @@ Type
     Procedure SaveOptions(Const GlobalOps: IITHGlobalOptions; Const Project: IOTAProject = Nil;
       Const DlgType: TITHDlgType = dtNA);
   Public
+    Constructor Create(AOwner : TComponent); Override;
+    Destructor Destroy; Override;
   End;
 
 Implementation
 
 Uses
+  {$IFDEF DEBUG}
+  CodeSiteLogging,
+  {$ENDIF}
   {$IFDEF EUREKALOG_VER7}
   ExceptionLog7;
   {$ENDIF}
   ITHelper.CommonFunctions, ITHelper.Constants;
 
 {$R *.dfm}
+
+(**
+
+  A constructor for the TframeAboutITHelper class.
+
+  @precon  None.
+  @postcon Does nothing but used for code site tracing.
+
+  @nocheck MissingCONSTInParam
+  @nohint  AOwner
+
+  @param   AOwner as a TComponent
+
+**)
+Constructor TframeAboutITHelper.Create(AOwner : TComponent);
+
+Begin
+  Inherited Create(AOwner);
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Create', tmoTiming);{$ENDIF}
+End;
+
+(**
+
+  A destructor for the TframeAboutITHelper class.
+
+  @precon  None.
+  @postcon Does nothing but used for code site tracing.
+
+**)
+Destructor TframeAboutITHelper.Destroy;
+
+Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Destroy', tmoTiming);{$ENDIF}
+  Inherited;
+End;
 
 (**
 
@@ -164,3 +204,4 @@ Begin
 End;
 
 End.
+

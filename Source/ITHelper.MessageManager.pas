@@ -4,7 +4,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    05 Jan 2018
+  @Date    18 Jul 2018
   
 **)
 Unit ITHelper.MessageManager;
@@ -126,6 +126,7 @@ End;
 Constructor TITHMessageManager.Create(Const GlobalOps: IITHGlobalOptions);
 
 Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Create', tmoTiming);{$ENDIF}
   FGlobalOps := GlobalOps;
   FMsgs := TInterfaceList.Create;
 End;
@@ -141,6 +142,7 @@ End;
 Destructor TITHMessageManager.Destroy;
 
 Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Destroy', tmoTiming);{$ENDIF}
   FMsgs.Free;
   Inherited Destroy;
 End;
@@ -228,5 +230,6 @@ Begin
 End;
 
 End.
+
 
 

@@ -4,7 +4,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    14 Jul 2018
+  @Date    18 Jul 2018
   
 **)
 Unit ITHelper.VersionManager;
@@ -36,11 +36,15 @@ Type
   Public
     Constructor Create(Const GloablOps: IITHGlobalOptions; Const ProjectOps: IITHProjectOptions;
       Const Project: IOTAProject; Const MsgMgr : IITHMessageManager);
+    Destructor Destroy; Override;
   End;
 
 Implementation
 
 Uses
+  {$IFDEF DEBUG}
+  CodeSiteLogging,
+  {$ENDIF}
   SysUtils,
   Classes, 
   Forms,
@@ -143,6 +147,7 @@ Constructor TITHVersionManager.Create(Const GloablOps: IITHGlobalOptions; Const 
       Const Project: IOTAProject; Const MsgMgr : IITHMessageManager);
 
 Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Create', tmoTiming);{$ENDIF}
   FGlobalOps := GloablOps;
   FProjectOps := ProjectOps;
   FProject := Project;
@@ -214,6 +219,21 @@ Begin
   Finally
     sl.Free;
   End;
+End;
+
+(**
+
+  A destructor for the TITHVersionManager class.
+
+  @precon  None.
+  @postcon Does nothing but is used for code site tracing.
+
+**)
+Destructor TITHVersionManager.Destroy;
+
+Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Destroy', tmoTiming);{$ENDIF}
+  Inherited;
 End;
 
 (**
@@ -314,3 +334,4 @@ Begin
 End;
 
 End.
+

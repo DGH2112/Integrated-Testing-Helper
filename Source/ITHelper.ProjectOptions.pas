@@ -5,7 +5,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    14 Jul 2018
+  @Date    18 Jul 2018
   
 **)
 Unit ITHelper.ProjectOptions;
@@ -79,6 +79,9 @@ Type
 Implementation
 
 Uses
+  {$IFDEF DEBUG}
+  CodeSiteLogging,
+  {$ENDIF}
   SysUtils;
 
 Const
@@ -143,6 +146,7 @@ Const
 Constructor TITHProjectOptions.Create(Const strINIFileName: String; Const Project: IOTAProject);
 
 Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Create', tmoTiming);{$ENDIF}
   FProject := Project;
   FINIFile := TMemIniFile.Create(strINIFileName);
   FVerInfo              := TStringList.Create;
@@ -163,6 +167,7 @@ End;
 Destructor TITHProjectOptions.Destroy;
 
 Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Destroy', tmoTiming);{$ENDIF}
   If FModified Then
     FINIFile.UpdateFile;
   FAddZipFiles.Free;
@@ -958,3 +963,4 @@ Begin
 End;
 
 End.
+

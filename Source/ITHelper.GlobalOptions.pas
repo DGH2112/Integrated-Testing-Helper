@@ -4,7 +4,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    14 Jul 2018
+  @Date    18 Jul 2018
 
 **)
 Unit ITHelper.GlobalOptions;
@@ -69,14 +69,17 @@ Type
 Implementation
 
 Uses
-  Dialogs,
+  {$IFDEF DEBUG}
+  CodeSiteLogging,
+  {$ENDIF}
+  System.SysUtils,
+  System.UITypes,
+  System.Contnrs, 
+  VCL.Dialogs,
+  VCL.ActnList,
+  WinAPI.Windows, 
   ITHelper.TestingHelperUtils,
-  SysUtils,
-  ActnList,
-  Windows, 
   ITHelper.CommonFunctions,
-  UITypes,
-  Contnrs, 
   ITHelper.ProjectOptions;
 
 Const
@@ -137,6 +140,7 @@ Const
 Constructor TITHGlobalOptions.Create;
 
 Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Create', tmoTiming);{$ENDIF}
   FINIFileName     := BuildRootKey;
   FProjectGroupOps := TStringList.Create;
   LoadSettings;
@@ -153,6 +157,7 @@ End;
 Destructor TITHGlobalOptions.Destroy;
 
 Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Destroy', tmoTiming);{$ENDIF}
   SaveSettings;
   FProjectGroupOps.Free;
   Inherited Destroy;
@@ -821,3 +826,5 @@ Begin
 End;
 
 End.
+
+

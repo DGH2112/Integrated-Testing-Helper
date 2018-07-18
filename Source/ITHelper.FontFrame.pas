@@ -57,9 +57,16 @@ Type
     Procedure SaveOptions(Const GlobalOps: IITHGlobalOptions; Const Project: IOTAProject = Nil;
       Const DlgType: TITHDlgType = dtNA);
   Public
- End;
+    Constructor Create(AOwner : TComponent); Override;
+    Destructor Destroy; Override;
+  End;
 
 Implementation
+
+{$IFDEF DEBUG}
+Uses
+  CodeSiteLogging;
+{$ENDIF}
 
 {$R *.dfm}
 
@@ -113,6 +120,41 @@ Begin
       iMessageType := TITHFonts(Byte(cbxMessageType.ItemIndex));
       FFontColour[iMessageType] := clbxFontColour.Selected;
     End;
+End;
+
+(**
+
+  A constructor for the TframeFonts class.
+
+  @precon  None.
+  @postcon Does nothing but is used for CodeSite tracing.
+
+  @nocheck MissingCONSTInParam
+  @nohint  AOwner
+
+  @param   AOwner as a TComponent
+
+**)
+Constructor TframeFonts.Create(AOwner : TComponent);
+
+Begin
+  Inherited Create(AOwner);
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Create', tmoTiming);{$ENDIF}
+End;
+
+(**
+
+  A destructor for the TframeFonts class.
+
+  @precon  None.
+  @postcon Does nothing but is used for CodeSite tracing.
+
+**)
+Destructor TframeFonts.Destroy;
+
+Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Destroy', tmoTiming);{$ENDIF}
+  Inherited;
 End;
 
 (**
@@ -234,3 +276,4 @@ Begin
 End;
 
 End.
+

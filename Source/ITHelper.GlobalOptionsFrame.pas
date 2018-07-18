@@ -58,12 +58,16 @@ Type
       Const DlgType : TITHDlgType);
     Function IsValidated: Boolean;
   Public
-    { Public declarations }
+    Constructor Create(AOwner : TComponent); Override;
+    Destructor Destroy; Override;
   End;
 
 Implementation
 
 Uses
+  {$IFDEF DEBUG}
+  CodeSiteLogging,
+  {$ENDIF}
   VCL.Menus,
   VCL.ActnList,
   ITHelper.TestingHelperUtils;
@@ -105,6 +109,41 @@ Begin
   dlgOpenEXE.FileName   := ExtractFileName(edtZipEXE.Text);
   If dlgOpenEXE.Execute Then
     edtZipEXE.Text := dlgOpenEXE.FileName;
+End;
+
+(**
+
+  A destructor for the TframeGlobalOptions class.
+
+  @precon  None.
+  @postcon Does nothing but is used for code site tracing.
+
+  @nocheck MissingCONSTInParam
+  @nohint  AOwner
+
+  @param   AOwner as a TComponent
+
+**)
+Constructor TframeGlobalOptions.Create(AOwner : TComponent);
+
+Begin
+  Inherited Create(AOwner);
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Create', tmoTiming);{$ENDIF}
+End;
+
+(**
+
+  A destructor for the TframeGlobalOptions class.
+
+  @precon  None.
+  @postcon Does nothing but is used for code site tracing.
+
+**)
+Destructor TframeGlobalOptions.Destroy;
+
+Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Destroy', tmoTiming);{$ENDIF}
+  Inherited;
 End;
 
 (**
@@ -221,3 +260,4 @@ Begin
 End;
 
 End.
+

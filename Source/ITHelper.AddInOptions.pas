@@ -48,6 +48,9 @@ Type
 Implementation
 
 Uses
+  {$IFDEF DEBUG}
+  CodeSiteLogging,
+  {$ENDIF}
   System.SysUtils;
 
 (**
@@ -65,15 +68,11 @@ Uses
 Constructor TITHAddInOptions.Create(Const GlobalOps : IITHGlobalOptions; Const FrameCls: TITHFrameClass;
   Const strOptionsPath: String);
 
-Var
-  EO : INTAEnvironmentOptionsServices;
-
 Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Create', tmoTiming);{$ENDIF}
   FGlobalOptions := GlobalOps;
   FFrameClass := FrameCls;
   FOptionsPath := strOptionsPath;
-  If Supports(BorlandIDEServices, INTAEnvironmentOptionsServices, EO) Then
-    EO.RegisterAddInOptions(Self);
 End;
 
 (**
@@ -86,12 +85,8 @@ End;
 **)
 Destructor TITHAddInOptions.Destroy;
 
-Var
-  EO : INTAEnvironmentOptionsServices;
-  
 Begin
-  If Supports(BorlandIDEServices, INTAEnvironmentOptionsServices, EO) Then
-    EO.UnregisterAddInOptions(Self);
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Destroy', tmoTiming);{$ENDIF}
   Inherited Destroy;
 End;
 
@@ -242,3 +237,4 @@ Begin
 End;
 
 End.
+

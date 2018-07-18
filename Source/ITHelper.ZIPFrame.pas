@@ -63,6 +63,8 @@ Type
       Const DlgType : TITHDlgType = dtNA);
     Function  IsValidated : Boolean;
   Public
+    Constructor Create(AOwner : TComponent); Override;
+    Destructor Destroy; Override;
   End;
 
 Implementation
@@ -70,6 +72,9 @@ Implementation
 {$R *.dfm}
 
 Uses
+  {$IFDEF DEBUG}
+  CodeSiteLogging,
+  {$ENDIF}
   System.SysUtils,
   VCL.FileCtrl,
   ITHelper.AdditionalZipFilesForm,
@@ -223,6 +228,41 @@ End;
 
 (**
 
+  A constructor for the TframeZipping class.
+
+  @precon  None.
+  @postcon Does nothing but is used for code site tracing.
+
+  @nocheck MissingCONSTInParam
+  @nohint  AOwner
+
+  @param   AOwner as a TComponent
+
+**)
+Constructor TframeZipping.Create(AOwner : TComponent);
+
+Begin
+  Inherited Create(AOwner);
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Create', tmoTiming);{$ENDIF}
+End;
+
+(**
+
+  A destructor for the TframeZipping class.
+
+  @precon  None.
+  @postcon Does nothing but is used for code site tracing.
+
+**)
+Destructor TframeZipping.Destroy;
+
+Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Destroy', tmoTiming);{$ENDIF}
+  Inherited;
+End;
+
+(**
+
   This is an on exit event handler for the ZIPEXE control.
 
   @precon  None.
@@ -359,3 +399,4 @@ Begin
 End;
 
 End.
+

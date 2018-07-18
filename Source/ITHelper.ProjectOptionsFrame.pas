@@ -74,6 +74,8 @@ Type
       Const DlgType : TITHDlgType = dtNA);
     Function  IsValidated : Boolean;
   Public
+    Constructor Create(AOwner : TComponent); Override;
+    Destructor Destroy; Override;
   End;
 
 Implementation
@@ -81,6 +83,9 @@ Implementation
 {$R *.dfm}
 
 Uses
+  {$IFDEF DEBUG}
+  CodeSiteLogging,
+  {$ENDIF}
   System.IniFiles;
 
 (**
@@ -226,6 +231,41 @@ End;
 
 (**
 
+  A constructor for the TframeProjectOptions class.
+
+  @precon  None.
+  @postcon Does nothing but is used for code site tracing.
+
+  @nocheck MissingCONSTInParam
+  @nohint  AOwner
+  
+  @param   AOwner as a TComponent
+
+**)
+Constructor TframeProjectOptions.Create(AOwner : TComponent);
+
+Begin
+  Inherited Create(AOwner);
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Create', tmoTiming);{$ENDIF}
+End;
+
+(**
+
+  A destructor for the TframeProjectOptions class.
+
+  @precon  None.
+  @postcon Does nothing but is used for code site tracing.
+
+**)
+Destructor TframeProjectOptions.Destroy;
+
+Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Destroy', tmoTiming);{$ENDIF}
+  Inherited;
+End;
+
+(**
+
   This method initialises the dialogue controls with information from the global options and the project 
   options.
 
@@ -324,3 +364,4 @@ Begin
 End;
 
 End.
+

@@ -5,7 +5,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    14 Jul 2018
+  @Date    18 Jul 2018
   
 **)
 Unit ITHelper.ResponseFile;
@@ -546,6 +546,7 @@ Constructor TITHResponseFile.Create(Const Project: IOTAProject; Const GlobalOps 
   Const ProjectOps: IITHProjectOptions; Const MessageManager : IITHMessageManager);
 
 Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Create', tmoTiming);{$ENDIF}
   FProject := Project;
   FGlobalOps := GlobalOps;
   FProjectOps := ProjectOps;
@@ -566,6 +567,7 @@ End;
 Destructor TITHResponseFile.Destroy;
 
 Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Destroy', tmoTiming);{$ENDIF}
   If FileExists(FFileName) Then
     DeleteFile(FFileName);
   FResponseFile.Free;
@@ -661,6 +663,7 @@ Begin
 End;
 
 End.
+
 
 
 

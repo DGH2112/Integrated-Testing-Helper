@@ -5,7 +5,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    16 Jul 2018
+  @Date    18 Jul 2018
 
 **)
 Unit ITHelper.ProjectManagerMenuInterface;
@@ -48,6 +48,7 @@ Type
     Procedure OptionsClick(Sender: TObject);
   Public
     Constructor Create(Const Wizard: TITHWizard);
+    Destructor Destroy; Override;
   End;
 
   {$IFDEF D2010}
@@ -91,6 +92,7 @@ Type
   Public
     Constructor Create(Const Wizard: TITHWizard; Const Project: IOTAProject; Const strCaption, strName,
       strVerb, strParent: String; Const iPosition: Integer; Const Setting: TSetting);
+    Destructor Destroy; Override;
   End;
   {$ENDIF}
   {$ENDIF}
@@ -100,6 +102,9 @@ Implementation
 {$IFDEF D2005}
 
 Uses
+  {$IFDEF DEBUG}
+  CodeSiteLogging,
+  {$ENDIF}
   SysUtils,
   ITHelper.TestingHelperUtils;
 
@@ -302,7 +307,22 @@ End;
 Constructor TITHProjectManagerMenu.Create(Const Wizard: TITHWizard);
 
 Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Create', tmoTiming);{$ENDIF}
   FWizard := Wizard;
+End;
+
+(**
+
+  A destructor for the TITHelperProjectManagerMenu class.
+
+  @precon  None.
+  @postcon Does nothing but is used for code site tracing.
+
+**)
+Destructor TITHProjectManagerMenu.Destroy;
+
+Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Destroy', tmoTiming);{$ENDIF}
 End;
 
 (**
@@ -394,6 +414,7 @@ Constructor TITHelperProjectMenu.Create(Const Wizard: TITHWizard; Const Project:
   Const Setting: TSetting);
 
 Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod('TITHelperProjectMenu.Create', tmoTiming);{$ENDIF}
   FWizard   := Wizard;
   FProject  := Project;
   FPosition := iPosition;
@@ -402,6 +423,20 @@ Begin
   FVerb     := strVerb;
   FParent   := strParent;
   FSetting  := Setting;
+End;
+
+(**
+
+  A destructor for the TITHelperProjectMenu class.
+
+  @precon  None.
+  @postcon Does nothing but is used for code site tracing.
+
+**)
+Destructor TITHelperProjectMenu.Destroy;
+
+Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod('TITHelperProjectMenu.Destroy', tmoTiming);{$ENDIF}
 End;
 
 (**
@@ -789,3 +824,5 @@ End;
 {$ENDIF}
 
 End.
+
+

@@ -5,7 +5,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    05 Jan 2018
+  @Date    18 Jul 2018
   
 **)
 Unit ITHelper.CustomMessages;
@@ -50,11 +50,15 @@ Type
     Constructor Create(Const strMsg : String; Const FontName : String;
       Const ForeColour : TColor = clBlack; Const Style : TFontStyles = [];
       Const BackColour : TColor = clWindow);
+    Destructor Destroy; Override;
   End;
 
 Implementation
 
 Uses
+  {$IFDEF DEBUG}
+  CodeSiteLogging,
+  {$ENDIF}
   SysUtils;
   
 (**
@@ -118,6 +122,7 @@ Var
   iLength: Integer;
 
 Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Create', tmoTiming);{$ENDIF}
   SetLength(FMsg, Length(strMsg));
   iLength := 0;
   For i := 1 To Length(strMsg) Do
@@ -136,6 +141,21 @@ Begin
   FStyle := Style;
   FBackColour := BackColour;
   FMessagePntr := Nil;
+End;
+
+(**
+
+  A destructor for the TITHCustomMessage class.
+
+  @precon  None.
+  @postcon Does nothing but used for codes site tracing.
+
+**)
+Destructor TITHCustomMessage.Destroy;
+
+Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Destroy', tmoTiming);{$ENDIF}
+  Inherited;
 End;
 
 (**
@@ -333,3 +353,4 @@ Begin //FI:W519
 End;
 
 End.
+

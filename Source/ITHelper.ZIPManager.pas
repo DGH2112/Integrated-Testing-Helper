@@ -4,7 +4,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    14 Jul 2018
+  @Date    18 Jul 2018
   
 **)
 Unit ITHelper.ZIPManager;
@@ -72,6 +72,7 @@ Constructor TITHZipManager.Create(Const Project: IOTAProject; Const GlobalOps : 
   Const ProjectOps : IITHProjectOptions; Const MessageManager : IITHMessageManager);
 
 Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Create', tmoTiming);{$ENDIF}
   FProject := Project;
   FGlobalOps := GlobalOps;
   FProjectOps := ProjectOps;
@@ -89,6 +90,7 @@ End;
 Destructor TITHZipManager.Destroy;
 
 Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Destroy', tmoTiming);{$ENDIF}
   Inherited Destroy;
 End;
 
@@ -212,5 +214,6 @@ Begin
 End;
 
 End.
+
 
 

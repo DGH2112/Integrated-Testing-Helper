@@ -78,7 +78,11 @@ Implementation
 
 {$R *.dfm}
 
-uses ITHelper.ProgrammeInfoForm;
+Uses
+  {$IFDEF DEBUG}
+  CodeSiteLogging,
+  {$ENDIF}
+  ITHelper.ProgrammeInfoForm;
 
 Type
   (** An enumerate to define the columns of the dialogue listview. @nohints **)
@@ -354,6 +358,7 @@ End;
 Constructor TframeExternalTools.Create(AOwner: TComponent);
 
 Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Create', tmoTiming);{$ENDIF}
   Inherited Create(AOwner);
   FProcesses := TITHProcessCollection.Create;
 End;
@@ -369,6 +374,7 @@ End;
 Destructor TframeExternalTools.Destroy;
 
 Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Destroy', tmoTiming);{$ENDIF}
   FProcesses.Free;
   Inherited Destroy;
 End;
@@ -729,3 +735,4 @@ Begin
 End;
 
 End.
+

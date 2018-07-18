@@ -14,7 +14,7 @@ object frameAboutITHelper: TframeAboutITHelper
     AlignWithMargins = True
     Left = 3
     Top = 3
-    Width = 523
+    Width = 309
     Height = 29
     Align = alTop
     Caption = 'Integrated Testing Helper'
@@ -25,13 +25,12 @@ object frameAboutITHelper: TframeAboutITHelper
     Font.Style = [fsBold]
     ParentFont = False
     Transparent = True
-    ExplicitWidth = 309
   end
   object lblAuthor: TLabel
     AlignWithMargins = True
     Left = 3
     Top = 60
-    Width = 523
+    Width = 248
     Height = 16
     Align = alTop
     Caption = 'Author: David Hoyle (c) Season'#39's Fall Music'
@@ -41,14 +40,12 @@ object frameAboutITHelper: TframeAboutITHelper
     Font.Name = 'Tahoma'
     Font.Style = []
     ParentFont = False
-    ExplicitTop = 54
-    ExplicitWidth = 248
   end
   object lblBuild: TLabel
     AlignWithMargins = True
     Left = 3
     Top = 38
-    Width = 523
+    Width = 40
     Height = 16
     Align = alTop
     Caption = 'lblBuild'
@@ -58,14 +55,12 @@ object frameAboutITHelper: TframeAboutITHelper
     Font.Name = 'Tahoma'
     Font.Style = []
     ParentFont = False
-    ExplicitTop = 35
-    ExplicitWidth = 40
   end
   object lblPleaseSelect: TLabel
     AlignWithMargins = True
     Left = 3
     Top = 275
-    Width = 523
+    Width = 220
     Height = 16
     Align = alTop
     Caption = 'Please select a sub-options category...'
@@ -76,8 +71,6 @@ object frameAboutITHelper: TframeAboutITHelper
     Font.Style = []
     ParentFont = False
     Layout = tlCenter
-    ExplicitTop = 260
-    ExplicitWidth = 220
   end
   object lblInformation: TLabel
     AlignWithMargins = True
@@ -124,11 +117,9 @@ object frameAboutITHelper: TframeAboutITHelper
     AlignWithMargins = True
     Left = 3
     Top = 82
-    Width = 523
+    Width = 66
     Height = 16
     Align = alTop
     Caption = 'lblBuildDate'
-    ExplicitTop = 73
-    ExplicitWidth = 66
   end
 end

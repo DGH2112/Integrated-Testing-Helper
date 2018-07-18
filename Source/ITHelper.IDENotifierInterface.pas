@@ -63,7 +63,6 @@ Type
     Procedure ProcessMsgHandler(Const strMsg: String; Var boolAbort: Boolean);
     Procedure IdleHandler;
   Public
-    { Public declarations }
     Constructor Create(Const GlobalOps: IITHGlobalOptions);
     Destructor Destroy; Override;
   End;
@@ -419,6 +418,7 @@ Const
   iTimerIntervalInMSec = 100;
 
 Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Create', tmoTiming);{$ENDIF}
   Inherited Create;
   FGlobalOps := GlobalOps;
   FMsgMgr := TITHMessageManager.Create(GlobalOps);
@@ -442,6 +442,7 @@ End;
 Destructor TITHelperIDENotifier.Destroy;
 
 Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Destroy', tmoTiming);{$ENDIF}
   FShouldBuildList.Free;
   FSuccessfulCompile.Enabled := False;
   FSuccessfulCompile.OnTimer := Nil;
@@ -777,5 +778,6 @@ Begin
 End;
 
 End.
+
 
 

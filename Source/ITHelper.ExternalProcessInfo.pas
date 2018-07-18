@@ -5,7 +5,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    16 Jul 2018
+  @Date    18 Jul 2018
 
 **)
 Unit ITHelper.ExternalProcessInfo;
@@ -65,6 +65,9 @@ Type
 Implementation
 
 Uses
+  {$IFDEF DEBUG}
+  CodeSiteLogging,
+  {$ENDIF}
   Classes,
   SysUtils, 
   ITHelper.CommonFunctions;
@@ -138,6 +141,7 @@ End;
 Constructor TITHProcessCollection.Create;
 
 Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Create', tmoTiming);{$ENDIF}
   FProcesses := TList<TITHProcessInfo>.Create;
 End;
 
@@ -168,6 +172,7 @@ End;
 Destructor TITHProcessCollection.Destroy;
 
 Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Destroy', tmoTiming);{$ENDIF}
   FProcesses.Free;
   Inherited Destroy;
 End;
@@ -321,3 +326,4 @@ Begin
 End;
 
 End.
+

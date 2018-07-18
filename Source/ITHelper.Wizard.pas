@@ -73,6 +73,9 @@ Type
 Implementation
 
 Uses
+  {$IFDEF DEBUG}
+  CodeSiteLogging,
+  {$ENDIF}
   Windows,
   SysUtils,
   Dialogs,
@@ -315,8 +318,10 @@ Constructor TITHWizard.Create;
 Var
   PM : IOTAProjectManager;
   S : IOTAServices;
+  EO : INTAEnvironmentOptionsServices;
 
 Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Create', tmoTiming);{$ENDIF}
   Inherited Create;
   FIDENotifierIndex := iWizardFailState;
   InstallSplashScreen;
@@ -330,9 +335,16 @@ Begin
     {$ENDIF}
   CreateMenus;
   FGlobalOps := TITHGlobalOptions.Create;
-  FAboutAddin := TITHAddInOptions.Create(FGlobalOps, TframeAboutITHelper, strAboutITHelperPath);
-  FGlobalOptionsAddin := TITHAddInOptions.Create(FGlobalOps, TframeGlobalOptions, strGlobalOptionsPath);
-  FFontsAddin := TITHAddInOptions.Create(FGlobalOps, TframeFonts, strFontsPath);
+  If Supports(BorlandIDEServices, INTAEnvironmentOptionsServices, EO) Then
+    Begin
+      FAboutAddin := TITHAddInOptions.Create(FGlobalOps, TframeAboutITHelper, strAboutITHelperPath);
+      EO.RegisterAddInOptions(FAboutAddIn);
+      FGlobalOptionsAddin := TITHAddInOptions.Create(FGlobalOps, TframeGlobalOptions,
+        strGlobalOptionsPath);
+      EO.RegisterAddInOptions(FGlobalOptionsAddIn);
+      FFontsAddin := TITHAddInOptions.Create(FGlobalOps, TframeFonts, strFontsPath);
+      EO.RegisterAddInOptions(FFontsAddIn);
+    End;
   If Supports(BorlandIDEServices, IOTAServices, S) Then
     FIDENotifierIndex := S.AddNotifier(TITHelperIDENotifier.Create(FGlobalOps));
   //: @debug FHTMLHelpCookie := HTMLHelp(Application.Handle, Nil, HH_INITIALIZE, 0);
@@ -446,8 +458,10 @@ Destructor TITHWizard.Destroy;
 Var
   PM : IOTAProjectManager;
   S : IOTAServices;
+  EO : INTAEnvironmentOptionsServices;
   
 Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Destroy', tmoTiming);{$ENDIF}
   HTMLHelp(0, Nil, HH_CLOSE_ALL, 0);
   //HTMLHelp(Application.Handle, Nil, HH_UNINITIALIZE, FHTMLHelpCookie);
   If FIDENotifierIndex > iWizardFailState Then
@@ -457,10 +471,6 @@ Begin
   FMenuTimer.Free;
   {$ENDIF}
   FTestingHelperMenu.Free;
-  FAboutAddIn := Nil;
-  FGlobalOptionsAddin := Nil;
-  FFontsAddin := Nil;
-  FGlobalOps := Nil;
   If FProjectMgrMenuIndex > -1 Then
     If Supports(BorlandIDEServices, IOTAPRojectManager, PM) Then
       {$IFNDEF D2010}
@@ -469,6 +479,17 @@ Begin
       PM.RemoveMenuItemCreatorNotifier(FProjectMgrMenuIndex);
       {$ENDIF}
   RemoveAboutBoxEntry(FAboutBoxIndex);
+  If Supports(BorlandIDEServices, INTAEnvironmentOptionsServices, EO) Then
+    Begin
+      EO.UnregisterAddInOptions(FAboutAddIn);
+      FAboutAddIn := Nil;
+      EO.UnregisterAddInOptions(FGlobalOptionsAddIn);
+      FGlobalOptionsAddin := Nil;
+      EO.UnregisterAddInOptions(FFontsAddIn);
+      FFontsAddin := Nil;
+    End;
+  FGlobalOps.Save;
+  FGlobalOps := Nil;
   Inherited Destroy;
 End;
 
@@ -822,3 +843,4 @@ Begin
 End;
 
 End.
+
