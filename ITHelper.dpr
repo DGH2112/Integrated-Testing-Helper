@@ -60,7 +60,8 @@ uses
   ITHelper.ExternalToolsFrame in 'Source\ITHelper.ExternalToolsFrame.pas' {frameExternalTools: TFrame},
   ITHelper.ZIPFrame in 'Source\ITHelper.ZIPFrame.pas' {frameZipping: TFrame},
   ITHelper.GlobalOptionsFrame in 'Source\ITHelper.GlobalOptionsFrame.pas' {frameGlobalOptions: TFrame},
-  ITHelper.AddInOptions in 'Source\ITHelper.AddInOptions.pas';
+  ITHelper.AddInOptions in 'Source\ITHelper.AddInOptions.pas',
+  ITHelper.AboutFrame in 'Source\ITHelper.AboutFrame.pas' {frameAboutITHelper: TFrame};
 
 {$R *.res}
 

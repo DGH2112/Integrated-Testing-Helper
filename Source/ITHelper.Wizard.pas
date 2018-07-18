@@ -33,6 +33,7 @@ Type
     FProjectMgrMenuIndex    : Integer;
     FProjectMgrMenuNotifier : IOTAProjectMenuItemCreatorNotifier;
     FIDENotifierIndex       : Integer;
+    FAboutAddin             : INTAAddInOptions;
     FGlobalOptionsAddin     : INTAAddInOptions;
     //FHTMLHelpCookie         : THandle;
   Strict Protected
@@ -61,6 +62,7 @@ Type
     Procedure BeforeCompilationUpdate(Sender: TObject);
     Procedure AfterCompilationUpdate(Sender: TObject);
     Procedure HelpClick(Sender : TObject);
+    Procedure AboutClick(Sender : TObject);
   Public
     Constructor Create;
     Destructor Destroy; Override;
@@ -93,15 +95,37 @@ Uses
   ITHelper.CommonFunctions,
   ITHelper.Constants,
   ITHelper.AddInOptions,
-  ITHelper.GlobalOptionsFrame;
+  ITHelper.GlobalOptionsFrame, ITHelper.AboutFrame;
 
 ResourceString
+  (** A string path to the ITHelper About options in the IDEs options dialogue. **)
+  strAboutITHelperPath = 'ITHelper';
   (** A string path to the Global Options in the IDEs options dialogue. **)
   strGlobalOptionsPath = 'ITHelper.Global Options';
 
 Const
   (** A constant to define the failed state of a wizard / notifier interface. **)
   iWizardFailState = -1;
+
+(**
+
+  This is an on click event handler for the about menu.
+
+  @precon  None.
+  @postcon Displays the about dialogue in the IDEs options.
+
+  @param   Sender as a TObject
+
+**)
+Procedure TITHWizard.AboutClick(Sender: TObject);
+
+Var
+  S : IOTAServices;
+  
+Begin
+  If Supports(BorlandIDEServices, IOTAServices, S) Then
+    S.GetEnvironmentOptions.EditOptions('', strAboutITHelperPath);
+End;
 
 (**
 
@@ -305,6 +329,7 @@ Begin
   CreateMenus;
   FGlobalOps := TITHGlobalOptions.Create;
   FGlobalOptionsAddin := TITHAddInOptions.Create(FGlobalOps, TframeGlobalOptions, strGlobalOptionsPath);
+  FAboutAddin := TITHAddInOptions.Create(FGlobalOps, TframeAboutITHelper, strAboutITHelperPath);
   If Supports(BorlandIDEServices, IOTAServices, S) Then
     FIDENotifierIndex := S.AddNotifier(TITHelperIDENotifier.Create(FGlobalOps));
   //: @debug FHTMLHelpCookie := HTMLHelp(Application.Handle, Nil, HH_INITIALIZE, 0);
@@ -334,6 +359,7 @@ ResourceString
   strZIPOptions = '&ZIP Options...';
   strMessageFonts = 'Message &Fonts...';
   strHelp = '&Help...';
+  strAbout = '&About...';
 
 Const
   strITHTestingHelper = 'ITHTestingHelper';
@@ -347,6 +373,7 @@ Const
   strITHFontDlg = 'ITHFontDlg';
   strITHSeparator2 = 'ITHSeparator2';
   strITHHelp = 'ITHHelp';
+  strITHAbout = 'ITHAbout';
   strTools = 'Tools';
   strCtrlShiftAlt = 'Ctrl+Shift+Alt+F9';
 
@@ -399,6 +426,8 @@ Begin
     '');
   TITHToolsAPIFunctions.CreateMenuItem(strITHHelp, strHelp, strITHTestingHelper, HelpClick, Nil, False,
     True, '');
+  TITHToolsAPIFunctions.CreateMenuItem(strITHAbout, strAbout, strITHTestingHelper, AboutClick, Nil,
+    False, True, '');
 End;
 
 (**
@@ -426,6 +455,7 @@ Begin
   {$ENDIF}
   FTestingHelperMenu.Free;
   FGlobalOptionsAddin := Nil;
+  FAboutAddIn := Nil;
   FGlobalOps := Nil;
   If FProjectMgrMenuIndex > -1 Then
     If Supports(BorlandIDEServices, IOTAPRojectManager, PM) Then
