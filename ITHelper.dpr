@@ -9,9 +9,10 @@
 
   @nocheck EmptyBEGINEND
 
-  @todo    Put global options into the IDEs Options dialogue.
   @todo    Create a wrapper for the ziplibrary and use that instead of an external zip programme.
   @todo    Consider adding a Project Notifier to handle rename / save as for the project .ITHelper file.
+  @todo    Create a command-line app ITHelper.exe which can perform version control, zipping, etc from a
+           .DPR (and implied .ITHelper) file.
 
   @bug     Shortcuts not remembered (actual Global options are not saved)! Reference count not zero?
 
@@ -37,7 +38,6 @@ uses
   ITHelper.ProjectManagerMenuInterface in 'Source\ITHelper.ProjectManagerMenuInterface.pas',
   ITHelper.IDENotifierInterface in 'Source\ITHelper.IDENotifierInterface.pas',
   ITHelper.GlobalOptions in 'Source\ITHelper.GlobalOptions.pas',
-  ITHelper.FontDialogue in 'Source\ITHelper.FontDialogue.pas' {frmITHFontDialogue},
   ITHelper.ProjectOptionsDialogue in 'Source\ITHelper.ProjectOptionsDialogue.pas' {frmITHProjectOptionsDialogue},
   ITHelper.SplashScreen in 'Source\ITHelper.SplashScreen.pas',
   ITHelper.CommonFunctions in 'Source\ITHelper.CommonFunctions.pas',
@@ -61,7 +61,8 @@ uses
   ITHelper.ZIPFrame in 'Source\ITHelper.ZIPFrame.pas' {frameZipping: TFrame},
   ITHelper.GlobalOptionsFrame in 'Source\ITHelper.GlobalOptionsFrame.pas' {frameGlobalOptions: TFrame},
   ITHelper.AddInOptions in 'Source\ITHelper.AddInOptions.pas',
-  ITHelper.AboutFrame in 'Source\ITHelper.AboutFrame.pas' {frameAboutITHelper: TFrame};
+  ITHelper.AboutFrame in 'Source\ITHelper.AboutFrame.pas' {frameAboutITHelper: TFrame},
+  ITHelper.FontFrame in 'Source\ITHelper.FontFrame.pas' {frameFonts: TFrame};
 
 {$R *.res}
 

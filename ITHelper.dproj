@@ -120,9 +120,6 @@
         <DCCReference Include="Source\ITHelper.ProjectManagerMenuInterface.pas"/>
         <DCCReference Include="Source\ITHelper.IDENotifierInterface.pas"/>
         <DCCReference Include="Source\ITHelper.GlobalOptions.pas"/>
-        <DCCReference Include="Source\ITHelper.FontDialogue.pas">
-            <Form>frmITHFontDialogue</Form>
-        </DCCReference>
         <DCCReference Include="Source\ITHelper.ProjectOptionsDialogue.pas">
             <Form>frmITHProjectOptionsDialogue</Form>
         </DCCReference>
@@ -170,6 +167,11 @@
         <DCCReference Include="Source\ITHelper.AddInOptions.pas"/>
         <DCCReference Include="Source\ITHelper.AboutFrame.pas">
             <Form>frameAboutITHelper</Form>
+            <FormType>dfm</FormType>
+            <DesignClass>TFrame</DesignClass>
+        </DCCReference>
+        <DCCReference Include="Source\ITHelper.FontFrame.pas">
+            <Form>frameFonts</Form>
             <FormType>dfm</FormType>
             <DesignClass>TFrame</DesignClass>
         </DCCReference>

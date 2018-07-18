@@ -1,32 +1,18 @@
-object frmITHFontDialogue: TfrmITHFontDialogue
+object frameFonts: TframeFonts
   Left = 0
   Top = 0
-  BorderIcons = []
-  BorderStyle = bsDialog
-  Caption = 'Message Fonts'
-  ClientHeight = 223
-  ClientWidth = 503
-  Color = clBtnFace
+  Width = 544
+  Height = 185
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -13
   Font.Name = 'Tahoma'
   Font.Style = []
-  OldCreateOrder = False
-  Position = poScreenCenter
+  ParentFont = False
+  TabOrder = 0
   DesignSize = (
-    503
-    223)
-  PixelsPerInch = 96
-  TextHeight = 16
-  object lblHeaderFontName: TLabel
-    Left = 8
-    Top = 11
-    Width = 176
-    Height = 16
-    Caption = 'Header && Standard Font Name'
-    FocusControl = cbxHeaderFontName
-  end
+    544
+    185)
   object lblToolFontName: TLabel
     Left = 8
     Top = 38
@@ -35,17 +21,25 @@ object frmITHFontDialogue: TfrmITHFontDialogue
     Caption = 'Tool Output Font Name'
     FocusControl = cbxToolFontName
   end
+  object lblHeaderFontName: TLabel
+    Left = 8
+    Top = 11
+    Width = 176
+    Height = 16
+    Caption = 'Header && Standard Font Name'
+    FocusControl = cbxHeaderFontName
+  end
   object gbxMessageColours: TGroupBox
     Left = 8
     Top = 62
-    Width = 487
-    Height = 122
+    Width = 533
+    Height = 120
     Anchors = [akLeft, akTop, akRight, akBottom]
     Caption = 'Message Colours'
     TabOrder = 2
     DesignSize = (
-      487
-      122)
+      533
+      120)
     object lblMessageType: TLabel
       Left = 12
       Top = 25
@@ -65,11 +59,12 @@ object frmITHFontDialogue: TfrmITHFontDialogue
     object clbxFontColour: TColorBox
       Left = 192
       Top = 49
-      Width = 283
+      Width = 281
       Height = 22
+      Style = [cbStandardColors, cbExtendedColors, cbSystemColors, cbCustomColor, cbPrettyNames, cbCustomColors]
       Anchors = [akLeft, akTop, akRight]
       TabOrder = 1
-      OnClick = clbxFontColourClick
+      OnChange = clbxFontColourClick
     end
     object chkFontStyleBold: TCheckBox
       Left = 12
@@ -110,7 +105,7 @@ object frmITHFontDialogue: TfrmITHFontDialogue
     object cbxMessageType: TComboBox
       Left = 192
       Top = 19
-      Width = 283
+      Width = 281
       Height = 24
       Style = csDropDownList
       Anchors = [akLeft, akTop, akRight]
@@ -118,53 +113,22 @@ object frmITHFontDialogue: TfrmITHFontDialogue
       OnClick = cbxMessageTypeClick
     end
   end
-  object cbxHeaderFontName: TComboBox
-    Left = 200
-    Top = 8
-    Width = 295
-    Height = 24
-    Style = csDropDownList
-    Anchors = [akLeft, akTop, akRight]
-    TabOrder = 0
-  end
   object cbxToolFontName: TComboBox
     Left = 200
     Top = 35
-    Width = 295
+    Width = 341
     Height = 24
     Style = csDropDownList
     Anchors = [akLeft, akTop, akRight]
     TabOrder = 1
   end
-  object btnOK: TBitBtn
-    Left = 339
-    Top = 190
-    Width = 75
-    Height = 25
-    Anchors = [akRight, akBottom]
-    Kind = bkOK
-    NumGlyphs = 2
-    TabOrder = 4
-  end
-  object btnCancel: TBitBtn
-    Left = 420
-    Top = 190
-    Width = 75
-    Height = 25
-    Anchors = [akRight, akBottom]
-    Kind = bkCancel
-    NumGlyphs = 2
-    TabOrder = 5
-  end
-  object btnHelp: TBitBtn
-    Left = 258
-    Top = 190
-    Width = 75
-    Height = 25
-    Anchors = [akRight, akBottom]
-    Kind = bkHelp
-    NumGlyphs = 2
-    TabOrder = 3
-    OnClick = btnHelpClick
+  object cbxHeaderFontName: TComboBox
+    Left = 200
+    Top = 8
+    Width = 341
+    Height = 24
+    Style = csDropDownList
+    Anchors = [akLeft, akTop, akRight]
+    TabOrder = 0
   end
 end

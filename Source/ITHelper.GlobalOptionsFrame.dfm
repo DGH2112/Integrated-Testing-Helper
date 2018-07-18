@@ -3,6 +3,12 @@ object frameGlobalOptions: TframeGlobalOptions
   Top = 0
   Width = 529
   Height = 405
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -13
+  Font.Name = 'Tahoma'
+  Font.Style = []
+  ParentFont = False
   TabOrder = 0
   DesignSize = (
     529
@@ -10,33 +16,32 @@ object frameGlobalOptions: TframeGlobalOptions
   object lblShortcuts: TLabel
     Left = 8
     Top = 153
-    Width = 46
-    Height = 13
+    Width = 54
+    Height = 16
     Caption = 'Short&cuts'
     FocusControl = lvShortcuts
   end
   object lblZipParams: TLabel
     Left = 8
     Top = 84
-    Width = 72
-    Height = 13
+    Width = 87
+    Height = 16
     Caption = '&Zip Parameters'
   end
   object lblZIPEXE: TLabel
     Left = 8
     Top = 57
-    Width = 70
-    Height = 13
+    Width = 82
+    Height = 16
     Caption = '&Zip Executable'
   end
   object lblClearMessagesAfter: TLabel
     Left = 8
     Top = 134
-    Width = 427
-    Height = 13
+    Width = 270
+    Height = 16
     Anchors = [akLeft, akTop, akRight]
     Caption = 'Clear Messages After Period of Time (seconds)'
-    ExplicitWidth = 774
   end
   object btnAssign: TBitBtn
     Left = 451
@@ -46,10 +51,8 @@ object frameGlobalOptions: TframeGlobalOptions
     Anchors = [akRight, akBottom]
     Caption = '&Assign'
     Enabled = False
-    TabOrder = 0
+    TabOrder = 10
     OnClick = btnAssignClick
-    ExplicitLeft = 721
-    ExplicitTop = 523
   end
   object lvShortcuts: TListView
     Left = 8
@@ -70,11 +73,9 @@ object frameGlobalOptions: TframeGlobalOptions
     HideSelection = False
     ReadOnly = True
     RowSelect = True
-    TabOrder = 1
+    TabOrder = 8
     ViewStyle = vsReport
     OnSelectItem = lvShortcutsSelectItem
-    ExplicitWidth = 788
-    ExplicitHeight = 348
   end
   object hkShortcut: THotKey
     Left = 8
@@ -83,9 +84,7 @@ object frameGlobalOptions: TframeGlobalOptions
     Height = 22
     Anchors = [akLeft, akRight, akBottom]
     Modifiers = []
-    TabOrder = 2
-    ExplicitTop = 526
-    ExplicitWidth = 707
+    TabOrder = 9
   end
   object edtZipParams: TEdit
     Left = 103
@@ -93,8 +92,7 @@ object frameGlobalOptions: TframeGlobalOptions
     Width = 423
     Height = 24
     Anchors = [akLeft, akTop, akRight]
-    TabOrder = 3
-    ExplicitWidth = 693
+    TabOrder = 4
   end
   object edtZipEXE: TEdit
     Left = 103
@@ -102,8 +100,7 @@ object frameGlobalOptions: TframeGlobalOptions
     Width = 383
     Height = 24
     Anchors = [akLeft, akTop, akRight]
-    TabOrder = 4
-    ExplicitWidth = 653
+    TabOrder = 2
   end
   object chkSwitchToMessages: TCheckBox
     Left = 8
@@ -113,7 +110,6 @@ object frameGlobalOptions: TframeGlobalOptions
     Anchors = [akLeft, akTop, akRight]
     Caption = '&Switch To Messages after a Successful compile'
     TabOrder = 5
-    ExplicitWidth = 788
   end
   object chkGroupMessages: TCheckBox
     Left = 8
@@ -122,8 +118,7 @@ object frameGlobalOptions: TframeGlobalOptions
     Height = 17
     Anchors = [akLeft, akTop, akRight]
     Caption = '&Group Messages into their own tab.'
-    TabOrder = 6
-    ExplicitWidth = 788
+    TabOrder = 0
   end
   object chkAutoScrollMessages: TCheckBox
     Left = 8
@@ -132,8 +127,7 @@ object frameGlobalOptions: TframeGlobalOptions
     Height = 17
     Anchors = [akLeft, akTop, akRight]
     Caption = '&Auto Scroll Messages.'
-    TabOrder = 7
-    ExplicitWidth = 788
+    TabOrder = 1
   end
   object btnBrowseZipEXE: TButton
     Left = 492
@@ -142,21 +136,19 @@ object frameGlobalOptions: TframeGlobalOptions
     Height = 25
     Anchors = [akTop, akRight]
     Caption = '...'
-    TabOrder = 8
+    TabOrder = 3
     OnClick = btnBrowseZipEXEClick
-    ExplicitLeft = 762
   end
   object udClearMessages: TUpDown
-    Left = 510
+    Left = 504
     Top = 131
     Width = 16
-    Height = 24
+    Height = 21
     Anchors = [akTop, akRight]
     Associate = edtClearMessages
     Max = 3600
     Increment = 10
-    TabOrder = 9
-    ExplicitLeft = 829
+    TabOrder = 7
   end
   object edtClearMessages: TEdit
     Left = 441
@@ -165,9 +157,8 @@ object frameGlobalOptions: TframeGlobalOptions
     Height = 24
     Anchors = [akTop, akRight]
     ReadOnly = True
-    TabOrder = 10
+    TabOrder = 6
     Text = '0'
-    ExplicitLeft = 760
   end
   object dlgOpenEXE: TOpenDialog
     Filter = 'Executables|*.exe;*.dll;*.bpl'

@@ -1,93 +1,67 @@
 (**
-
-  This module contains a class ewhich represents a form for editing the font styles and
-  colours used in the messages that are output by the expert.
+  
+  This module contains a frame for the font settings for the custom messages.
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    14 Jul 2018
-
+  @Date    18 Jul 2018
+  
 **)
-Unit ITHelper.FontDialogue;
+Unit ITHelper.FontFrame;
 
 Interface
 
 Uses
-  Windows,
-  Messages,
-  SysUtils,
-  Variants,
-  Classes,
-  Graphics,
-  Controls,
-  Forms,
-  Dialogs,
-  StdCtrls,
-  ExtCtrls,
-  Buttons, 
+  Winapi.Windows,
+  Winapi.Messages,
+  System.SysUtils,
+  System.Variants,
+  System.Classes,
+  Vcl.Graphics,
+  Vcl.Controls,
+  Vcl.Forms,
+  Vcl.Dialogs,
+  Vcl.StdCtrls,
+  Vcl.ExtCtrls,
+  ToolsAPI,
   ITHelper.Types,
   ITHelper.Interfaces;
 
 Type
-  (** A class to represent the form interface. **)
-  TfrmITHFontDialogue = Class(TForm)
-    lblHeaderFontName: TLabel;
-    lblToolFontName: TLabel;
+  (** A frame to holf the font settings for custom messages int he IDEs options dialogue. **)
+  TframeFonts = Class(TFrame, IITHOptionsFrame)
     gbxMessageColours: TGroupBox;
+    lblMessageType: TLabel;
+    lblMessageFontClour: TLabel;
     clbxFontColour: TColorBox;
     chkFontStyleBold: TCheckBox;
     chkFontStyleItalic: TCheckBox;
     chkFontStyleUnderline: TCheckBox;
     chkFontStyleStrikeout: TCheckBox;
-    cbxHeaderFontName: TComboBox;
-    cbxToolFontName: TComboBox;
     cbxMessageType: TComboBox;
-    lblMessageType: TLabel;
-    btnOK: TBitBtn;
-    btnCancel: TBitBtn;
-    lblMessageFontClour: TLabel;
-    btnHelp: TBitBtn;
+    cbxToolFontName: TComboBox;
+    cbxHeaderFontName: TComboBox;
+    lblToolFontName: TLabel;
+    lblHeaderFontName: TLabel;
     Procedure FontStyleClick(Sender: TObject);
     Procedure cbxMessageTypeClick(Sender: TObject);
-    procedure btnHelpClick(Sender: TObject);
     procedure clbxFontColourClick(Sender: TObject);
-  Private
-    { Private declarations }
+  Strict Private
     FFontColour: Array [Low(TITHFonts) .. High(TITHFonts)] Of TColor;
     FFontStyle : Array [Low(TITHFonts) .. High(TITHFonts)] Of TFontStyles;
     FUpdating  : Boolean;
-    Procedure InitialiseMessageOptions(Const GlobalOps: IITHGlobalOptions);
-    Procedure SaveMessageOptions(Const GlobalOps: IITHGlobalOptions);
+  Strict Protected
+    Procedure InitialiseOptions(Const GlobalOps: IITHGlobalOptions; Const Project: IOTAProject = Nil;
+      Const DlgType: TITHDlgType = dtNA);
+    Function IsValidated: Boolean;
+    Procedure SaveOptions(Const GlobalOps: IITHGlobalOptions; Const Project: IOTAProject = Nil;
+      Const DlgType: TITHDlgType = dtNA);
   Public
-    { Public declarations }
-    Class Procedure Execute(Const GlobalOptions: IITHGlobalOptions);
-  End;
+ End;
 
 Implementation
 
 {$R *.dfm}
-
-Uses
-  ITHelper.TestingHelperUtils;
-
-(**
-
-  This is an on click event handler for the Help button.
-
-  @precon  None.
-  @postcon Displays the Message Fonts help page.
-
-  @param   Sender as a TObject
-
-**)
-Procedure TfrmITHFontDialogue.btnHelpClick(Sender: TObject);
-
-Const
-  strMessageFonts = 'MessageFonts';
-
-Begin
-  HTMLHelp(0, PChar(TITHToolsAPIFunctions.ITHHTMLHelpFile(strMessageFonts)), HH_DISPLAY_TOPIC, 0);
-End;
 
 (**
 
@@ -99,7 +73,7 @@ End;
   @param   Sender as a TObject
 
 **)
-Procedure TfrmITHFontDialogue.cbxMessageTypeClick(Sender: TObject);
+Procedure TframeFonts.cbxMessageTypeClick(Sender: TObject);
 
 Var
   iMessageType: TITHFonts;
@@ -128,7 +102,7 @@ End;
   @param   Sender as a TObject
 
 **)
-Procedure TfrmITHFontDialogue.clbxFontColourClick(Sender: TObject);
+Procedure TframeFonts.clbxFontColourClick(Sender: TObject);
 
 Var
   iMessageType : TITHFonts;
@@ -143,32 +117,6 @@ End;
 
 (**
 
-  This is the forms main interface method for invoking the dialogue.
-
-  @precon  GlobalOptions must be a valid instance.
-  @postcon Displays the dialogue.
-
-  @param   GlobalOptions as a IITHGlobalOptions as a constant
-
-**)
-Class Procedure TfrmITHFontDialogue.Execute(Const GlobalOptions: IITHGlobalOptions);
-
-Var
-  frm: TfrmITHFontDialogue;
-
-Begin
-  frm := TfrmITHFontDialogue.Create(Nil);
-  Try
-    frm.InitialiseMessageOptions(GlobalOptions);
-    If frm.ShowModal = mrOK Then
-      frm.SaveMessageOptions(GlobalOptions);
-  Finally
-    frm.Free;
-  End;
-End;
-
-(**
-
   This is an on click event handler for the Font Style check boxes.
 
   @precon  None.
@@ -177,7 +125,7 @@ End;
   @param   Sender as a TObject
 
 **)
-Procedure TfrmITHFontDialogue.FontStyleClick(Sender: TObject);
+Procedure TframeFonts.FontStyleClick(Sender: TObject);
 
 Var
   iMessageType: TITHFonts;
@@ -205,10 +153,15 @@ End;
   @precon  None.
   @postcon Initialises the message font checkboxes in the dialogue.
 
-  @param   GlobalOps as a IITHGlobalOptions as a constant
+  @nohint  Project DlgType
+
+  @param   GlobalOps as an IITHGlobalOptions as a constant
+  @param   Project   as an IOTAProject as a constant
+  @param   DlgType   as a TITHDlgType as a constant
 
 **)
-Procedure TfrmITHFontDialogue.InitialiseMessageOptions(Const GlobalOps: IITHGlobalOptions);
+Procedure TframeFonts.InitialiseOptions(Const GlobalOps: IITHGlobalOptions; Const Project: IOTAProject;
+  Const DlgType: TITHDlgType);
 
 Const
   strFontDescriptions: Array [Low(TITHFonts) .. High(TITHFonts)
@@ -236,15 +189,36 @@ End;
 
 (**
 
+  This method validates the frame.
+
+  @precon  None.
+  @postcon Nothing to validate.
+
+  @return  a Boolean
+
+**)
+Function TframeFonts.IsValidated: Boolean;
+
+Begin
+  Result := True;
+End;
+
+(**
+
   This method saves the message options to the Options record structure.
 
   @precon  None.
   @postcon Saves the message options to the Options record structure.
 
-  @param   GlobalOps as a IITHGlobalOptions as a constant
+  @nohint  Project DlgType
+
+  @param   GlobalOps as an IITHGlobalOptions as a constant
+  @param   Project   as an IOTAProject as a constant
+  @param   DlgType   as a TITHDlgType as a constant
 
 **)
-Procedure TfrmITHFontDialogue.SaveMessageOptions(Const GlobalOps: IITHGlobalOptions);
+Procedure TframeFonts.SaveOptions(Const GlobalOps: IITHGlobalOptions; Const Project: IOTAProject;
+  Const DlgType: TITHDlgType);
 
 Var
   iMessageType: TITHFonts;
@@ -252,7 +226,7 @@ Var
 Begin
   GlobalOps.FontName[fnHeader] := cbxHeaderFontName.Text;
   GlobalOps.FontName[fnTools]  := cbxToolFontName.Text;
-  For iMessageType             := Low(TITHFonts) To High(TITHFonts) Do
+  For iMessageType := Low(TITHFonts) To High(TITHFonts) Do
     Begin
       GlobalOps.FontColour[iMessageType] := FFontColour[iMessageType];
       GlobalOps.FontStyles[iMessageType] := FFontStyle[iMessageType];
