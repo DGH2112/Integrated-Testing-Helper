@@ -14,8 +14,6 @@
   @todo    Create a command-line app ITHelper.exe which can perform version control, zipping, etc from a
            .DPR (and implied .ITHelper) file.
 
-  @bug     Shortcuts not remembered (actual Global options are not saved)! Reference count not zero?
-
 **)
 Library ITHelper;
 
