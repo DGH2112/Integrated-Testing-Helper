@@ -326,7 +326,7 @@ End;
   @param   boolAbort as a Boolean as a reference
 
 **)
-Procedure TITHVersionManager.ProcessMsgHandler(Const strMsg: String; Var boolAbort: Boolean);
+Procedure TITHVersionManager.ProcessMsgHandler(Const strMsg: String; Var boolAbort: Boolean); //FI:O804
 
 Begin
   If strMsg <> '' Then

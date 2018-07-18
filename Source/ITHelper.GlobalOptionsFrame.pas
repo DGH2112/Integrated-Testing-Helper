@@ -161,7 +161,7 @@ End;
 
 **)
 Procedure TframeGlobalOptions.InitialiseOptions(Const GlobalOps: IITHGlobalOptions;
-  Const Project : IOTAProject; Const DlgType : TITHDlgType);
+  Const Project : IOTAProject; Const DlgType : TITHDlgType); //FI:O804
 
 Var
   i: Integer;
@@ -238,7 +238,7 @@ end;
 
 **)
 Procedure TframeGlobalOptions.SaveOptions(Const GlobalOps: IITHGlobalOptions;
-  Const Project : IOTAProject; Const DlgType : TITHDlgType);
+  Const Project : IOTAProject; Const DlgType : TITHDlgType); //FI:O804
 
 Var
   i: Integer;
