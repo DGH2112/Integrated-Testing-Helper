@@ -4,7 +4,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    19 Mar 2018
+  @Date    18 Jul 2018
   
 **)
 Unit ITHelper.CommonFunctions;
@@ -24,8 +24,12 @@ Type
   TITHProcessMsgHandler = Procedure(Const strMsg : String; Var boolAbort : Boolean) Of Object;
   (** A method signature for the DGHCreateProcess idle event handler. **)
   TITHIdleHandler = Procedure Of Object;
+  (** A record to hold the version information. **)
+  TITHVersionInfo = Record
+    FMajor, FMinor, FBugFix, FBuild : Integer;
+  End;
 
-  Procedure BuildNumber(Const strFileName : String; Var iMajor, iMinor, iBugFix, iBuild : Integer);
+  Procedure BuildNumber(Const strFileName : String; Var recVersionInfo : TITHVersionInfo);
   Function  BuildRootKey : String;
   Function  ComputerName : String;
   Function  DGHCreateProcess(Const Process : TITHProcessInfo;
@@ -52,14 +56,11 @@ Uses
   @precon  None.
   @postcon Extracts and display the applications version number present within the EXE file.
 
-  @param   strFileName as a String as a constant
-  @param   iMajor      as an Integer as a reference
-  @param   iMinor      as an Integer as a reference
-  @param   iBugFix     as an Integer as a reference
-  @param   iBuild      as an Integer as a reference
+  @param   strFileName    as a String as a constant
+  @param   recVersionInfo as a TITHVersionInfo as a reference
 
 **)
-Procedure BuildNumber(Const strFileName : String; Var iMajor, iMinor, iBugFix, iBuild : Integer);
+Procedure BuildNumber(Const strFileName : String; Var recVersionInfo : TITHVersionInfo);
 
 Const
   iShiftRight16 = 16;
@@ -73,6 +74,10 @@ Var
   Dummy: DWORD;
 
 Begin
+  recVersionInfo.FMajor := 0;
+  recVersionInfo.FMinor := 0;
+  recVersionInfo.FBugFix := 0;
+  recVersionInfo.FBuild := 0;
   VerInfoSize := GetFileVersionInfoSize(PChar(strFileName), Dummy);
   If VerInfoSize <> 0 Then
     Begin
@@ -80,10 +85,10 @@ Begin
       Try
         GetFileVersionInfo(PChar(strFileName), 0, VerInfoSize, VerInfo);
         VerQueryValue(VerInfo, '\', Pointer(VerValue), VerValueSize);
-        iMajor := VerValue^.dwFileVersionMS Shr iShiftRight16;
-        iMinor := VerValue^.dwFileVersionMS And iWordMask;
-        iBugFix := VerValue^.dwFileVersionLS Shr iShiftRight16;
-        iBuild := VerValue^.dwFileVersionLS And iWordMask;
+        recVersionInfo.FMajor := VerValue^.dwFileVersionMS Shr iShiftRight16;
+        recVersionInfo.FMinor := VerValue^.dwFileVersionMS And iWordMask;
+        recVersionInfo.FBugFix := VerValue^.dwFileVersionLS Shr iShiftRight16;
+        recVersionInfo.FBuild := VerValue^.dwFileVersionLS And iWordMask;
       Finally
         FreeMem(VerInfo, VerInfoSize);
       End;

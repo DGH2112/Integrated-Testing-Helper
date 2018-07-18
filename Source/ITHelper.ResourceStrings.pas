@@ -4,7 +4,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    07 Jan 2018
+  @Date    18 Jul 2018
   
 **)
 Unit ITHelper.ResourceStrings;
@@ -16,7 +16,7 @@ ResourceString
   strSplashScreenName = 'Integrated Testing Helper %d.%d%s for %s';
   {$IFDEF DEBUG}
   (** This is another message string to appear in the splash screen **)
-  strSplashScreenBuild = 'Freeware by David Hoyle (Build %d.%d.%d.%d)';
+  strSplashScreenBuild = 'Freeware by David Hoyle (DEBUG Build %d.%d.%d.%d)';
   {$ELSE}
   (** This is another message string to appear in the splash screen **)
   strSplashScreenBuild = 'Freeware by David Hoyle (Build %d.%d.%d.%d)';

@@ -343,20 +343,31 @@ Const
 
 Var
   strModuleName : String;
-  iSize, iMajor, iMinor, iBugFix, iBuild : Integer;
+  iSize : Integer;
+  recVersionInfo : TITHVersionInfo;
 
 Begin
   SetLength(strModuleName, MAX_PATH);
   iSize := GetModuleFileName(hInstance, PChar(strModuleName), MAX_PATH);
   SetLength(strModuleName, iSize);
-  BuildNumber(strModuleName, iMajor, iMinor, iBugFix, iBuild);
+  BuildNumber(strModuleName, recVersionInfo);
   {$IFDEF DEBUG}
   FTestingHelperMenu := TITHToolsAPIFunctions.CreateMenuItem(strITHTestingHelper,
-    Format(strTestingHelper, [iMajor, iMinor, strRevisions[Succ(iBugFix)], iMajor, iMinor, iBugfix, iBuild]),
+    Format(strTestingHelper, [
+      recVersionInfo.FMajor,
+      recVersionInfo.FMinor,
+      strRevisions[Succ(recVersionInfo.FBugFix)],
+      recVersionInfo.FMajor,
+      recVersionInfo.FMinor,
+      recVersionInfo.FBugfix,
+      recVersionInfo.FBuild]),
     strTools, Nil, Nil, True, False, '');
   {$ELSE}
   FTestingHelperMenu := TITHToolsAPIFunctions.CreateMenuItem(strITHTestingHelper,
-    Format(strTestingHelper, [iMajor, iMinor, strRevisions[Succ(iBugFix)]]),
+    Format(strTestingHelper, [
+      recVersionInfo.FMajor,
+      recVersionInfo.FMinor,
+      strRevisions[Succ(recVersionInfo.FBugFix)]]),
     strTools, Nil, Nil, True, False, '');
   {$ENDIF}
   TITHToolsAPIFunctions.CreateMenuItem(strITHEnabled, strOops, strITHTestingHelper, ToggleEnabled,
