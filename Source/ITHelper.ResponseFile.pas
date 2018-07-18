@@ -5,7 +5,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    02 Mar 2018
+  @Date    18 Jul 2018
   
 **)
 Unit ITHelper.ResponseFile;
@@ -88,7 +88,7 @@ Var
 Begin
   slWildcards := FProjectOps.AddZipFiles;
   For iModule := 0 To slWildcards.Count - 1 Do
-    AddToList(strBasePath, ExpandMacro(slWildcards[iModule], FProject.FileName));
+    AddToList(strBasePath, TITHToolsAPIFunctions.ExpandMacro(slWildcards[iModule], FProject.FileName));
 End;
 
 (**
@@ -193,15 +193,12 @@ ResourceString
   strCheckingFilelistForResources = 'Checking Filelist for Resources...';
 
 Const
-  //: @debug strRESExt = '.res';
   strCFGExt = '.cfg';
   strResponseFileExt = '.response';
 
 Begin
   Result := False;
   TfrmITHProcessing.ShowProcessing(Format(strBuildingFilelistFor, [ExtractFileName(strProject)]));
-  //: @debug AddToList(strBasePath, FProject.FileName);
-  //: @debug AddToList(strBasePath, ChangeFileExt(FProject.FileName, strRESExt));
   AddToList(strBasePath, ChangeFileExt(FProject.FileName, strCFGExt));
   BuildTargetFileName(strBasePath);
   AddProjectFilesToResponseFile(strBasePath);
@@ -235,68 +232,36 @@ End;
 Procedure TITHResponseFile.BuildTargetFileName(Const strBasePath: String);
 
 Const
-  iExtLen = 3;
-  strDPKExt = '*.dpk';
-  strBPLExt = '.bpl';
-  strDPRExt = '*.dpr';
-  strEXEExt = '.exe';
-  strLibraryPattern = '*library*%s*;*';
-  strDLLExt = '.dll';
-  strOutputDirOpName = 'OutputDir';
-  strPkgDllDirOpName = 'PkgDllDir';
-  strDllPrefixOpName = 'DllPrefix';
-  strSOPrefixOpName = 'SOPrefix';
-  strDllSuffixOpName = 'DllSuffix';
-  strSOSuffixOpName = 'SOSuffix';
-  strDllVersionOpName = 'DllVersion';
-  strSOVersionOpName = 'SOVersion';
-  strDPRExtChange = '.dpr';
+  iExtStartPos = 3;
 
 Var
   strExt: String;
   i: Integer;
-  strTargetName: String;
   sl: TStringList;
   iStart: Integer;
   iEnd: Integer;
 
 Begin
-  //: @todo UPdate!!!!!
-  If IsProject(strDPKExt) Then
-    strExt := strBPLExt
-  Else If IsProject(strDPRExt) Then
-    Begin
-      strExt := strEXEExt;
-      sl := TStringList.Create;
-      Try
-        sl.LoadFromFile(ChangeFileExt(FProject.FileName, strDPRExtChange));
-        For i := 0 To sl.Count - 1 Do
+  // Workaround for TargetName not honouring explicit extension changes in the project file.
+  strExt := ExtractFileExt(FProject.ProjectOptions.TargetName);
+  sl := TStringList.Create;
+  Try
+    sl.LoadFromFile(ExtractFilePath(FProject.FileName) + TITHToolsAPIFunctions.GetProjectName(FProject));
+    For i := 0 To sl.Count - 1 Do
+      Begin
+        // Search for alternate extension
+        If Like('{$e *}*', sl[i]) Or Like('{$e'#9'*}*', sl[i]) Then
           Begin
-            If Like(Format(strLibraryPattern,
-              [ChangeFileExt(ExtractFileName(FProject.FileName), '')]), sl[i]) Then
-              strExt := strDLLExt;
-            If Like('{$e *}*', sl[i]) Or Like('{$e'#9'*}*', sl[i]) Then
-            // Search for alternate extension
-              Begin
-                iStart := Pos('{$e', Lowercase(sl[i]));
-                iEnd := Pos('}', sl[i]);
-                If (iStart > 0) And (iEnd > 0) And (iStart < iEnd) Then
-                  strExt := '.' + Trim(Copy(sl[i], iStart + iExtLen, iEnd - iStart - iExtLen));
-              End;
+            iStart := Pos('{$e', Lowercase(sl[i])) + iExtStartPos;
+            iEnd := Pos('}', sl[i]);
+            If (iStart > 0) And (iEnd > 0) And (iStart < iEnd) Then
+              strExt := '.' + Trim(Copy(sl[i], iStart, iEnd - iStart));
           End;
-      Finally
-        sl.Free;
       End;
-    End;
-  //: @todo Check that this code works in XE2 and above properly.
-  strTargetName := ExtractFilePath(FProject.FileName) + 
-    ProjectOptions([strOutputDirOpName, strPkgDllDirOpName]) +
-    ProjectOptions([strDllPrefixOpName, strSOPrefixOpName]) +
-    ExtractFileName(ChangeFileExt(FProject.FileName, '')) + 
-    ProjectOptions([strDllSuffixOpName, strSOSuffixOpName]) + strExt + '.' +
-    ProjectOptions([strDllVersionOpName, strSOVersionOpName]);
-  strTargetName := ExpandFileName(strTargetName);
-  AddToList(strBasePath, strTargetName);
+  Finally
+    sl.Free;
+  End;
+  AddToList(strBasePath, ChangeFileExt(FProject.ProjectOptions.TargetName, strExt));
 End;
 
 (**
@@ -581,6 +546,7 @@ Constructor TITHResponseFile.Create(Const Project: IOTAProject; Const GlobalOps 
   Const ProjectOps: IITHProjectOptions; Const MessageManager : IITHMessageManager);
 
 Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Create', tmoTiming);{$ENDIF}
   FProject := Project;
   FGlobalOps := GlobalOps;
   FProjectOps := ProjectOps;
@@ -601,6 +567,7 @@ End;
 Destructor TITHResponseFile.Destroy;
 
 Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Destroy', tmoTiming);{$ENDIF}
   If FileExists(FFileName) Then
     DeleteFile(FFileName);
   FResponseFile.Free;
@@ -696,6 +663,7 @@ Begin
 End;
 
 End.
+
 
 
 

@@ -1,4 +1,4 @@
-//: @nodocumentation @nometrics @nochecks
+//: @nodocumentation @nometrics Disabled metrics @nochecks Disbale checks
 Unit TestGlobalOptions;
 
 Interface

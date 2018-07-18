@@ -4,7 +4,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    05 Jan 2018
+  @Date    18 Jul 2018
 
 **)
 Unit ITHelper.GlobalOptions;
@@ -69,14 +69,17 @@ Type
 Implementation
 
 Uses
-  Dialogs,
+  {$IFDEF DEBUG}
+  CodeSiteLogging,
+  {$ENDIF}
+  System.SysUtils,
+  System.UITypes,
+  System.Contnrs, 
+  VCL.Dialogs,
+  VCL.ActnList,
+  WinAPI.Windows, 
   ITHelper.TestingHelperUtils,
-  SysUtils,
-  ActnList,
-  Windows, 
   ITHelper.CommonFunctions,
-  UITypes,
-  Contnrs, 
   ITHelper.ProjectOptions;
 
 Const
@@ -137,6 +140,7 @@ Const
 Constructor TITHGlobalOptions.Create;
 
 Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Create', tmoTiming);{$ENDIF}
   FINIFileName     := BuildRootKey;
   FProjectGroupOps := TStringList.Create;
   LoadSettings;
@@ -153,6 +157,7 @@ End;
 Destructor TITHGlobalOptions.Destroy;
 
 Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Destroy', tmoTiming);{$ENDIF}
   SaveSettings;
   FProjectGroupOps.Free;
   Inherited Destroy;
@@ -316,7 +321,7 @@ Var
 
 Begin
   Result := [];
-  PG     := ProjectGroup;
+  PG     := TITHToolsAPIFunctions.ProjectGroup;
   If PG = Nil Then
     Exit;
   strProjectGroup := ExtractFileName(PG.FileName);
@@ -491,10 +496,10 @@ Begin
       sl.Free;
     End;
     // Action Shortcuts
-    For i := 0 To Actions.Count - 1 Do
-      If Actions[i] Is TAction Then
+    For i := 0 To TITHToolsAPIFunctions.Actions.Count - 1 Do
+      If TITHToolsAPIFunctions.Actions[i] Is TAction Then
         Begin
-          A          := Actions[i] As TAction;
+          A          := TITHToolsAPIFunctions.Actions[i] As TAction;
           A.ShortCut := iniFile.ReadInteger(strShortcutsSection, A.Name, A.ShortCut);
         End;
     If boolNeedsSaving Then
@@ -534,7 +539,7 @@ Var
 
 Begin
   strINIFileName := ChangeFileExt(Project.FileName, strITHelperExt);
-  strProjectName := GetProjectName(Project);
+  strProjectName := TITHToolsAPIFunctions.GetProjectName(Project);
   If Not FileExists(strINIFileName) Then
     Begin
       // Migrate settings from the main INI file to a local one
@@ -624,10 +629,10 @@ Begin
       For i := 0 To FProjectGroupOps.Count - 1 Do
         iniFile.WriteInteger(strNewProjectGroupOptionsSection, FProjectGroupOps[i],
           Integer(FProjectGroupOps.Objects[i]));
-      For i := 0 To Actions.Count - 1 Do
-        If Actions[i] Is TAction Then
+      For i := 0 To TITHToolsAPIFunctions.Actions.Count - 1 Do
+        If TITHToolsAPIFunctions.Actions[i] Is TAction Then
           Begin
-            A := Actions[i] As TAction;
+            A := TITHToolsAPIFunctions.Actions[i] As TAction;
             iniFile.WriteInteger(strSetupSection, A.Name, A.ShortCut);
           End;
       iniFile.UpdateFile;
@@ -757,7 +762,7 @@ Var
   iIndex         : Integer;
 
 Begin
-  PG := ProjectGroup;
+  PG := TITHToolsAPIFunctions.ProjectGroup;
   If PG = Nil Then
     Exit;
   strProjectGroup := ExtractFileName(PG.FileName);
@@ -821,3 +826,5 @@ Begin
 End;
 
 End.
+
+

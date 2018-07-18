@@ -4,7 +4,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    02 Mar 2018
+  @Date    18 Jul 2018
 
 **)
 Unit ITHelper.Interfaces;
@@ -43,6 +43,7 @@ Type
     Function  GetExcPatterns: String;
     Function  GetAddZipFiles: TStringList;
     Function  GetIniFile : TMemIniFile;
+    Function  GetSaveModifiedFiles : Boolean;
     Procedure SetResExtExc(Const strValue: String);
     Procedure SetIncOnCompile(Const boolValue: Boolean);
     Procedure SetCopyVerInfo(Const strValue: String);
@@ -60,6 +61,7 @@ Type
     Procedure SetZipName(Const strValue: String);
     Procedure SetBasePath(Const strValue: String);
     Procedure SetExcPatterns(Const strValue: String);
+    Procedure SetSaveModifiedFiles(Const boolValue : Boolean);
   // Properties
     (**
       This property gets and sets the resource extensions to be excluded from checks.
@@ -217,6 +219,13 @@ Type
       @return  a TStringList
     **)
     Property AddZipFiles: TStringList Read GetAddZipFiles;
+    (**
+      This property determines of any modified files in a project should be saved before zipping.
+      @precon  None.
+      @postcon Gets or Sets whether any modified files in a project should be saved before zipping.
+      @return  a Boolean
+    **)
+    Property SaveModifiedFiles : Boolean Read GetSaveModifiedFiles Write SetSaveModifiedFiles;
   End;
 
   (** An interface for the global options. **)
@@ -429,6 +438,16 @@ Type
   IITHVersionManager = Interface
   ['{F230054C-67E1-48D7-ACDA-5BC1AC19E04B}']
     Procedure BuildProjectVersionResource();
+  End;
+
+  (** An interface to specify the methods that need to be implemented by a Project Options frame. **)
+  IITHOptionsFrame = Interface
+  ['{277C1FF5-DA63-4936-84C1-CF21E88BE474}']
+    Procedure InitialiseOptions(Const GlobalOps: IITHGlobalOptions; Const Project : IOTAProject = Nil;
+      Const DlgType : TITHDlgType = dtNA);
+    Procedure SaveOptions(Const GlobalOps: IITHGlobalOptions; Const Project: IOTAProject = Nil;
+      Const DlgType : TITHDlgType = dtNA);
+    Function  IsValidated : Boolean;
   End;
 
 Implementation

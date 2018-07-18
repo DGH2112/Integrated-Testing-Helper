@@ -5,7 +5,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    05 Jan 2018
+  @Date    18 Jul 2018
 
 **)
 Unit ITHelper.ProjectOptionsDialogue;
@@ -30,54 +30,43 @@ Uses
   ITHelper.Interfaces,
   Grids,
   ValEdit,
-  ComCtrls;
+  ComCtrls,
+  ITHelper.ProjectOptionsFrame,
+  ITHelper.ExternalToolsFrame,
+  ITHelper.ZIPFrame;
 
 Type
+  (** An enumerate to define the page to display on opening. **)
+  TITHProjectOptionType = (potProjectOptions, potBeforeCompile, potAfterCompile, potZipping);
+
+  (** An enumerate to describe the pages of the options dialogue. **)
+  TITHOptionsPage = (opProjectOptions, opBeforeCompileTools, opAfterCompileTools, opZipping);
+  
   (** A class to represent the project options form. **)
   TfrmITHProjectOptionsDialogue = Class(TForm)
-    lblResExts: TLabel;
-    lblVersionInfo: TLabel;
-    chkIncrementBuildOnCompile: TCheckBox;
-    edtResExts: TEdit;
-    edtVersionInfo: TEdit;
-    btnOpenEXE: TButton;
     btnOK: TBitBtn;
     btnCancel: TBitBtn;
-    dlgOpenEXE: TOpenDialog;
-    vleVersionInfo: TValueListEditor;
-    gbxVersionInfo: TGroupBox;
-    chkEnabled: TCheckBox;
-    lblMajor: TLabel;
-    edtMajor: TEdit;
-    upMajor: TUpDown;
-    edtMinor: TEdit;
-    upMinor: TUpDown;
-    lblMinor: TLabel;
-    edtRelease: TEdit;
-    upRelease: TUpDown;
-    lblRelease: TLabel;
-    edtBuild: TEdit;
-    upBuild: TUpDown;
-    lblBuild: TLabel;
-    btnGetVersionInfo: TBitBtn;
-    chkIncludeInProject: TCheckBox;
-    chkCompileWithBRCC32: TCheckBox;
-    lblResourceName: TLabel;
-    edtResourceName: TEdit;
     btnHelp: TBitBtn;
-    Procedure btnOpenEXEClick(Sender: TObject);
-    Procedure chkEnabledClick(Sender: TObject);
-    Procedure BuildChange(Sender: TObject; Button: TUDBtnType);
-    Procedure btnGetVersionInfoClick(Sender: TObject);
+    pgcProjectOptions: TPageControl;
+    tabProjectOptions: TTabSheet;
+    tabBeforeCompileTools: TTabSheet;
+    tabAfterCompileTools: TTabSheet;
+    tabZipping: TTabSheet;
     procedure btnHelpClick(Sender: TObject);
-  Private
-    { Private declarations }
-    FProject : IOTAProject;
-    Procedure InitialiseOptions(Const GlobalOps: IITHGlobalOptions; Const Project: IOTAProject);
-    Procedure SaveOptions(Const GlobalOps: IITHGlobalOptions; Const Project: IOTAProject);
+    procedure FormCreate(Sender: TObject);
+    procedure btnOKClick(Sender: TObject);
+  Strict Private
+    FProjectOptions     : IITHOptionsFrame;
+    FBeforeCompileTools : IITHOptionsFrame;
+    FAfterCompileTools  : IITHOptionsFrame;
+    FZipping            : IITHOptionsFrame;
+  Strict Protected
+    Procedure LoadSettings(Const GlobalOps: IITHGlobalOptions);
+    Procedure SaveSettings(Const GlobalOps: IITHGlobalOptions);
   Public
     { Public declarations }
-    Class Procedure Execute(Const GlobalOps: IITHGlobalOptions; Const Project: IOTAProject);
+    Class Procedure Execute(Const ProjectOptionType : TITHProjectOptionType;
+      Const GlobalOps: IITHGlobalOptions; Const Project: IOTAProject);
   End;
 
 Implementation
@@ -89,6 +78,7 @@ Uses
   {$IFDEF DXE20}
   CommonOptionStrs,
   {$ENDIF}
+  ITHelper.Types,
   ITHelper.TestingHelperUtils;
 
 Const
@@ -105,67 +95,6 @@ Const
 
 (**
 
-  This is an on click event handler for the GetvVersionInfo button.
-
-  @precon  None.
-  @postcon Extracts the version information from the IDE.
-
-  @param   Sender as a TObject
-
-**)
-Procedure TfrmITHProjectOptionsDialogue.btnGetVersionInfoClick(Sender: TObject);
-
-Const
-  strMsg = 'Are you sure you want to replace the current version information with the ' +
-    'version information from the IDE?';
-  strMajorVersion = 'MajorVersion';
-  strMinorVersion = 'MinorVersion';
-  strRelease = 'Release';
-  strBuild = 'Build';
-  strKeys = 'Keys';
-
-Var
-  S : TStrings;
-  {$IFNDEF DXE20}
-  PO : IOTAProjectOptions;
-  i : Integer;
-  sl : TStrings;
-  {$ELSE}
-  POC : IOTAProjectOptionsConfigurations;
-  AC : IOTABuildConfiguration;
-  {$ENDIF}
-
-Begin
-  If MessageDlg(strMsg, mtConfirmation, [mbYes, mbNo], 0) <> mrYes Then
-    Exit;
-  {$IFDEF DXE20}
-  If FProject.ProjectOptions.QueryInterface(IOTAProjectOptionsConfigurations,
-    POC) = S_OK Then
-    Begin
-      AC := POC.ActiveConfiguration;
-      upMajor.Position := AC.AsInteger[sVerInfo_MajorVer];
-      upMinor.Position := AC.AsInteger[sVerInfo_MinorVer];
-      upRelease.Position := AC.AsInteger[sVerInfo_Release];
-      upBuild.Position := AC.AsInteger[sVerInfo_Build];
-      S := vleVersionInfo.Strings;
-      S.Text := StringReplace(AC.Value[sVerInfo_Keys], ';', #13#10, [rfReplaceAll]);
-    End;
-  {$ELSE}
-    PO := FProject.ProjectOptions;
-    upMajor.Position := PO.Values[strMajorVersion];
-    upMinor.Position := PO.Values[strMinorVersion];
-    upRelease.Position := PO.Values[strRelease];
-    upBuild.Position := PO.Values[strBuild];
-    i := VarAsType(PO.Values[strKeys], varInteger);
-    sl := TStrings(i);
-    S := vleVersionInfo.Strings;
-    S.Assign(sl);
-    S.Text := StringReplace(S.Text, ';', #13#10, [rfReplaceAll]);
-  {$ENDIF}
-End;
-
-(**
-
   This is an on click event handler for the Help button.
 
   @precon  None.
@@ -178,89 +107,40 @@ Procedure TfrmITHProjectOptionsDialogue.btnHelpClick(Sender: TObject);
 
 Const
   strProjectOptions = 'ProjectOptions';
-
-Begin
-  HTMLHelp(0, PChar(ITHHTMLHelpFile(strProjectOptions)), HH_DISPLAY_TOPIC, 0);
-End;
-
-(**
-
-  This is an on click event handler for the Browse Zip EXE button.
-
-  @precon  None.
-  @postcon Allows the user to select a zip executable.
-
-  @param   Sender as a TObject
-
-**)
-Procedure TfrmITHProjectOptionsDialogue.btnOpenEXEClick(Sender: TObject);
-
-Begin
-  dlgOpenEXE.FileName := edtVersionInfo.Text;
-  If dlgOpenEXE.Execute Then
-    edtVersionInfo.Text := dlgOpenEXE.FileName;
-End;
-
-(**
-
-  This is an on change event handler for the Build controls (Major, Minor, Release and
-  Build) control.
-
-  @precon  None.
-  @postcon Updates the FileVersion member of the version information strings.
-
-  @param   Sender as a TObject
-  @param   Button as a TUDBtnType
-
-**)
-Procedure TfrmITHProjectOptionsDialogue.BuildChange(Sender: TObject; Button: TUDBtnType);
-
-Const
-  strFileVersion = 'FileVersion';
+  strCompilationTools = 'CompilationTools';
+  strZIPOptions = 'ZIPOptions';
 
 Var
-  S : TStrings;
+  strTopic : String;
 
 Begin
-  S := vleVersionInfo.Strings;
-  If S.IndexOfName(strFileVersion) > -1 Then
-    S.Values[strFileVersion] :=
-      Format('%d.%d.%d.%d', [upMajor.Position, upMinor.Position, upRelease.Position,
-        upBuild.Position]);
+  Case TITHOptionsPage(pgcProjectOptions.ActivePageIndex) Of
+    opProjectOptions:                          strTopic := strProjectOptions;
+    opBeforeCompileTools, opAfterCompileTools: strTopic := strCompilationTools;
+    opZipping:                                 strTopic := strZIPOptions;  
+  End;
+  HtmlHelp(0, PChar(TITHToolsAPIFunctions.ITHHTMLHelpFile(strTopic)), HH_DISPLAY_TOPIC, 0);
 End;
 
 (**
 
-  This is an on click event handler for the Enabled checkbox.
+  This is an on click event handler for the OK button.
 
   @precon  None.
-  @postcon Enables of disables the grouop box accordingly.
+  @postcon Validates the frames in the form.
 
   @param   Sender as a TObject
 
 **)
-Procedure TfrmITHProjectOptionsDialogue.chkEnabledClick(Sender: TObject);
+Procedure TfrmITHProjectOptionsDialogue.btnOKClick(Sender: TObject);
 
 Begin
-  gbxVersionInfo.Enabled := chkEnabled.Checked;
-  lblMajor.Enabled := chkEnabled.Checked;
-  edtMajor.Enabled := chkEnabled.Checked;
-  upMajor.Enabled := chkEnabled.Checked;
-  lblMinor.Enabled := chkEnabled.Checked;
-  edtMinor.Enabled := chkEnabled.Checked;
-  upMinor.Enabled := chkEnabled.Checked;
-  lblRelease.Enabled := chkEnabled.Checked;
-  edtRelease.Enabled := chkEnabled.Checked;
-  upRelease.Enabled := chkEnabled.Checked;
-  lblBuild.Enabled := chkEnabled.Checked;
-  edtBuild.Enabled := chkEnabled.Checked;
-  upBuild.Enabled := chkEnabled.Checked;
-  vleVersionInfo.Enabled := chkEnabled.Checked;
-  chkIncludeInProject.Enabled := chkEnabled.Checked;
-  chkCompileWithBRCC32.Enabled := chkEnabled.Checked;
-  lblResourceName.Enabled := chkEnabled.Checked;
-  edtResourceName.Enabled := chkEnabled.Checked;
-  btnGetVersionInfo.Enabled := chkEnabled.Checked;
+  If Not (
+    FProjectOptions.IsValidated And
+    FBeforeCompileTools.IsValidated And
+    FAfterCompileTools.IsValidated And
+    FZipping.Isvalidated) Then
+    ModalResult := mrNone;
 End;
 
 (**
@@ -270,12 +150,13 @@ End;
   @precon  None.
   @postcon Initialises the project options in the dialogue.
 
-  @param   GlobalOps as a IITHGlobalOptions as a constant
-  @param   Project   as an IOTAProject as a constant
+  @param   ProjectOptionType as a TITHProjectOptionType as a constant
+  @param   GlobalOps         as an IITHGlobalOptions as a constant
+  @param   Project           as an IOTAProject as a constant
 
 **)
-Class Procedure TfrmITHProjectOptionsDialogue.Execute(Const GlobalOps: IITHGlobalOptions;
-  Const Project: IOTAProject);
+Class Procedure TfrmITHProjectOptionsDialogue.Execute(Const ProjectOptionType : TITHProjectOptionType;
+  Const GlobalOps: IITHGlobalOptions; Const Project: IOTAProject);
 
 ResourceString
   strProjectOptionsFor = 'Project Options for %s';
@@ -286,12 +167,26 @@ Var
 Begin
   frm := TfrmITHProjectOptionsDialogue.Create(Nil);
   Try
-    frm.Caption := Format(strProjectOptionsFor, [GetProjectName(Project)]);
-    frm.FProject := Project;
-    frm.InitialiseOptions(GlobalOps, Project);
-    frm.chkEnabledClick(Nil);
+    frm.Caption := Format(strProjectOptionsFor, [TITHToolsAPIFunctions.GetProjectName(Project)]);
+    frm.LoadSettings(GlobalOps);
+    frm.FProjectOptions.InitialiseOptions(GlobalOps, Project);
+    frm.FBeforeCompileTools.InitialiseOptions(GlobalOps, Project, dtBefore);
+    frm.FAfterCompileTools.InitialiseOptions(GlobalOps, Project, dtAfter);
+    frm.FZipping.InitialiseOptions(GlobalOps, Project);
+    Case ProjectOptionType Of
+      potProjectOptions: frm.pgcProjectOptions.ActivePage := frm.tabProjectOptions;
+      potBeforeCompile: frm.pgcProjectOptions.ActivePage := frm.tabBeforeCompileTools;
+      potAfterCompile: frm.pgcProjectOptions.ActivePage := frm.tabAfterCompileTools;
+      potZipping: frm.pgcProjectOptions.ActivePage := frm.tabZipping;
+    End;
     If frm.ShowModal = mrOK Then
-      frm.SaveOptions(GlobalOps, Project);
+      Begin
+        frm.SaveSettings(GlobalOps);
+        frm.FProjectOptions.SaveOptions(GlobalOps, Project);
+        frm.FBeforeCompileTools.SaveOptions(GlobalOps, Project, dtBefore);
+        frm.FAfterCompileTools.SaveOptions(GlobalOps, Project, dtAfter);
+        frm.FZipping.SaveOptions(GlobalOps, Project);
+      End;
   Finally
     frm.Free;
   End;
@@ -299,23 +194,69 @@ End;
 
 (**
 
-  This method initialises the dialogue controls with information from the global options and the project 
-  options.
+  This is an OnFormCreate Event Handler for the TfrmITHProjectOptionsDialogue class.
 
-  @precon  GlobalOps and Project must be valid instances.
-  @postcon Initialises the dialogue controls with information from the global options and the project 
-           options.
+  @precon  None.
+  @postcon Creates the options frame dynamically (so any changes in the frames take effect in this dlg).
 
-  @param   GlobalOps as a IITHGlobalOptions as a constant
-  @param   Project   as an IOTAProject as a constant
+  @param   Sender as a TObject
 
 **)
-Procedure TfrmITHProjectOptionsDialogue.InitialiseOptions(Const GlobalOps: IITHGlobalOptions;
-  Const Project: IOTAProject);
+Procedure TfrmITHProjectOptionsDialogue.FormCreate(Sender: TObject);
+
+ResourceString
+  strIITHOptionsFrameNotSupported = 'IITHOptionsFrame not supported!';
+
+Const
+  strProjectOptionsFrameName = 'frameProjectOptionsFrame';
+  strBeforeCompileToolsName = 'frameBeforeCompileTools';
+  strAfterCompileToolsName = 'frameAfterCompileTools';
+  strZippingName = 'frameZipping';
+
+Var
+  F: Tframe;
+
+Begin
+  F := TframeProjectOptions.Create(Self);
+  F.Name := strProjectOptionsFrameName;
+  F.Parent := tabProjectOptions;
+  F.Align := alClient;
+  If Not Supports(F, IITHOptionsFrame, FProjectOptions) Then
+    Raise Exception.Create(strIITHOptionsFrameNotSupported);
+  F := TframeExternalTools.Create(Self);
+  F.Name := strBeforeCompileToolsName;
+  F.Parent := tabBeforeCompileTools;
+  F.Align := alClient;
+  If Not Supports(F, IITHOptionsFrame, FBeforeCompileTools) Then
+    Raise Exception.Create(strIITHOptionsFrameNotsupported);
+  F := TframeExternalTools.Create(Self);
+  F.Name := strAfterCompileToolsName;
+  F.Parent := tabAfterCompileTools;
+  F.Align := alClient;
+  If Not Supports(F, IITHOptionsFrame, FAfterCompileTools) Then
+    Raise Exception.Create(strIITHOptionsFrameNotSupported);
+  F := TframeZipping.Create(Self);
+  F.Name := strZippingName;
+  F.Parent := tabZipping;
+  F.Align := alClient;
+  If Not Supports(F, IITHOptionsFrame, FZipping) Then
+    Raise Exception.Create(strIITHOptionsFrameNotSupported);
+End;
+
+(**
+
+  This method loads the position settings for the options dialogue from the ini file.
+
+  @precon  None.
+  @postcon The dialogue is positioned on the screen where it was last time.
+
+  @param   GlobalOps as an IITHGlobalOptions as a constant
+
+**)
+Procedure TfrmITHProjectOptionsDialogue.LoadSettings(Const GlobalOps: IITHGlobalOptions);
 
 Var
   iniFile: TMemIniFile;
-  ProjectOps: IITHProjectOptions;
 
 Begin
   iniFile := TMemIniFile.Create(GlobalOps.INIFileName);
@@ -327,42 +268,22 @@ Begin
   Finally
     iniFile.Free;
   End;
-  ProjectOps := GlobalOps.ProjectOptions(Project);
-  Try
-    chkIncrementBuildOnCompile.Checked := ProjectOps.IncOnCompile;
-    edtVersionInfo.Text          := ProjectOps.CopyVerInfo;
-    edtResExts.Text              := ProjectOps.ResExtExc;
-    chkEnabled.Checked           := ProjectOps.IncITHVerInfo;
-    chkIncludeInProject.Checked  := ProjectOps.IncResInProj;
-    chkCompileWithBRCC32.Checked := ProjectOps.CompileRes;
-    upMajor.Position             := ProjectOps.Major;
-    upMinor.Position             := ProjectOps.Minor;
-    upRelease.Position           := ProjectOps.Release;
-    upBuild.Position             := ProjectOps.Build;
-    edtResourceName.Text         := ProjectOps.ResourceName;
-    vleVersionInfo.Strings.Assign(ProjectOps.VerInfo);
-  Finally
-    ProjectOps := Nil;
-  End;
 End;
 
 (**
 
-  This method saves the project options to the ini file.
+  This method saves the current position of the options dialogue to the ini file.
 
   @precon  None.
-  @postcon Saves the project options to the ini file.
+  @postcon The options dialogue position and size is saved to the ini file.
 
-  @param   GlobalOps as a IITHGlobalOptions as a constant
-  @param   Project   as an IOTAProject as a constant
+  @param   GlobalOps as an IITHGlobalOptions as a constant
 
 **)
-Procedure TfrmITHProjectOptionsDialogue.SaveOptions(Const GlobalOps: IITHGlobalOptions;
-  Const Project: IOTAProject);
+Procedure TfrmITHProjectOptionsDialogue.SaveSettings(Const GlobalOps: IITHGlobalOptions);
 
 Var
   iniFile: TMemIniFile;
-  ProjectOps: IITHProjectOptions;
 
 Begin
   iniFile := TMemIniFile.Create(GlobalOps.INIFileName);
@@ -374,23 +295,6 @@ Begin
     iniFile.UpdateFile;
   Finally
     iniFile.Free;
-  End;
-  ProjectOps := GlobalOps.ProjectOptions(Project);
-  Try
-    ProjectOps.IncOnCompile := chkIncrementBuildOnCompile.Checked;
-    ProjectOps.CopyVerInfo := edtVersionInfo.Text;
-    ProjectOps.ResExtExc := edtResExts.Text;
-    ProjectOps.IncITHVerInfo := chkEnabled.Checked;
-    ProjectOps.IncResInProj := chkIncludeInProject.Checked;
-    ProjectOps.CompileRes := chkCompileWithBRCC32.Checked;
-    ProjectOps.Major := upMajor.Position;
-    ProjectOps.Minor := upMinor.Position;
-    ProjectOps.Release := upRelease.Position;
-    ProjectOps.Build := upBuild.Position;
-    ProjectOps.ResourceName := edtResourceName.Text;
-    ProjectOps.VerInfo.Assign(vleVersionInfo.Strings);
-  Finally
-    ProjectOps := Nil;
   End;
 End;
 

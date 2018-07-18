@@ -4,7 +4,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    07 Jan 2018
+  @Date    18 Jul 2018
   
 **)
 Unit ITHelper.VersionManager;
@@ -36,11 +36,15 @@ Type
   Public
     Constructor Create(Const GloablOps: IITHGlobalOptions; Const ProjectOps: IITHProjectOptions;
       Const Project: IOTAProject; Const MsgMgr : IITHMessageManager);
+    Destructor Destroy; Override;
   End;
 
 Implementation
 
 Uses
+  {$IFDEF DEBUG}
+  CodeSiteLogging,
+  {$ENDIF}
   SysUtils,
   Classes, 
   Forms,
@@ -105,7 +109,7 @@ Begin
       Process.FDir := GetCurrentDir;
       FMsgMgr.ParentMsg :=
         FMsgMgr.AddMsg(Format(strRunning,
-        [ExtractFileName(Process.FTitle), GetProjectName(FProject)]), fnHeader, ithfHeader);
+        [ExtractFileName(Process.FTitle), TITHToolsAPIFunctions.GetProjectName(FProject)]), fnHeader, ithfHeader);
       TfrmITHProcessing.ShowProcessing(Format(strProcessing,
         [ExtractFileName(Process.FTitle)]));
       FMsgMgr.Clear;
@@ -118,11 +122,11 @@ Begin
         End;
       If iResult <> 0 Then
         FMsgMgr.ParentMsg.ForeColour := FGlobalOps.FontColour[ithfFailure];
-      ShowHelperMessages(FGlobalOps.GroupMessages);
+      TITHToolsAPIFunctions.ShowHelperMessages(FGlobalOps.GroupMessages);
       If iResult > 0 Then
-        Abort; //: @bug Change this!
+        Abort;
       FMsgMgr.AddMsg(Format(strResourceRCCompiledForProject, [
-        FProjectOps.ResourceName, GetProjectName(FProject)]), fnHeader, ithfDefault);
+        FProjectOps.ResourceName, TITHToolsAPIFunctions.GetProjectName(FProject)]), fnHeader, ithfDefault);
     End;
 End;
 
@@ -143,6 +147,7 @@ Constructor TITHVersionManager.Create(Const GloablOps: IITHGlobalOptions; Const 
       Const Project: IOTAProject; Const MsgMgr : IITHMessageManager);
 
 Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Create', tmoTiming);{$ENDIF}
   FGlobalOps := GloablOps;
   FProjectOps := ProjectOps;
   FProject := Project;
@@ -200,10 +205,10 @@ Begin
   sl := TStringList.Create;
   Try
     sl.Text := strVersionTemplate;
-    sl.Text := ExpandMacro(sl.Text, strMajor, FProjectOps.Major.ToString);
-    sl.Text := ExpandMacro(sl.Text, strMinor, FProjectOps.Minor.ToString);
-    sl.Text := ExpandMacro(sl.Text, strRelease, FProjectOps.Release.ToString);
-    sl.Text := ExpandMacro(sl.Text, strBuild, FProjectOps.Build.ToString);
+    sl.Text := ExpandMacro(sl.Text, strMajor, IntToStr(FProjectOps.Major));
+    sl.Text := ExpandMacro(sl.Text, strMinor, IntToStr(FProjectOps.Minor));
+    sl.Text := ExpandMacro(sl.Text, strRelease, IntToStr(FProjectOps.Release));
+    sl.Text := ExpandMacro(sl.Text, strBuild, IntToStr(FProjectOps.Build));
     slDetails := FProjectOps.VerInfo;
     For i := 0 To slDetails.Count - 1 Do
       strDetails := strDetails + Format(strVALUE, [slDetails.Names[i],
@@ -214,6 +219,21 @@ Begin
   Finally
     sl.Free;
   End;
+End;
+
+(**
+
+  A destructor for the TITHVersionManager class.
+
+  @precon  None.
+  @postcon Does nothing but is used for code site tracing.
+
+**)
+Destructor TITHVersionManager.Destroy;
+
+Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Destroy', tmoTiming);{$ENDIF}
+  Inherited;
 End;
 
 (**
@@ -274,7 +294,7 @@ Var
 
 Begin
   FMsgMgr.AddMsg(Format(strVerInfoRRCCreated, [
-    FProjectOps.ResourceName, GetProjectName(FProject)]), fnHeader, ithfDefault);
+    FProjectOps.ResourceName, TITHToolsAPIFunctions.GetProjectName(FProject)]), fnHeader, ithfDefault);
   If FProjectOps.IncResInProj Then
     Begin
       boolFound := False;
@@ -288,7 +308,7 @@ Begin
         Begin
           FProject.AddFile(strFileName, True);
           FMsgMgr.AddMsg(Format(strResourceRCAdded, [
-            FProjectOps.ResourceName, GetProjectName(FProject)]), fnHeader, ithfDefault);
+            FProjectOps.ResourceName, TITHToolsAPIFunctions.GetProjectName(FProject)]), fnHeader, ithfDefault);
         End;
     End;
 End;
@@ -306,7 +326,7 @@ End;
   @param   boolAbort as a Boolean as a reference
 
 **)
-Procedure TITHVersionManager.ProcessMsgHandler(Const strMsg: String; Var boolAbort: Boolean);
+Procedure TITHVersionManager.ProcessMsgHandler(Const strMsg: String; Var boolAbort: Boolean); //FI:O804
 
 Begin
   If strMsg <> '' Then
@@ -314,3 +334,4 @@ Begin
 End;
 
 End.
+

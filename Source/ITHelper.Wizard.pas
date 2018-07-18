@@ -4,7 +4,7 @@
   external tools before and after the compilation of the current project.
 
   @Version 1.0
-  @Date    05 Jan 2018
+  @Date    18 Jul 2018
   @Author  David Hoyle
 
 **)
@@ -15,7 +15,7 @@ Interface
 Uses
   ToolsAPI,
   Menus,
-  ITHelper.Interfaces;
+  ITHelper.Interfaces, ITHelper.FontFrame;
 
 {$INCLUDE 'CompilerDefinitions.inc'}
 
@@ -33,6 +33,9 @@ Type
     FProjectMgrMenuIndex    : Integer;
     FProjectMgrMenuNotifier : IOTAProjectMenuItemCreatorNotifier;
     FIDENotifierIndex       : Integer;
+    FAboutAddin             : INTAAddInOptions;
+    FGlobalOptionsAddin     : INTAAddInOptions;
+    FFontsAddin             : INTAAddInOptions;
     //FHTMLHelpCookie         : THandle;
   Strict Protected
     // IOTAWizard
@@ -60,6 +63,7 @@ Type
     Procedure BeforeCompilationUpdate(Sender: TObject);
     Procedure AfterCompilationUpdate(Sender: TObject);
     Procedure HelpClick(Sender : TObject);
+    Procedure AboutClick(Sender : TObject);
   Public
     Constructor Create;
     Destructor Destroy; Override;
@@ -69,6 +73,9 @@ Type
 Implementation
 
 Uses
+  {$IFDEF DEBUG}
+  CodeSiteLogging,
+  {$ENDIF}
   Windows,
   SysUtils,
   Dialogs,
@@ -81,21 +88,49 @@ Uses
   ITHelper.ProcessingForm,
   ITHelper.ExternalProcessInfo,
   ITHelper.ProjectManagerMenuInterface,
-  ITHelper.FontDialogue,
-  ITHelper.ZIPDialogue,
-  ITHelper.GlobalOptionsDialogue,
   ITHelper.ProjectOptionsDialogue, 
   ITHelper.SplashScreen, 
   ITHelper.AboutBox, 
   ITHelper.IDENotifierInterface, 
   ITHelper.Types, 
-  ITHelper.ConfigurationForm, 
   ITHelper.TestingHelperUtils, 
-  ITHelper.GlobalOptions;
+  ITHelper.GlobalOptions,
+  ITHelper.CommonFunctions,
+  ITHelper.Constants,
+  ITHelper.AddInOptions,
+  ITHelper.GlobalOptionsFrame, ITHelper.AboutFrame;
+
+ResourceString
+  (** A string path to the ITHelper About options in the IDEs options dialogue. **)
+  strAboutITHelperPath = 'ITHelper';
+  (** A string path to the Global Options in the IDEs options dialogue. **)
+  strGlobalOptionsPath = 'ITHelper.Global Options';
+  (** A string path to the Fonts Options in the IDEs options dialogue. **)
+  strFontsPath = 'ITHelper.Fonts';
 
 Const
   (** A constant to define the failed state of a wizard / notifier interface. **)
   iWizardFailState = -1;
+
+(**
+
+  This is an on click event handler for the about menu.
+
+  @precon  None.
+  @postcon Displays the about dialogue in the IDEs options.
+
+  @param   Sender as a TObject
+
+**)
+Procedure TITHWizard.AboutClick(Sender: TObject);
+
+Var
+  S : IOTAServices;
+  
+Begin
+  If Supports(BorlandIDEServices, IOTAServices, S) Then
+    S.GetEnvironmentOptions.EditOptions('', strAboutITHelperPath);
+End;
 
 (**
 
@@ -112,8 +147,7 @@ Const
 Procedure TITHWizard.AfterCompilation(Const Project: IOTAProject);
 
 Begin
-  If TfrmITHConfigureDlg.Execute(Project, FGlobalOps, dtAfter) Then
-    FGlobalOps.Save;
+  TfrmITHProjectOptionsDialogue.Execute(potAfterCompile, FGlobalOps, Project);
 End;
 
 (**
@@ -129,8 +163,8 @@ End;
 Procedure TITHWizard.AfterCompilationClick(Sender: TObject);
 
 Begin
-  If ActiveProject <> Nil Then
-    AfterCompilation(ActiveProject);
+  If TITHToolsAPIFunctions.ActiveProject <> Nil Then
+    AfterCompilation(TITHToolsAPIFunctions.ActiveProject);
 End;
 
 (**
@@ -158,11 +192,11 @@ Begin
   If Sender Is TAction Then
     Begin
       A := Sender As TAction;
-      P := ActiveProject;
+      P := TITHToolsAPIFunctions.ActiveProject;
       If P <> Nil Then
         Begin
           A.Enabled    := True;
-          strProject := GetProjectName(P);
+          strProject := TITHToolsAPIFunctions.GetProjectName(P);
           A.Caption    := Format(strAfterCompilationOptionsFor, [strProject])
         End
       Else
@@ -188,8 +222,7 @@ End;
 Procedure TITHWizard.BeforeCompilation(Const Project: IOTAProject);
 
 Begin
-  If TfrmITHConfigureDlg.Execute(Project, FGlobalOps, dtBefore) Then
-    FGlobalOps.Save;
+  TfrmITHProjectOptionsDialogue.Execute(potBeforeCompile, FGlobalOps, Project);
 End;
 
 (**
@@ -205,8 +238,8 @@ End;
 Procedure TITHWizard.BeforeCompilationClick(Sender: TObject);
 
 Begin
-  If ActiveProject <> Nil Then
-    BeforeCompilation(ActiveProject);
+  If TITHToolsAPIFunctions.ActiveProject <> Nil Then
+    BeforeCompilation(TITHToolsAPIFunctions.ActiveProject);
 End;
 
 (**
@@ -234,11 +267,11 @@ Begin
   If Sender Is TAction Then
     Begin
       A := Sender As TAction;
-      P := ActiveProject;
+      P := TITHToolsAPIFunctions.ActiveProject;
       If P <> Nil Then
         Begin
           A.Enabled    := True;
-          strProject := GetProjectName(P);
+          strProject := TITHToolsAPIFunctions.GetProjectName(P);
           A.Caption    := Format(strBeforeCompilationOptionsFor, [strProject])
         End
       Else
@@ -284,8 +317,11 @@ Constructor TITHWizard.Create;
 
 Var
   PM : IOTAProjectManager;
+  S : IOTAServices;
+  EO : INTAEnvironmentOptionsServices;
 
 Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Create', tmoTiming);{$ENDIF}
   Inherited Create;
   FIDENotifierIndex := iWizardFailState;
   InstallSplashScreen;
@@ -299,9 +335,19 @@ Begin
     {$ENDIF}
   CreateMenus;
   FGlobalOps := TITHGlobalOptions.Create;
-  FIDENotifierIndex := (BorlandIDEServices As IOTAServices).AddNotifier(
-    TITHelperIDENotifier.Create(FGlobalOps));
-  //FHTMLHelpCookie := HTMLHelp(Application.Handle, Nil, HH_INITIALIZE, 0);
+  If Supports(BorlandIDEServices, INTAEnvironmentOptionsServices, EO) Then
+    Begin
+      FAboutAddin := TITHAddInOptions.Create(FGlobalOps, TframeAboutITHelper, strAboutITHelperPath);
+      EO.RegisterAddInOptions(FAboutAddIn);
+      FGlobalOptionsAddin := TITHAddInOptions.Create(FGlobalOps, TframeGlobalOptions,
+        strGlobalOptionsPath);
+      EO.RegisterAddInOptions(FGlobalOptionsAddIn);
+      FFontsAddin := TITHAddInOptions.Create(FGlobalOps, TframeFonts, strFontsPath);
+      EO.RegisterAddInOptions(FFontsAddIn);
+    End;
+  If Supports(BorlandIDEServices, IOTAServices, S) Then
+    FIDENotifierIndex := S.AddNotifier(TITHelperIDENotifier.Create(FGlobalOps));
+  //: @debug FHTMLHelpCookie := HTMLHelp(Application.Handle, Nil, HH_INITIALIZE, 0);
 End;
 
 (**
@@ -311,23 +357,92 @@ End;
   @precon  None.
   @postcon The menus are created.
 
-  @nocheck HardCodedString
-
 **)
 Procedure TITHWizard.CreateMenus;
 
+ResourceString
+  {$IFDEF DEBUG}
+  strTestingHelper = '&Testing Helper %d.%d%s (DEBUG Build %d.%d.%d.%d)';
+  {$ELSE}
+  strTestingHelper = '&Testing Helper %d.%d%s';
+  {$ENDIF}
+  strOops = 'Oops...';
+  strGlobalOptions = '&Global Options...';
+  strProjectOptions = '&Project Options...';
+  strBeforeCompilationTools = '&Before Compilation Tools...';
+  strAfterCompilationTools = '&After Compilation Tools...';
+  strZIPOptions = '&ZIP Options...';
+  strMessageFonts = 'Message &Fonts...';
+  strHelp = '&Help...';
+  strAbout = '&About...';
+
+Const
+  strITHTestingHelper = 'ITHTestingHelper';
+  strITHEnabled = 'ITHEnabled';
+  strITHSeparator1 = 'ITHSeparator1';
+  strITHGlobalOptions = 'ITHGlobalOptions';
+  strITHProjectOptions = 'ITHProjectOptions';
+  strITHBeforeCompilation = 'ITHBeforeCompilation';
+  strITHAfterCompilation = 'ITHAfterCompilation';
+  strITHZIPDlg = 'ITHZIPDlg';
+  strITHFontDlg = 'ITHFontDlg';
+  strITHSeparator2 = 'ITHSeparator2';
+  strITHHelp = 'ITHHelp';
+  strITHAbout = 'ITHAbout';
+  strTools = 'Tools';
+  strCtrlShiftAlt = 'Ctrl+Shift+Alt+F9';
+
+Var
+  strModuleName : String;
+  iSize : Integer;
+  recVersionInfo : TITHVersionInfo;
+
 Begin
-  FTestingHelperMenu := CreateMenuItem('ITHTestingHelper', '&Testing Helper', 'Tools', Nil, Nil, True, False, '');
-  CreateMenuItem('ITHEnabled', 'Oops...', 'ITHTestingHelper', ToggleEnabled, UpdateEnabled, False, True, 'Ctrl+Shift+Alt+F9', clFuchsia);
-  CreateMenuItem('ITHSeparator1', '', 'ITHTestingHelper', Nil, Nil, False, True, '');
-  CreateMenuItem('ITHGlobalOptions', '&Global Options...', 'ITHTestingHelper', GlobalOptionDialogueClick, Nil, False, True, '', clFuchsia);
-  CreateMenuItem('ITHProjectOptions', '&Project Options...', 'ITHTestingHelper', ProjectOptionsClick, ProjectOptionsUpdate, False, True, '', clFuchsia);
-  CreateMenuItem('ITHBeforeCompilation', '&Before Compilation Tools...', 'ITHTestingHelper', BeforeCompilationClick, BeforeCompilationUpdate, False, True, '', clFuchsia);
-  CreateMenuItem('ITHAfterCompilation', '&After Compilation Tools...', 'ITHTestingHelper', AfterCompilationClick, AfterCompilationUpdate, False, True, '', clFuchsia);
-  CreateMenuItem('ITHZIPDlg', '&ZIP Options...', 'ITHTestingHelper', ZIPDialogueClick, ZIPDialogueUpdate, False, True, '', clFuchsia);
-  CreateMenuItem('ITHFontDlg', 'Message &Fonts...', 'ITHTestingHelper', FontDialogueClick, Nil, False, True, '', clOlive);
-  CreateMenuItem('ITHSeparator2', '', 'ITHTestingHelper', Nil, Nil, False, True, '');
-  CreateMenuItem('ITHHelp', '&Help...', 'ITHTestingHelper', HelpClick, Nil, False, True, '');
+  SetLength(strModuleName, MAX_PATH);
+  iSize := GetModuleFileName(hInstance, PChar(strModuleName), MAX_PATH);
+  SetLength(strModuleName, iSize);
+  BuildNumber(strModuleName, recVersionInfo);
+  {$IFDEF DEBUG}
+  FTestingHelperMenu := TITHToolsAPIFunctions.CreateMenuItem(strITHTestingHelper,
+    Format(strTestingHelper, [
+      recVersionInfo.FMajor,
+      recVersionInfo.FMinor,
+      strRevisions[Succ(recVersionInfo.FBugFix)],
+      recVersionInfo.FMajor,
+      recVersionInfo.FMinor,
+      recVersionInfo.FBugfix,
+      recVersionInfo.FBuild]),
+    strTools, Nil, Nil, True, False, '');
+  {$ELSE}
+  FTestingHelperMenu := TITHToolsAPIFunctions.CreateMenuItem(strITHTestingHelper,
+    Format(strTestingHelper, [
+      recVersionInfo.FMajor,
+      recVersionInfo.FMinor,
+      strRevisions[Succ(recVersionInfo.FBugFix)]]),
+    strTools, Nil, Nil, True, False, '');
+  {$ENDIF}
+  TITHToolsAPIFunctions.CreateMenuItem(strITHEnabled, strOops, strITHTestingHelper, ToggleEnabled,
+    UpdateEnabled, False, True, strCtrlShiftAlt, clFuchsia);
+  TITHToolsAPIFunctions.CreateMenuItem(strITHSeparator1, '', strITHTestingHelper, Nil, Nil, False, True,
+    '');
+  TITHToolsAPIFunctions.CreateMenuItem(strITHGlobalOptions, strGlobalOptions, strITHTestingHelper,
+    GlobalOptionDialogueClick, Nil, False, True, '', clFuchsia);
+  TITHToolsAPIFunctions.CreateMenuItem(strITHProjectOptions, strProjectOptions, strITHTestingHelper,
+    ProjectOptionsClick, ProjectOptionsUpdate, False, True, '', clFuchsia);
+  TITHToolsAPIFunctions.CreateMenuItem(strITHBeforeCompilation, strBeforeCompilationTools,
+    strITHTestingHelper, BeforeCompilationClick, BeforeCompilationUpdate, False, True, '', clFuchsia);
+  TITHToolsAPIFunctions.CreateMenuItem(strITHAfterCompilation, strAfterCompilationTools,
+    strITHTestingHelper, AfterCompilationClick, AfterCompilationUpdate, False, True, '', clFuchsia);
+  TITHToolsAPIFunctions.CreateMenuItem(strITHZIPDlg, strZIPOptions, strITHTestingHelper, 
+    ZIPDialogueClick, ZIPDialogueUpdate, False, True, '', clFuchsia);
+  TITHToolsAPIFunctions.CreateMenuItem(strITHFontDlg, strMessageFonts, strITHTestingHelper,
+    FontDialogueClick, Nil, False, True, '', clOlive);
+  TITHToolsAPIFunctions.CreateMenuItem(strITHSeparator2, '', strITHTestingHelper, Nil, Nil, False, True,
+    '');
+  TITHToolsAPIFunctions.CreateMenuItem(strITHHelp, strHelp, strITHTestingHelper, HelpClick, Nil, False,
+    True, '');
+  TITHToolsAPIFunctions.CreateMenuItem(strITHAbout, strAbout, strITHTestingHelper, AboutClick, Nil,
+    False, True, '');
 End;
 
 (**
@@ -342,22 +457,20 @@ Destructor TITHWizard.Destroy;
 
 Var
   PM : IOTAProjectManager;
+  S : IOTAServices;
+  EO : INTAEnvironmentOptionsServices;
   
 Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Destroy', tmoTiming);{$ENDIF}
   HTMLHelp(0, Nil, HH_CLOSE_ALL, 0);
   //HTMLHelp(Application.Handle, Nil, HH_UNINITIALIZE, FHTMLHelpCookie);
   If FIDENotifierIndex > iWizardFailState Then
-    (BorlandIDEServices As IOTAServices).RemoveNotifier(FIDENotifierIndex);
+    If Supports(BorlandIDEServices, IOTAServices, S) Then
+      S.RemoveNotifier(FIDENotifierIndex);
   {$IFNDEF D2005}
   FMenuTimer.Free;
   {$ENDIF}
   FTestingHelperMenu.Free;
-  {$IFNDEF DXE20}
-  //: @bug This has been removed from Delphi XE2 as it generates an Access Violation as
-  //: the IDE closes down.
-  ClearMessages([cmCompiler, cmGroup]);
-  {$ENDIF}
-  FGlobalOps := Nil;
   If FProjectMgrMenuIndex > -1 Then
     If Supports(BorlandIDEServices, IOTAPRojectManager, PM) Then
       {$IFNDEF D2010}
@@ -366,6 +479,17 @@ Begin
       PM.RemoveMenuItemCreatorNotifier(FProjectMgrMenuIndex);
       {$ENDIF}
   RemoveAboutBoxEntry(FAboutBoxIndex);
+  If Supports(BorlandIDEServices, INTAEnvironmentOptionsServices, EO) Then
+    Begin
+      EO.UnregisterAddInOptions(FAboutAddIn);
+      FAboutAddIn := Nil;
+      EO.UnregisterAddInOptions(FGlobalOptionsAddIn);
+      FGlobalOptionsAddin := Nil;
+      EO.UnregisterAddInOptions(FFontsAddIn);
+      FFontsAddin := Nil;
+    End;
+  FGlobalOps.Save;
+  FGlobalOps := Nil;
   Inherited Destroy;
 End;
 
@@ -396,8 +520,12 @@ End;
 **)
 Procedure TITHWizard.FontDialogueClick(Sender: TObject);
 
+Var
+  S : IOTAServices;
+  
 Begin
-  TfrmITHFontDialogue.Execute(FGlobalOps);
+  If Supports(BorlandIDEServices, IOTAServices, S) Then
+    S.GetEnvironmentOptions.EditOptions('', strFontsPath);
 End;
 
 (**
@@ -467,8 +595,12 @@ End;
 **)
 Procedure TITHWizard.GlobalOptionDialogueClick(Sender: TObject);
 
+Var
+  S : IOTAServices;
+  
 Begin
-  TfrmITHGlobalOptionsDialogue.Execute(FGlobalOps);
+  If Supports(BorlandIDEServices, IOTAServices, S) Then
+    S.GetEnvironmentOptions.EditOptions('', strGlobalOptionsPath);
 End;
 
 (**
@@ -487,7 +619,7 @@ Const
   strHelpStartPage = 'Welcome';
 
 Begin
-  HTMLHelp(0, PChar(ITHHTMLHelpFile(strHelpStartPage)), HH_DISPLAY_TOC, 0);
+  HTMLHelp(0, PChar(TITHToolsAPIFunctions.ITHHTMLHelpFile(strHelpStartPage)), HH_DISPLAY_TOC, 0);
 End;
 
 (**
@@ -503,7 +635,7 @@ End;
 Procedure TITHWizard.ProjectOptions(Const Project: IOTAProject);
 
 Begin
-  TfrmITHProjectOptionsDialogue.Execute(FGlobalOps, Project);
+  TfrmITHProjectOptionsDialogue.Execute(potProjectOptions, FGlobalOps, Project);
 End;
 
 (**
@@ -519,8 +651,8 @@ End;
 Procedure TITHWizard.ProjectOptionsClick(Sender: TObject);
 
 Begin
-  If ActiveProject <> Nil Then
-    ProjectOptions(ActiveProject);
+  If TITHToolsAPIFunctions.ActiveProject <> Nil Then
+    ProjectOptions(TITHToolsAPIFunctions.ActiveProject);
 End;
 
 (**
@@ -548,11 +680,11 @@ Begin
   If Sender Is TAction Then
     Begin
       A := Sender As TAction;
-      P := ActiveProject;
+      P := TITHToolsAPIFunctions.ActiveProject;
       If P <> Nil Then
         Begin
           A.Enabled    := True;
-          strProject := GetProjectName(P);
+          strProject := TITHToolsAPIFunctions.GetProjectName(P);
           A.Caption    := Format(strProjectOptionsFor, [strProject])
         End
       Else
@@ -584,7 +716,7 @@ Var
   Ops            : TITHEnabledOptions;
 
 Begin
-  PG := ProjectGroup;
+  PG := TITHToolsAPIFunctions.ProjectGroup;
   If PG <> Nil Then
     Begin
       Ops := FGlobalOps.ProjectGroupOps;
@@ -620,7 +752,7 @@ Begin
   If Sender Is TAction Then
     Begin
       A := Sender As TAction;
-      PG := ProjectGroup;
+      PG := TITHToolsAPIFunctions.ProjectGroup;
       If PG <> Nil Then
         Begin
           A.Enabled         := True;
@@ -648,8 +780,8 @@ End;
 Procedure TITHWizard.ZIPDialogueClick(Sender: TObject);
 
 Begin
-  If ActiveProject <> Nil Then
-    ZIPOptions(ActiveProject);
+  If TITHToolsAPIFunctions.ActiveProject <> Nil Then
+    ZIPOptions(TITHToolsAPIFunctions.ActiveProject);
 End;
 
 (**
@@ -677,11 +809,11 @@ Begin
   If Sender Is TAction Then
     Begin
       A := Sender As TAction;
-      P := ActiveProject;
+      P := TITHToolsAPIFunctions.ActiveProject;
       If P <> Nil Then
         Begin
           A.Enabled    := True;
-          strProject := GetProjectName(P);
+          strProject := TITHToolsAPIFunctions.GetProjectName(P);
           A.Caption    := Format(strZIPOptionsFor, [strProject])
         End
       Else
@@ -707,7 +839,8 @@ End;
 Procedure TITHWizard.ZIPOptions(Const Project: IOTAProject);
 
 Begin
-  TfrmITHZIPDialogue.Execute(Project, FGlobalOps);
+  TfrmITHProjectOptionsDialogue.Execute(potZipping, FGlobalOps, Project);
 End;
 
 End.
+

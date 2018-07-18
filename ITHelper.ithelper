@@ -1,0 +1,51 @@
+[Setup]
+WarnBefore=0
+WarnAfter=0
+IncBuild=1
+CopyVersionInfoFrom=
+ExcludedResExts=.dcr
+EnabledVersionInfo=1
+IncludeInProject=1
+CompileWithBRCC32=0
+MajorVer=2
+MinorVer=0
+ReleaseVer=0
+BuildVer=1520
+ResourceName=ITHelperVersionInfo
+
+[Zipping]
+Enabled=1
+ZipFile={$PROJDRIVE$}\Documents\Web Page\Zips\ithelper.zip
+BasePath={$PROJDRIVE$}\Documents\RAD Studio\
+ExclusionFiles=
+
+[Pre-Compilation]
+{$PROJDRIVE$}\HoylD\Borland Studio Projects\IDE Addins\Integrated Testing Helper\Test\ITHelperTests.exe||{$PROJDRIVE$}\HoylD\Borland Studio Projects\IDE Addins\Integrated Testing Helper\Test\|ITHelperTests.exe=0
+{$PROJDRIVE$}\HoylD\Borland Studio Projects\Applications\Check DFMs\CheckDFMs.exe|ITHelperXE2.dpr|{$PROJDRIVE$}\HoylD\Borland Studio Projects\IDE Addins\Integrated Testing Helper\DLL\|CheckDFMs.exe=0
+
+[Post-Compilation]
+C:\Program Files\JPSoft\TCMD13x64\tcc.exe|BuildIndividualITHelper.btm D7 Both|{$PROJDRIVE$}\HoylD\Borland Studio Projects\IDE Addins\Integrated Testing Helper\|Delphi 7=0
+C:\Program Files\JPSoft\TCMD13x64\tcc.exe|BuildIndividualITHelper.btm D2006 Both|{$PROJDRIVE$}\HoylD\Borland Studio Projects\IDE Addins\Integrated Testing Helper\|Delphi 2006=0
+C:\Program Files\JPSoft\TCMD13x64\tcc.exe|BuildIndividualITHelper.btm D2007 Both|{$PROJDRIVE$}\HoylD\Borland Studio Projects\IDE Addins\Integrated Testing Helper\|Delphi 2007=0
+C:\Program Files\JPSoft\TCMD13x64\tcc.exe|BuildIndividualITHelper.btm D2009 Both|{$PROJDRIVE$}\HoylD\Borland Studio Projects\IDE Addins\Integrated Testing Helper\|Delphi 2009=0
+C:\Program Files\JPSoft\TCMD13x64\tcc.exe|BuildIndividualITHelper.btm D2010 Both|{$PROJDRIVE$}\HoylD\Borland Studio Projects\IDE Addins\Integrated Testing Helper\|Delphi 2010=0
+C:\Program Files\JPSoft\TCMD13x64\tcc.exe|BuildIndividualITHelper.btm DXE Both|{$PROJDRIVE$}\HoylD\Borland Studio Projects\IDE Addins\Integrated Testing Helper\|Delphi XE=0
+C:\Program Files\JPSoft\TCMD13x64\tcc.exe|BuildIndividualITHelper.btm DXE2 Package|{$PROJDRIVE$}\HoylD\Borland Studio Projects\IDE Addins\Integrated Testing Helper\|Delphi XE2=0
+{$PROJDRIVE$}\HoylD\Borland Studio Projects\Applications\Update HoylD XML\HoylDXML.exe|ithelperXE2.dll "..\..\..\Web Page\HoylD-Live.xml" ITHelper2006|{$PROJDRIVE$}\HoylD\Borland Studio Projects\IDE Addins\Integrated Testing Helper\|HoylDXML.exe=0
+
+[VersionInfo]
+CompanyName=Season's Fall Music
+FileDescription=Integrated Testing Helper for Embarcadero RAD Studio
+FileVersion=2.0.0.1520
+InternalName=ITHelper
+LegalCopyright=Season's Fall Music
+LegalTrademarks=Season's Fall Music
+OriginalFilename=ITHelper
+ProductName=ITHelper
+ProductVersion=2.0
+Comments=ITHelper: A RAD Studio IDE adding for automating pre and post compilation processing.
+
+[Additional Zip Files]
+Item0={$PROJDRIVE$}\Documents\RAD Studio\IDE Addins\Integrated Testing Helper\Images\*.bmp
+Item1={$PROJDRIVE$}\Documents\RAD Studio\IDE Addins\Integrated Testing Helper\HTML Help\Images\*.gif
+

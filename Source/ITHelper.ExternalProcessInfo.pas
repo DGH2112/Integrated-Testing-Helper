@@ -5,7 +5,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    05 Jan 2018
+  @Date    18 Jul 2018
 
 **)
 Unit ITHelper.ExternalProcessInfo;
@@ -39,6 +39,8 @@ Type
     Destructor Destroy; Override;
     Procedure AddProcessInfo(Const boolEnabled : Boolean; Const strEXE, strParams, strDir,
       strTitle : String);
+    Procedure Delete(Const iIndex : Integer);
+    Procedure SwapItems(Const iIndex1, iIndex2: Integer);
     Procedure Clear;
     Procedure LoadFromINI(Const iniFile : TMemIniFile; Const strSection : String);
     Procedure SaveToINI(Const iniFile : TMemIniFile; Const strSection : String);
@@ -63,6 +65,9 @@ Type
 Implementation
 
 Uses
+  {$IFDEF DEBUG}
+  CodeSiteLogging,
+  {$ENDIF}
   Classes,
   SysUtils, 
   ITHelper.CommonFunctions;
@@ -136,7 +141,24 @@ End;
 Constructor TITHProcessCollection.Create;
 
 Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Create', tmoTiming);{$ENDIF}
   FProcesses := TList<TITHProcessInfo>.Create;
+End;
+
+(**
+
+  This method deletes the indexed item from the list.
+
+  @precon  iIndex must be between 0 and Count - 1.
+  @postcon The indexed item is deleted from the list.
+
+  @param   iIndex as an Integer as a constant
+
+**)
+Procedure TITHProcessCollection.Delete(Const iIndex: Integer);
+
+Begin
+  FProcesses.Delete(iIndex);
 End;
 
 (**
@@ -150,6 +172,7 @@ End;
 Destructor TITHProcessCollection.Destroy;
 
 Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Destroy', tmoTiming);{$ENDIF}
   FProcesses.Free;
   Inherited Destroy;
 End;
@@ -285,4 +308,22 @@ Begin
   FProcesses[iIndex] := PI;
 End;
 
+(**
+
+  This method swaps the values contained in the 2 indexed positions.
+
+  @precon  iIndex1 and iIndex2 must be between 0 and Count -1.
+  @postcon The items in the list are swapped.
+
+  @param   iIndex1 as an Integer as a constant
+  @param   iIndex2 as an Integer as a constant
+
+**)
+Procedure TITHProcessCollection.SwapItems(Const iIndex1, iIndex2: Integer);
+
+Begin
+  FProcesses.Exchange(iIndex1, iIndex2);
+End;
+
 End.
+

@@ -5,7 +5,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    04 Jan 2018
+  @Date    18 Jul 2018
   
 **)
 Unit ITHelper.ProjectOptions;
@@ -49,6 +49,7 @@ Type
     Function  GetExcPatterns: String;
     Function  GetAddZipFiles: TStringList;
     Function  GetIniFile : TMemIniFile;
+    Function  GetSaveModifiedFiles: Boolean;
     Procedure SetResExtExc(Const strValue: String);
     Procedure SetIncOnCompile(Const boolValue: Boolean);
     Procedure SetCopyVerInfo(Const strValue: String);
@@ -69,6 +70,7 @@ Type
     Procedure UpdateVerInfo(Sender: TObject);
     Procedure UpdateAddZipFiles(Sender: TObject);
     Procedure UpdateFileVersion;
+    Procedure SetSaveModifiedFiles(Const boolValue: Boolean);
   Public
     Constructor Create(Const strINIFileName: String; Const Project: IOTAProject);
     Destructor Destroy; Override;
@@ -77,6 +79,9 @@ Type
 Implementation
 
 Uses
+  {$IFDEF DEBUG}
+  CodeSiteLogging,
+  {$ENDIF}
   SysUtils;
 
 Const
@@ -124,6 +129,8 @@ Const
   strZipFileKey = 'ZipFile';
   (** An INI Section name for zipping information. **)
   strZippingSection = 'Zipping';
+  (** An INI Key for the SaveModifiedFiles property. **)
+  strSaveModifiedFilesBeforeZippingKey = 'SaveModifiedFilesBeforeZipping';
 
 (**
 
@@ -139,6 +146,7 @@ Const
 Constructor TITHProjectOptions.Create(Const strINIFileName: String; Const Project: IOTAProject);
 
 Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Create', tmoTiming);{$ENDIF}
   FProject := Project;
   FINIFile := TMemIniFile.Create(strINIFileName);
   FVerInfo              := TStringList.Create;
@@ -159,6 +167,7 @@ End;
 Destructor TITHProjectOptions.Destroy;
 
 Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Destroy', tmoTiming);{$ENDIF}
   If FModified Then
     FINIFile.UpdateFile;
   FAddZipFiles.Free;
@@ -460,6 +469,22 @@ Const
 
 Begin
   Result := FINIFile.ReadString(strSetupSection, strResourceNameKey, strDefaultVerInfoName);
+End;
+
+(**
+
+  This is a getter method for the SaveModifiedFiles property.
+
+  @precon  None.
+  @postcon Gets this property from the ITHelper ini file.
+
+  @return  a Boolean
+
+**)
+Function TITHProjectOptions.GetSaveModifiedFiles: Boolean;
+
+Begin
+  Result := FINIFile.ReadBool(strSetupSection, strSaveModifiedFilesBeforeZippingKey, False);
 End;
 
 (**
@@ -807,6 +832,22 @@ End;
 
 (**
 
+  This is a setter method for the SaveModifiedFiles property.
+
+  @precon  None.
+  @postcon Sets this property in the ITHelper inni file.
+
+  @param   boolValue as a Boolean as a constant
+
+**)
+Procedure TITHProjectOptions.SetSaveModifiedFiles(Const boolValue: Boolean);
+
+Begin
+  FINIFile.WriteBool(strSetupSection, strSaveModifiedFilesBeforeZippingKey, boolValue);
+End;
+
+(**
+
   This is a setter method for the WarnAfter property.
 
   @precon  None.
@@ -922,3 +963,4 @@ Begin
 End;
 
 End.
+

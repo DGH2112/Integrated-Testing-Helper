@@ -4,7 +4,7 @@
   wildcards for additional files to be included in the zipping process.
 
   @Version 1.0
-  @Date    05 Jan 2018
+  @Date    14 Jul Jan 2018
   @Author  David Hoyle
 
 **)
@@ -98,7 +98,7 @@ Var
 
 Begin
   strDir := ExtractFilePath(edtWildcard.Text);
-  If Not SysUtils.DirectoryExists(ExpandMacro(strDir, FProject.FileName)) Then
+  If Not SysUtils.DirectoryExists(TITHToolsAPIFunctions.ExpandMacro(strDir, FProject.FileName)) Then
     Begin
       ModalResult := mrNone;
       MessageDlg(Format(strDirectoryDoesNotExists, [strDir]),

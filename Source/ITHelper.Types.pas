@@ -4,7 +4,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    04 Jan 2018
+  @Date    17 Jul 2018
   
 **)
 Unit ITHelper.Types;
@@ -29,6 +29,9 @@ Type
   );
   (** A set of enumerates. **)
   TITHEnabledOptions = Set Of TITHEnabledOption;
+
+  (** An enumerate to define which set of data the dialogue is to work with. **)
+  TITHDlgType = (dtNA, dtBefore, dtAfter);
 
 Implementation
 

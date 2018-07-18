@@ -4,7 +4,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    03 Jan 2018
+  @Date    18 Jul 2018
   
 **)
 Unit ITHelper.AboutBox;
@@ -40,7 +40,11 @@ Function  AddAboutBoxEntry : Integer;
 
 Const
   strITHelperSplashScreen48x48 = 'ITHelperSplashScreen48x48';
+  {$IFDEF DEBUG}
+  strSKUBuild = 'SKU DEBUG Build %d.%d.%d.%d';
+  {$ELSE}
   strSKUBuild = 'SKU Build %d.%d.%d.%d';
+  {$ENDIF}
 
 ResourceString
   strPluginDescription = 'An IDE expert to allow the configuration of pre and post compilation ' + 
@@ -48,7 +52,7 @@ ResourceString
 
 Var
   bmSplashScreen : HBITMAP;
-  iMajor, iMinor, iBugFix, iBuild : Integer;
+  recVersionInfo : TITHVersionInfo;
   ABS : IOTAAboutBoxServices;
   strModuleName: String;
   iSize: Cardinal;
@@ -58,18 +62,29 @@ Begin
   SetLength(strModuleName, MAX_PATH);
   iSize := GetModuleFileName(hInstance, PChar(strModuleName), MAX_PATH);
   SetLength(strModuleName, iSize);
-  BuildNumber(strModuleName, iMajor, iMinor, iBugFix, iBuild);
+  BuildNumber(strModuleName, recVersionInfo);
   bmSplashScreen := LoadBitmap(hInstance, strITHelperSplashScreen48x48);
   If Supports(BorlandIDEServices, IOTAAboutBoxServices, ABS) Then
     Begin
-      Result := (BorlandIDEServices As IOTAAboutBoxServices).AddPluginInfo(
-        Format(strSplashScreenName, [iMajor, iMinor, Copy(strRevisions, iBugFix + 1, 1),
+      Result := ABS.AddPluginInfo(
+        Format(strSplashScreenName, [
+          recVersionInfo.FMajor,
+          recVersionInfo.FMinor,
+          Copy(strRevisions, recVersionInfo.FBugFix + 1, 1),
           Application.Title]),
         strPluginDescription,
         bmSplashScreen,
         {$IFDEF DEBUG} True {$ELSE} False {$ENDIF},
-        Format(strSplashScreenBuild, [iMajor, iMinor, iBugfix, iBuild]),
-        Format(strSKUBuild, [iMajor, iMinor, iBugfix, iBuild]));
+        Format(strSplashScreenBuild, [
+          recVersionInfo.FMajor,
+          recVersionInfo.FMinor,
+          recVersionInfo.FBugfix,
+          recVersionInfo.FBuild]),
+        Format(strSKUBuild, [
+          recVersionInfo.FMajor,
+          recVersionInfo.FMinor,
+          recVersionInfo.FBugfix,
+          recVersionInfo.FBuild]));
     End;
 End;
 
@@ -85,9 +100,13 @@ End;
 **)
 Procedure RemoveAboutBoxEntry(Const iAboutBoxIndex : Integer);
 
+Var
+  ABS : IOTAAboutBoxServices;
+  
 Begin
   If iAboutBoxIndex > -1 Then
-    (BorlandIDEServices As IOTAAboutBoxServices).RemovePluginInfo(iAboutBoxIndex);
+    If Supports(BorlandIDEServices, IOTAAboutBoxServices, ABS) Then
+      ABS.RemovePluginInfo(iAboutBoxIndex);
 End;
 
 End.

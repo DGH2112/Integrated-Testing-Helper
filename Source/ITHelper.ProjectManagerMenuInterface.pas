@@ -5,7 +5,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    30 Dec 2017
+  @Date    18 Jul 2018
 
 **)
 Unit ITHelper.ProjectManagerMenuInterface;
@@ -48,6 +48,7 @@ Type
     Procedure OptionsClick(Sender: TObject);
   Public
     Constructor Create(Const Wizard: TITHWizard);
+    Destructor Destroy; Override;
   End;
 
   {$IFDEF D2010}
@@ -91,6 +92,7 @@ Type
   Public
     Constructor Create(Const Wizard: TITHWizard; Const Project: IOTAProject; Const strCaption, strName,
       strVerb, strParent: String; Const iPosition: Integer; Const Setting: TSetting);
+    Destructor Destroy; Override;
   End;
   {$ENDIF}
   {$ENDIF}
@@ -100,6 +102,9 @@ Implementation
 {$IFDEF D2005}
 
 Uses
+  {$IFDEF DEBUG}
+  CodeSiteLogging,
+  {$ENDIF}
   SysUtils,
   ITHelper.TestingHelperUtils;
 
@@ -302,7 +307,22 @@ End;
 Constructor TITHProjectManagerMenu.Create(Const Wizard: TITHWizard);
 
 Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Create', tmoTiming);{$ENDIF}
   FWizard := Wizard;
+End;
+
+(**
+
+  A destructor for the TITHelperProjectManagerMenu class.
+
+  @precon  None.
+  @postcon Does nothing but is used for code site tracing.
+
+**)
+Destructor TITHProjectManagerMenu.Destroy;
+
+Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Destroy', tmoTiming);{$ENDIF}
 End;
 
 (**
@@ -348,18 +368,24 @@ Procedure TITHProjectManagerMenu.OptionsClick(Sender: TObject);
 Var
   Project : IOTAProject;
   strIdent: String;
+  PM : IOTAProjectManager;
 
 Begin
-  Project := (BorlandIDEServices As IOTAProjectManager).GetCurrentSelection(strIdent);
-  If Sender Is TMenuItem Then
-    If (Sender As TMenuItem).Name = strProjectName Then
-      FWizard.ConfigureOptions(Project, seProject)
-    Else If (Sender As TMenuItem).Name = strBeforeName Then
-      FWizard.ConfigureOptions(Project, seBefore)
-    Else If (Sender As TMenuItem).Name = strAfterName Then
-      FWizard.ConfigureOptions(Project, seAfter)
-    Else If (Sender As TMenuItem).Name = strZIPName Then
-      FWizard.ConfigureOptions(Project, seZIP);
+  If Supports(BorlandIDEServices, IOTAProjectManager, PM) Then
+    Begin
+      Project := PM.GetCurrentSelection(strIdent);
+      If Sender Is TMenuItem Then
+        If (Sender As TMenuItem).Name = strMainCaption Then
+          FWizard.ConfigureOptions(Project, seProject)
+        Else If (Sender As TMenuItem).Name = strProjectName Then
+          FWizard.ConfigureOptions(Project, seProject)
+        Else If (Sender As TMenuItem).Name = strBeforeName Then
+          FWizard.ConfigureOptions(Project, seBefore)
+        Else If (Sender As TMenuItem).Name = strAfterName Then
+          FWizard.ConfigureOptions(Project, seAfter)
+        Else If (Sender As TMenuItem).Name = strZIPName Then
+          FWizard.ConfigureOptions(Project, seZIP);
+    End;
 End;
 
 { TITHelperProjectMenu }
@@ -388,6 +414,7 @@ Constructor TITHelperProjectMenu.Create(Const Wizard: TITHWizard; Const Project:
   Const Setting: TSetting);
 
 Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod('TITHelperProjectMenu.Create', tmoTiming);{$ENDIF}
   FWizard   := Wizard;
   FProject  := Project;
   FPosition := iPosition;
@@ -396,6 +423,20 @@ Begin
   FVerb     := strVerb;
   FParent   := strParent;
   FSetting  := Setting;
+End;
+
+(**
+
+  A destructor for the TITHelperProjectMenu class.
+
+  @precon  None.
+  @postcon Does nothing but is used for code site tracing.
+
+**)
+Destructor TITHelperProjectMenu.Destroy;
+
+Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod('TITHelperProjectMenu.Destroy', tmoTiming);{$ENDIF}
 End;
 
 (**
@@ -783,3 +824,5 @@ End;
 {$ENDIF}
 
 End.
+
+

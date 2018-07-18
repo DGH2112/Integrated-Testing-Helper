@@ -185,6 +185,7 @@ Begin
   Check(Not Like('*had*litle*', strText), '8');
   Check(Not Like('*little*had*', strText), '9');
   Check(Like('*library*testprojectdll*;*', 'Library TestProjectDLL;'), '10');
+  Check(Like('*library*TestProjectDLL*;*', 'Library TestProjectDLL;'), '11');
   Check(Like('*', ''));
   Check(Like('*', strText));
 End;
