@@ -86,13 +86,7 @@ Uses
 Type
   (** An enumerate to define the columns of the dialogue listview. @nohints **)
   TITHColumn = (coTitle, coEXE, coParams, coDir);
-  (** A record helper for the above enumerate to translate the enumerate to a subimte or column reference
-      index. @nohints **)
-  TITHColumnHelper = Record Helper For TITHColumn
-    Function ColumnIndex : Integer;
-    Function SubItemIndex : Integer;
-  End;
-  
+
 Const
   (** A constant arrant to distinguish between before and after compilation tools. **)
   strSection : Array[Low(TITHDlgType)..High(TITHDlgType)] Of String = (
@@ -100,38 +94,6 @@ Const
   (** A constant array of string representing the data type the dialogue is to work
       with. **)
   DlgTypes : Array[Low(TITHDlgType)..High(TITHDlgType)] of String = ('NA', 'Before', 'After');
-
-(**
-
-  This method returns the enumerate as a column index.
-
-  @precon  None.
-  @postcon Returns the enumerate as a column index.
-
-  @return  an Integer
-
-**)
-Function TITHColumnHelper.ColumnIndex: Integer;
-
-Begin
-  Result := Ord(Self);
-End;
-
-(**
-
-  This method returns the enumerate as a subitem index.
-
-  @precon  None.
-  @postcon Returns the enumerate as a subitem index.
-
-  @return  an Integer
-
-**)
-Function TITHColumnHelper.SubItemIndex: Integer;
-
-Begin
-  Result := Pred(Ord(Self));
-End;
 
 (**
 
@@ -644,10 +606,10 @@ Var
 Begin
   LV := Sender As TListView;
   i := LV.ClientWidth;
-  LV.Columns[coTitle.ColumnIndex].Width := Trunc(i * dblTitlePctWidth);
-  LV.Columns[coExe.ColumnIndex].Width := Trunc(i * dblEXEPctWidth);
-  LV.Columns[coParams.ColumnIndex].Width := Trunc(i * dblParamsPctWidth);
-  LV.Columns[coDir.ColumnIndex].Width := Trunc(i * dblDirPctWidth);
+  LV.Columns[Integer(coTitle)].Width := Trunc(i * dblTitlePctWidth);
+  LV.Columns[Integer(coExe)].Width := Trunc(i * dblEXEPctWidth);
+  LV.Columns[Integer(coParams)].Width := Trunc(i * dblParamsPctWidth);
+  LV.Columns[Integer(coDir)].Width := Trunc(i * dblDirPctWidth);
 End;
 
 (**
