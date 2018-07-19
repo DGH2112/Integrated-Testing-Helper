@@ -4,7 +4,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    18 Jul 2018
+  @Date    19 Jul 2018
   
 **)
 Unit ITHelper.ExternalToolsFrame;
@@ -21,7 +21,6 @@ Uses
   Vcl.Controls,
   Vcl.Forms,
   Vcl.Dialogs,
-  System.ImageList,
   Vcl.ImgList,
   Vcl.ComCtrls,
   Vcl.StdCtrls,
