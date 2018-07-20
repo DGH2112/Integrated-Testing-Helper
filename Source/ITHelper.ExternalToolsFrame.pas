@@ -12,19 +12,19 @@ Unit ITHelper.ExternalToolsFrame;
 Interface
 
 Uses
-  Winapi.Windows,
-  Winapi.Messages,
-  System.SysUtils,
-  System.Variants,
-  System.Classes,
-  Vcl.Graphics,
-  Vcl.Controls,
-  Vcl.Forms,
-  Vcl.Dialogs,
-  Vcl.ImgList,
-  Vcl.ComCtrls,
-  Vcl.StdCtrls,
-  Vcl.Buttons,
+  Windows,
+  Messages,
+  SysUtils,
+  Variants,
+  Classes,
+  Graphics,
+  Controls,
+  Forms,
+  Dialogs,
+  ImgList,
+  ComCtrls,
+  StdCtrls,
+  Buttons,
   ToolsAPI,
   ITHelper.Types,
   ITHelper.Interfaces,
@@ -58,7 +58,7 @@ Type
   Strict Private
     FGlobalOps: IITHGlobalOptions;
     FProcesses : TITHProcessCollection;
-  Strict Protected
+  {$IFDEF D2010} Strict {$ENDIF} Protected
     Procedure AddListItem(Const Item: TListItem; Const Process: TITHProcessInfo);
     Procedure AddProcesses(Const strSection: String; Const Project: IOTAProject);
     Procedure SaveProcesses(Const strSection: String; Const Project: IOTAProject);

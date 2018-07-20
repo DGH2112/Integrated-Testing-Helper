@@ -5,16 +5,19 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    18 Jul 2018
+  @Date    19 Jul 2018
   
 **)
 Unit ITHelper.AddInOptions;
 
 Interface
 
+{$INCLUDE CompilerDefinitions.inc}
+
+{$IFDEF DXE00}
 Uses
   ToolsAPI,
-  VCL.Forms,
+  Forms,
   ITHelper.Interfaces;
 
 Type
@@ -44,6 +47,7 @@ Type
       Const strOptionsPath: String);
     Destructor Destroy; Override;
   End;
+{$ENDIF}
 
 Implementation
 
@@ -51,8 +55,9 @@ Uses
   {$IFDEF DEBUG}
   CodeSiteLogging,
   {$ENDIF}
-  System.SysUtils;
+  SysUtils;
 
+{$IFDEF DXE00}
 (**
 
   A constructor for the TITHAddInOptions class.
@@ -235,6 +240,7 @@ Begin
   If Supports(FFrame, IITHOptionsFrame, F) Then
     Result := F.IsValidated();
 End;
+{$ENDIF}
 
 End.
 

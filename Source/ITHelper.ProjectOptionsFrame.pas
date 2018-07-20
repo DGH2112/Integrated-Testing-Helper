@@ -5,7 +5,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    18 Jul 2018
+  @Date    19 Jul 2018
   
 **)
 Unit ITHelper.ProjectOptionsFrame;
@@ -13,20 +13,20 @@ Unit ITHelper.ProjectOptionsFrame;
 Interface
 
 Uses
-  Winapi.Windows,
-  Winapi.Messages,
-  System.SysUtils,
-  System.Variants,
-  System.Classes,
-  Vcl.Graphics,
-  Vcl.Controls,
-  Vcl.Forms,
-  Vcl.Dialogs,
-  Vcl.Buttons,
-  Vcl.ComCtrls,
-  Vcl.Grids,
-  Vcl.ValEdit,
-  Vcl.StdCtrls,
+  Windows,
+  Messages,
+  SysUtils,
+  Variants,
+  Classes,
+  Graphics,
+  Controls,
+  Forms,
+  Dialogs,
+  Buttons,
+  ComCtrls,
+  Grids,
+  ValEdit,
+  StdCtrls,
   ToolsAPI,
   ITHelper.Types,
   ITHelper.Interfaces;
@@ -67,7 +67,7 @@ Type
     Procedure btnGetVersionInfoClick(Sender: TObject);
   Strict Private
     FProject : IOTAProject;
-  Strict Protected
+  {$IFDEF D2010} Strict {$ENDIF} Protected
     Procedure InitialiseOptions(Const GlobalOps: IITHGlobalOptions; Const Project: IOTAProject = Nil;
       Const DlgType : TITHDlgType = dtNA);
     Procedure SaveOptions(Const GlobalOps: IITHGlobalOptions; Const Project: IOTAProject = Nil;
@@ -86,7 +86,7 @@ Uses
   {$IFDEF DEBUG}
   CodeSiteLogging,
   {$ENDIF}
-  System.IniFiles;
+  IniFiles;
 
 (**
 

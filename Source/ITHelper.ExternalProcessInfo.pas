@@ -5,7 +5,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    18 Jul 2018
+  @Date    19 Jul 2018
 
 **)
 Unit ITHelper.ExternalProcessInfo;
@@ -321,8 +321,19 @@ End;
 **)
 Procedure TITHProcessCollection.SwapItems(Const iIndex1, iIndex2: Integer);
 
+{$IFNDEF D2010}
+var
+  R: TITHProcessInfo;
+{$ENDIF}
+
 Begin
+  {$IFDEF D2010}
   FProcesses.Exchange(iIndex1, iIndex2);
+  {$ELSE}
+  R := FProcesses[iIndex1];
+  FProcesses[iIndex1] := FProcesses[iIndex2];
+  FProcesses[iIndex2] := R;
+  {$ENDIF}
 End;
 
 End.

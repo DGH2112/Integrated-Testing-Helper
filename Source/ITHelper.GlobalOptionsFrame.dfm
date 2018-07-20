@@ -143,7 +143,7 @@ object frameGlobalOptions: TframeGlobalOptions
     Left = 504
     Top = 131
     Width = 16
-    Height = 21
+    Height = 24
     Anchors = [akTop, akRight]
     Associate = edtClearMessages
     Max = 3600

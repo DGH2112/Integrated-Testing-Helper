@@ -4,7 +4,7 @@
 
   @Version 1.0
   @Author  David Hoyle
-  @Date    18 Jul 2018
+  @Date    19 Jul 2018
   
 **)
 Unit ITHelper.GlobalOptionsFrame;
@@ -12,18 +12,18 @@ Unit ITHelper.GlobalOptionsFrame;
 Interface
 
 Uses
-  Winapi.Windows,
-  Winapi.Messages,
-  System.SysUtils,
-  System.Variants,
-  System.Classes,
-  Vcl.Graphics,
-  Vcl.Controls,
-  Vcl.Forms,
-  Vcl.Dialogs,
-  Vcl.StdCtrls,
-  Vcl.ComCtrls,
-  Vcl.Buttons,
+  Windows,
+  Messages,
+  SysUtils,
+  Variants,
+  Classes,
+  Graphics,
+  Controls,
+  Forms,
+  Dialogs,
+  StdCtrls,
+  ComCtrls,
+  Buttons,
   ToolsAPI,
   ITHelper.Types,
   ITHelper.Interfaces;
@@ -51,7 +51,7 @@ Type
     Procedure lvShortcutsSelectItem(Sender: TObject; Item: TListItem; Selected: Boolean);
     Procedure btnAssignClick(Sender: TObject);
   Strict Private
-  Strict Protected
+  {$IFDEF D2010} Strict {$ENDIF} Protected
     Procedure InitialiseOptions(Const GlobalOps: IITHGlobalOptions; Const Project : IOTAProject;
       Const DlgType : TITHDlgType);
     Procedure SaveOptions(Const GlobalOps: IITHGlobalOptions; Const Project : IOTAProject;
@@ -68,8 +68,8 @@ Uses
   {$IFDEF DEBUG}
   CodeSiteLogging,
   {$ENDIF}
-  VCL.Menus,
-  VCL.ActnList,
+  Menus,
+  ActnList,
   ITHelper.TestingHelperUtils;
 
 {$R *.dfm}

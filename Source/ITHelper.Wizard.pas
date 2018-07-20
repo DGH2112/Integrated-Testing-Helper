@@ -4,7 +4,7 @@
   external tools before and after the compilation of the current project.
 
   @Version 1.0
-  @Date    18 Jul 2018
+  @Date    19 Jul 2018
   @Author  David Hoyle
 
 **)
@@ -15,7 +15,8 @@ Interface
 Uses
   ToolsAPI,
   Menus,
-  ITHelper.Interfaces, ITHelper.FontFrame;
+  ITHelper.Interfaces,
+  ITHelper.FontFrame;
 
 {$INCLUDE 'CompilerDefinitions.inc'}
 
@@ -31,13 +32,21 @@ Type
     FGlobalOps              : IITHGlobalOptions;
     FTestingHelperMenu      : TMenuItem;
     FProjectMgrMenuIndex    : Integer;
+    {$IFDEF D2005}
+    {$IFDEF D2010}
     FProjectMgrMenuNotifier : IOTAProjectMenuItemCreatorNotifier;
+    {$ELSE}
+    FProjectMgrMenuNotifier : INTAProjectMenuCreatorNotifier;
+    {$ENDIF}
+    {$ENDIF}
     FIDENotifierIndex       : Integer;
+    {$IFDEF DXE00}
     FAboutAddin             : INTAAddInOptions;
     FGlobalOptionsAddin     : INTAAddInOptions;
     FFontsAddin             : INTAAddInOptions;
+    {$ENDIF}
     //FHTMLHelpCookie         : THandle;
-  Strict Protected
+  {$IFDEF D2010} Strict {$ENDIF} Protected
     // IOTAWizard
     Procedure Execute;
     Function  GetIDString: String;
@@ -124,12 +133,17 @@ Const
 **)
 Procedure TITHWizard.AboutClick(Sender: TObject);
 
+{$IFDEF DXE00}
 Var
   S : IOTAServices;
+{$ENDIF}
   
 Begin
+  {$IFDEF DXE00}
   If Supports(BorlandIDEServices, IOTAServices, S) Then
     S.GetEnvironmentOptions.EditOptions('', strAboutITHelperPath);
+  {$ENDIF}
+  //: @bug Need to show this in a dialogue for D2010 and below!
 End;
 
 (**
@@ -318,7 +332,9 @@ Constructor TITHWizard.Create;
 Var
   PM : IOTAProjectManager;
   S : IOTAServices;
+  {$IFDEF DXE00}
   EO : INTAEnvironmentOptionsServices;
+  {$ENDIF}
 
 Begin
   {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Create', tmoTiming);{$ENDIF}
@@ -326,15 +342,19 @@ Begin
   FIDENotifierIndex := iWizardFailState;
   InstallSplashScreen;
   FAboutBoxIndex := AddAboutBoxEntry;
+  { $IFDEF D2010}
   FProjectMgrMenuNotifier := TITHProjectManagerMenu.Create(Self);
+  { $ELSE}
+  { $ENDIF}
   If Supports(BorlandIDEServices, IOTAProjectManager, PM) Then
-    {$IFNDEF D2010}
-    FProjectMgrMenu := PM.AddMenuCreatorNotifier(FProjectMgrMenuNotifier);
-    {$ELSE}
+    {$IFDEF D2010}
     FProjectMgrMenuIndex := PM.AddMenuItemCreatorNotifier(FProjectMgrMenuNotifier);
+    {$ELSE}
+    FProjectMgrMenuIndex := PM.AddMenuCreatorNotifier(FProjectMgrMenuNotifier);
     {$ENDIF}
   CreateMenus;
   FGlobalOps := TITHGlobalOptions.Create;
+  {$IFDEF DXE00}
   If Supports(BorlandIDEServices, INTAEnvironmentOptionsServices, EO) Then
     Begin
       FAboutAddin := TITHAddInOptions.Create(FGlobalOps, TframeAboutITHelper, strAboutITHelperPath);
@@ -345,6 +365,8 @@ Begin
       FFontsAddin := TITHAddInOptions.Create(FGlobalOps, TframeFonts, strFontsPath);
       EO.RegisterAddInOptions(FFontsAddIn);
     End;
+  {$ENDIF}
+  //: @bug Need Global Options Dlg for D2010 and below!
   If Supports(BorlandIDEServices, IOTAServices, S) Then
     FIDENotifierIndex := S.AddNotifier(TITHelperIDENotifier.Create(FGlobalOps));
   //: @debug FHTMLHelpCookie := HTMLHelp(Application.Handle, Nil, HH_INITIALIZE, 0);
@@ -458,7 +480,9 @@ Destructor TITHWizard.Destroy;
 Var
   PM : IOTAProjectManager;
   S : IOTAServices;
+  {$IFDEF DXE00}
   EO : INTAEnvironmentOptionsServices;
+  {$ENDIF}
   
 Begin
   {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Destroy', tmoTiming);{$ENDIF}
@@ -479,6 +503,7 @@ Begin
       PM.RemoveMenuItemCreatorNotifier(FProjectMgrMenuIndex);
       {$ENDIF}
   RemoveAboutBoxEntry(FAboutBoxIndex);
+  {$IFDEF DXE00}
   If Supports(BorlandIDEServices, INTAEnvironmentOptionsServices, EO) Then
     Begin
       EO.UnregisterAddInOptions(FAboutAddIn);
@@ -488,6 +513,7 @@ Begin
       EO.UnregisterAddInOptions(FFontsAddIn);
       FFontsAddin := Nil;
     End;
+  {$ENDIF}
   FGlobalOps.Save;
   FGlobalOps := Nil;
   Inherited Destroy;
@@ -520,12 +546,16 @@ End;
 **)
 Procedure TITHWizard.FontDialogueClick(Sender: TObject);
 
+{$IFDEF DXE00}
 Var
   S : IOTAServices;
+{$ENDIF}
   
 Begin
+  {$IFDEF DXE00}
   If Supports(BorlandIDEServices, IOTAServices, S) Then
     S.GetEnvironmentOptions.EditOptions('', strFontsPath);
+  {$ENDIF}
 End;
 
 (**
@@ -595,12 +625,16 @@ End;
 **)
 Procedure TITHWizard.GlobalOptionDialogueClick(Sender: TObject);
 
+{$IFDEF DXE00}
 Var
   S : IOTAServices;
+{$ENDIF}
   
 Begin
+  {$IFDEF DXE00}
   If Supports(BorlandIDEServices, IOTAServices, S) Then
     S.GetEnvironmentOptions.EditOptions('', strGlobalOptionsPath);
+  {$ENDIF}
 End;
 
 (**
