@@ -60,7 +60,8 @@ uses
   ITHelper.GlobalOptionsFrame in 'Source\ITHelper.GlobalOptionsFrame.pas' {frameGlobalOptions: TFrame},
   ITHelper.AddInOptions in 'Source\ITHelper.AddInOptions.pas',
   ITHelper.AboutFrame in 'Source\ITHelper.AboutFrame.pas' {frameAboutITHelper: TFrame},
-  ITHelper.FontFrame in 'Source\ITHelper.FontFrame.pas' {frameFonts: TFrame};
+  ITHelper.FontFrame in 'Source\ITHelper.FontFrame.pas' {frameFonts: TFrame},
+  ITHelper.GlobalOptionsDlg in 'Source\ITHelper.GlobalOptionsDlg.pas' {frmITHGlobalOptionsDlg};
 
 {$R *.res}
 

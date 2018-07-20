@@ -175,6 +175,10 @@
             <FormType>dfm</FormType>
             <DesignClass>TFrame</DesignClass>
         </DCCReference>
+        <DCCReference Include="Source\ITHelper.GlobalOptionsDlg.pas">
+            <Form>frmITHGlobalOptionsDlg</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
         <None Include="Source\CompilerDefinitions.inc"/>
         <None Include="License.md"/>
         <None Include="README.md"/>

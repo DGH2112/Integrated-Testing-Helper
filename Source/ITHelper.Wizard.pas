@@ -4,7 +4,7 @@
   external tools before and after the compilation of the current project.
 
   @Version 1.0
-  @Date    19 Jul 2018
+  @Date    20 Jul 2018
   @Author  David Hoyle
 
 **)
@@ -107,7 +107,9 @@ Uses
   ITHelper.CommonFunctions,
   ITHelper.Constants,
   ITHelper.AddInOptions,
-  ITHelper.GlobalOptionsFrame, ITHelper.AboutFrame;
+  ITHelper.GlobalOptionsFrame,
+  ITHelper.AboutFrame,
+  ITHelper.GlobalOptionsDlg;
 
 ResourceString
   (** A string path to the ITHelper About options in the IDEs options dialogue. **)
@@ -142,8 +144,9 @@ Begin
   {$IFDEF DXE00}
   If Supports(BorlandIDEServices, IOTAServices, S) Then
     S.GetEnvironmentOptions.EditOptions('', strAboutITHelperPath);
+  {$ELSE}
+  TfrmITHGlobalOptionsDlg.Execute(gotAbout, FGlobalOps);
   {$ENDIF}
-  //: @bug Need to show this in a dialogue for D2010 and below!
 End;
 
 (**
@@ -366,7 +369,6 @@ Begin
       EO.RegisterAddInOptions(FFontsAddIn);
     End;
   {$ENDIF}
-  //: @bug Need Global Options Dlg for D2010 and below!
   If Supports(BorlandIDEServices, IOTAServices, S) Then
     FIDENotifierIndex := S.AddNotifier(TITHelperIDENotifier.Create(FGlobalOps));
   //: @debug FHTMLHelpCookie := HTMLHelp(Application.Handle, Nil, HH_INITIALIZE, 0);
@@ -555,6 +557,8 @@ Begin
   {$IFDEF DXE00}
   If Supports(BorlandIDEServices, IOTAServices, S) Then
     S.GetEnvironmentOptions.EditOptions('', strFontsPath);
+  {$ELSE}
+  TfrmITHGlobalOptionsDlg.Execute(gotFonts, FGlobalOps);
   {$ENDIF}
 End;
 
@@ -634,6 +638,8 @@ Begin
   {$IFDEF DXE00}
   If Supports(BorlandIDEServices, IOTAServices, S) Then
     S.GetEnvironmentOptions.EditOptions('', strGlobalOptionsPath);
+  {$ELSE}
+  TfrmITHGlobalOptionsDlg.Execute(gotGlobalOptions, FGlobalOps);
   {$ENDIF}
 End;
 
