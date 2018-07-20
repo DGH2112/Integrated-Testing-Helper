@@ -4,7 +4,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    18 Jul 2018
+  @Date    19 Jul 2018
   
 **)
 Unit ITHelper.ZIPManager;
@@ -27,7 +27,7 @@ Type
     FGlobalOps  : IITHGlobalOptions;
     FProjectOps : IITHProjectOptions;
     FMsgMgr     : IITHMessageManager;
-  Strict Protected
+  {$IFDEF D2010} Strict {$ENDIF} Protected
     // IITHZipManager
     Function ZipProjectInformation : Integer;
     // General Methods

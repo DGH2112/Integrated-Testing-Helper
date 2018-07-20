@@ -4,7 +4,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    18 Jul 2018
+  @Date    19 Jul 2018
   
 **)
 Unit ITHelper.ZIPFrame;
@@ -12,16 +12,16 @@ Unit ITHelper.ZIPFrame;
 Interface
 
 Uses
-  Winapi.Windows,
-  Winapi.Messages,
-  System.Variants,
-  System.Classes,
-  Vcl.Graphics,
-  Vcl.Controls,
-  Vcl.Forms,
-  Vcl.Dialogs,
-  Vcl.StdCtrls,
-  Vcl.Buttons,
+  Windows,
+  Messages,
+  Variants,
+  Classes,
+  Graphics,
+  Controls,
+  Forms,
+  Dialogs,
+  StdCtrls,
+  Buttons,
   ToolsAPI,
   ITHelper.Types,
   ITHelper.Interfaces;
@@ -56,7 +56,7 @@ Type
   Strict Private
     FProject : IOTAProject;
     FFileName: String;
-  Strict Protected
+  {$IFDEF D2010} Strict {$ENDIF} Protected
     Procedure InitialiseOptions(Const GlobalOps: IITHGlobalOptions; Const Project : IOTAProject = Nil;
       Const DlgType : TITHDlgType = dtNA);
     Procedure SaveOptions(Const GlobalOps: IITHGlobalOptions; Const Project : IOTAProject = Nil;
@@ -75,8 +75,8 @@ Uses
   {$IFDEF DEBUG}
   CodeSiteLogging,
   {$ENDIF}
-  System.SysUtils,
-  VCL.FileCtrl,
+  SysUtils,
+  FileCtrl,
   ITHelper.AdditionalZipFilesForm,
   ITHelper.TestingHelperUtils,
   ITHelper.CommonFunctions;
@@ -347,14 +347,14 @@ ResourceString
 Begin
   Result := True;
   If cbxEnabledZipping.Checked And Not
-    System.SysUtils.DirectoryExists(TITHToolsAPIFunctions.ExpandMacro(edtBasePath.Text, FProject.FileName)) Then
+    SysUtils.DirectoryExists(TITHToolsAPIFunctions.ExpandMacro(edtBasePath.Text, FProject.FileName)) Then
     Begin
       MessageDlg(Format(strZipFileBaseDirectoryDoesNotExist,
           [TITHToolsAPIFunctions.ExpandMacro(edtBasePath.Text, FProject.FileName)]), mtError, [mbOK], 0);
       Result := False;
     End;
   If cbxEnabledZipping.Checked And Not
-    System.SysUtils.DirectoryExists(ExtractFilePath(TITHToolsAPIFunctions.ExpandMacro(edtZipName.Text,
+    SysUtils.DirectoryExists(ExtractFilePath(TITHToolsAPIFunctions.ExpandMacro(edtZipName.Text,
     FProject.FileName))) Then
     Begin
       MessageDlg(Format(strZipFilePathDirectoryDoesNotExist,

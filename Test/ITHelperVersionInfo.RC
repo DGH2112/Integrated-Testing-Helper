@@ -1,8 +1,8 @@
 LANGUAGE LANG_ENGLISH,SUBLANG_ENGLISH_US
 
 1 VERSIONINFO LOADONCALL MOVEABLE DISCARDABLE IMPURE
-FILEVERSION 1, 0, 15, 1966
-PRODUCTVERSION 1, 0, 15, 1966
+FILEVERSION 1, 0, 15, 1985
+PRODUCTVERSION 1, 0, 15, 1985
 FILEFLAGSMASK VS_FFI_FILEFLAGSMASK
 FILEOS VOS__WINDOWS32
 FILETYPE VFT_APP
@@ -13,7 +13,7 @@ FILETYPE VFT_APP
     {
       VALUE "CompanyName", "Season's Fall Music Limited (c) 1989\000"
       VALUE "FileDescription", "Unit Tets for the ITHelper project\000"
-      VALUE "FileVersion", "1.0.15.1966\000"
+      VALUE "FileVersion", "1.0.15.1985\000"
       VALUE "InternalName", "ITHelper\000"
       VALUE "LegalCopyright", "Season's Fall Music Limited (c) 1989\000"
       VALUE "LegalTrademarks", "Season's Fall Music Limited (c) 1989\000"

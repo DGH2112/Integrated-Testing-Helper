@@ -4,12 +4,14 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    18 Jul 2018
+  @Date    19 Jul 2018
 
 **)
 Unit ITHelper.GlobalOptions;
 
 Interface
+
+{$INCLUDE CompilerDefinitions.inc}
 
 Uses
   Graphics,
@@ -34,7 +36,7 @@ Type
     FGroupMessages     : Boolean;
     FAutoScrollMessages: Boolean;
     FClearMessages     : Integer;
-  Strict Protected
+  {$IFDEF D2010} Strict {$ENDIF} Protected
     Procedure LoadSettings;
     Procedure SaveSettings;
     Function  GetFontName(Const iFont: TITHFontNames): String;
@@ -72,12 +74,14 @@ Uses
   {$IFDEF DEBUG}
   CodeSiteLogging,
   {$ENDIF}
-  System.SysUtils,
-  System.UITypes,
-  System.Contnrs, 
-  VCL.Dialogs,
-  VCL.ActnList,
-  WinAPI.Windows, 
+  SysUtils,
+  {$IFDEF DXE20}
+  UITypes,
+  {$ENDIF}
+  Contnrs, 
+  Dialogs,
+  ActnList,
+  Windows, 
   ITHelper.TestingHelperUtils,
   ITHelper.CommonFunctions,
   ITHelper.ProjectOptions;

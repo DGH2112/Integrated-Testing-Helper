@@ -5,7 +5,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    18 Jul 2018
+  @Date    19 Jul 2018
   
 **)
 Unit ITHelper.ResponseFile;
@@ -30,7 +30,7 @@ Type
     FResponseFile : TStringList;
     FFileName     : String;
     FMsgMgr       : IITHMessageManager;
-  Strict Protected
+  {$IFDEF D2010} Strict {$ENDIF} Protected
     // IITHResponseFile
     Function  GetFileName : String;
     // General Methods
@@ -64,9 +64,9 @@ Uses
   ITHelper.ProcessingForm, 
   ITHelper.CommonFunctions, 
   ITHelper.Types, 
-  System.StrUtils, 
+  StrUtils, 
   ITHelper.PascalParsing, 
-  System.Variants;
+  Variants;
 
 (**
 
@@ -113,8 +113,9 @@ Var
 Begin
   slFiles := TStringList.Create;
   Try
-    // 160 and above (Delphi 8)
+    {$IFDEF D2010}
     FProject.GetCompleteFileList(slFiles);
+    {$ENDIF}
     For iFile := 0 To slFiles.Count - 1 Do
       AddToList(strBasePath, slFiles[iFile]);
     // Manually
@@ -126,7 +127,10 @@ Begin
         For iFile := 0 To slFiles.Count - 1 Do
           AddToList(strBasePath, slFiles[iFile]);
       End;
+    {$IFDEF DXE00}
     FProject.GetAssociatedFilesFromModule(slFiles);
+    //: @bug Check this does not overwrite the above files!!!
+    {$ENDIF}
     For iFile := 0 To FProject.ModuleFileCount - 1 Do
       AddToList(strBasePath, FProject.ModuleFileEditors[iFile].FileName);
   Finally

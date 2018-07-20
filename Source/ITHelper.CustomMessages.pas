@@ -5,7 +5,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    18 Jul 2018
+  @Date    19 Jul 2018
   
 **)
 Unit ITHelper.CustomMessages;
@@ -31,7 +31,7 @@ Type
     FStyle       : TFontStyles;
     FBackColour  : TColor;
     FMessagePntr : Pointer;
-  Strict Protected
+  {$IFDEF D2010} Strict {$ENDIF} Protected
     // IOTACustomMessage
     Function GetColumnNumber: Integer;
     Function GetFileName: String;

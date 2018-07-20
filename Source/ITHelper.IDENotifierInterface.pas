@@ -5,7 +5,7 @@
 
   @Author  David Hoyle.
   @Version 1.0
-  @Date    18 Jul 2018
+  @Date    19 Jul 2018
 
 **)
 Unit ITHelper.IDENotifierInterface;
@@ -35,7 +35,7 @@ Type
     FLastSuccessfulCompile : Int64;
     FShouldBuildList       : TStringList;
     FMsgMgr                : IITHMessageManager;
-  Strict Protected
+  {$IFDEF D2010} Strict {$ENDIF} Protected
     // IOTANotifier
     // IOTAIDENotifier
     Procedure FileNotification(NotifyCode: TOTAFileNotification; Const FileName: String;
@@ -369,14 +369,14 @@ Begin
             {$ELSE}
             If Not ProjectOps.IncITHVerInfo Then
               Begin
-                If Project.ProjectOptions.Values[strMajorVersion] <> iMajor Then
-                  Project.ProjectOptions.Values[strMajorVersion] := iMajor;
-                If Project.ProjectOptions.Values[strMinorVersion] <> iMinor Then
-                  Project.ProjectOptions.Values[strMinorVersion] := iMinor;
-                If Project.ProjectOptions.Values[strRelease] <> iBugfix Then
-                  Project.ProjectOptions.Values[strRelease] := iBugfix;
-                If Project.ProjectOptions.Values[strBuild] <> iBuild Then
-                  Project.ProjectOptions.Values[strBuild] := iBuild;
+                If Project.ProjectOptions.Values[strMajorVersion] <> recVersionInfo.FMajor Then
+                  Project.ProjectOptions.Values[strMajorVersion] := recVersionInfo.FMajor;
+                If Project.ProjectOptions.Values[strMinorVersion] <> recVersionInfo.FMinor Then
+                  Project.ProjectOptions.Values[strMinorVersion] := recVersionInfo.FMinor;
+                If Project.ProjectOptions.Values[strRelease] <> recVersionInfo.FBugfix Then
+                  Project.ProjectOptions.Values[strRelease] := recVersionInfo.FBugfix;
+                If Project.ProjectOptions.Values[strBuild] <> recVersionInfo.FBuild Then
+                  Project.ProjectOptions.Values[strBuild] := recVersionInfo.FBuild;
               End;
             {$ENDIF}
               If ProjectOps.IncITHVerInfo Then
