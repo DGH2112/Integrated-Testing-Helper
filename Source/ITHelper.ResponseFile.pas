@@ -5,7 +5,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    19 Jul 2018
+  @Date    21 Jul 2018
   
 **)
 Unit ITHelper.ResponseFile;
@@ -109,6 +109,7 @@ Var
   ModuleInfo: IOTAModuleInfo;
   iFile: Integer;
   slFiles : TStringList;
+  sl: TStringList;
 
 Begin
   slFiles := TStringList.Create;
@@ -128,8 +129,15 @@ Begin
           AddToList(strBasePath, slFiles[iFile]);
       End;
     {$IFDEF DXE00}
-    FProject.GetAssociatedFilesFromModule(slFiles);
-    //: @bug Check this does not overwrite the above files!!!
+    // Prevent Duplicates
+    sl := TstringList.Create;
+    Try
+      FProject.GetAssociatedFilesFromModule(sl);
+      For iFile := 0 To sl.Count - 1 Do
+        AddToList(strBasePath, sl[iFile]);
+    Finally
+      sl.Free;
+    End;
     {$ENDIF}
     For iFile := 0 To FProject.ModuleFileCount - 1 Do
       AddToList(strBasePath, FProject.ModuleFileEditors[iFile].FileName);
@@ -171,7 +179,8 @@ Begin
           If strNewModuleName <> '' Then
             Begin
               Result := FResponseFile.Find(strNewModuleName, iIndex);
-              FResponseFile.Add(strNewModuleName);
+              If Not Result Then
+                FResponseFile.Add(strNewModuleName);
             End;
         End;
     End;
