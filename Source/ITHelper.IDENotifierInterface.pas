@@ -5,7 +5,7 @@
 
   @Author  David Hoyle.
   @Version 1.0
-  @Date    19 Jul 2018
+  @Date    22 Jul 2018
 
 **)
 Unit ITHelper.IDENotifierInterface;
@@ -15,12 +15,14 @@ Interface
 Uses
   ToolsAPI,
   Contnrs,
-  ITHelper.TestingHelperUtils,
   ExtCtrls,
   Classes,
   IniFiles,
+  ITHelper.Types, 
+  ITHelper.Interfaces,
   ITHelper.ExternalProcessInfo,
-  ITHelper.Interfaces;
+  ITHelper.CommonFunctions, 
+  ITHelper.TestingHelperUtils;
 
 {$INCLUDE 'CompilerDefinitions.inc'}
 
@@ -52,16 +54,50 @@ Type
     // General Methods
     Function ProcessCompileInformation(Const ProjectOps : IITHProjectOptions; Const Project: IOTAProject;
       Const strWhere: String): Integer;
-    Procedure IncrementBuild(Const ProjectOps : IITHProjectOptions; Const Project: IOTAProject;
-      Const strProject: String);
-    Procedure CopyVersionInfoFromDependency(Const Project: IOTAProject; Const strProject: String;
-      Const ProjectOps: IITHProjectOptions);
+    Procedure IncrementBuild(Const Ops : TITHEnabledOptions; Const ProjectOps : IITHProjectOptions;
+      Const Project: IOTAProject; Const strProject: String);
+    Procedure CopyVersionInfoFromDependency(Const Ops : TITHEnabledOptions; Const Project: IOTAProject;
+      Const strProject: String; Const ProjectOps: IITHProjectOptions);
+    Procedure ProcessBeforeCompile(Const Project: IOTAProject; Const IsCodeInsight: Boolean;
+      Var Cancel: Boolean);
     Procedure ProcessAfterCompile(Const Project: IOTAProject;
       Succeeded, IsCodeInsight: Boolean);
     Procedure SuccessfulCompile(Sender: TObject);
     Procedure ExpandProcessMacro(Const Processes: TITHProcessCollection; Const Project: IOTAProject);
     Procedure ProcessMsgHandler(Const strMsg: String; Var boolAbort: Boolean);
     Procedure IdleHandler;
+    Procedure ProcessVersionInformation(Const Ops : TITHEnabledOptions;
+      Const ProjectOps : IITHProjectOptions; Const Project : IOTAProject);
+    Procedure ClearMessages;
+    Procedure WarnBeforeCompile(Const iResult : Integer; Const ProjectOps : IITHProjectOptions;
+      Const strProject : String);
+    Function RunPrecompilationTools(Const Ops : TITHEnabledOptions;
+      Const ProjectOps : IITHProjectOptions; Const Project : IOTAProject;
+      Const strProject : String) : Boolean;
+    Procedure WarnAfterCompile(Const iResult : Integer; Const ProjectOps : IITHProjectOptions;
+      Const strProject : String);
+    Function RunPostcompilationTools(Const Ops : TITHEnabledOptions;
+      Const ProjectOps : IITHProjectOptions; Const Project : IOTAProject;
+      Const strProject : String) : Boolean;
+    Procedure ZipProjectFiles(Const Ops : TITHEnabledOptions; Const ProjectOps : IITHProjectOptions;
+      Const Project : IOTAProject; Const strProject : String);
+    Function  CheckProjectOptions (Const Project : IOTAProject) : IOTABuildConfiguration;
+    Procedure IncrementITHelperVerInfo(
+      {$IFDEF DXE20} Const ActiveConfig : IOTABuildConfiguration; {$ENDIF}
+      Const ProjectOps : IITHProjectOptions; Const strProject: String);
+    Procedure IncrementIDEVerInfo(
+      Const {$IFDEF DXE20} ActiveConfig: IOTABuildConfiguration; {$ELSE} Project : IOTAProject; {$ENDIF}
+      Const strProject: String);
+    Procedure UpdateITHelperVerInfo(Const ProjectOps: IITHProjectOptions;
+      {$IFDEF DXE20} Const ActiveConfig : IOTABuildConfiguration; {$ENDIF}
+      Const recVersionInfo : TITHVersionInfo);
+    {$IFDEF DXE20}
+    Procedure UpdateIDEVerInfo(Const ActiveConfig : IOTABuildConfiguration;
+      Const recVersionInfo : TITHVersionInfo);
+    {$ELSE}
+    Procedure UpdateIDEVerInfo(Const ProjectOps: IITHProjectOptions; Const Project : IOTAProject;
+      Const recVersionInfo : TITHVersionInfo);
+    {$ENDIF}
   Public
     Constructor Create(Const GlobalOps: IITHGlobalOptions);
     Destructor Destroy; Override;
@@ -70,7 +106,7 @@ Type
 Implementation
 
 Uses
-  {$IFDEF CODESITE}
+  {$IFDEF DEBUG}
   CodeSiteLogging,
   {$ENDIF}
   ITHelper.EnabledOptions,
@@ -84,42 +120,35 @@ Uses
   CommonOptionStrs,
   {$ENDIF}
   Variants, 
-  ITHelper.CommonFunctions, 
-  ITHelper.Types, 
   ITHelper.ZIPManager, 
   ITHelper.MessageManager, 
   ITHelper.VersionManager;
-
-Type
-  (** A custom exception for ITHelper problems. **)
-  EITHException = Class(Exception);
 
 ResourceString
   (** This is the warning shown if there are no after compilation tools. **)
   strAfterCompileWARNING = 'WARNING: There are no Post-Compilation tools configured (%s).';
   (** This is the warning shown if there are no before compilation tools. **)
   strBeforeCompileWARNING = 'WARNING: There are no Pre-Compilation tools configured (%s).';
-{$IFDEF DXE20}
+  {$IFDEF VER230}
   (** A resource string messge for broken Open Tools API version control XE2 ONLY!!!! **)
   strMsgBroken = 'The Open Tools API''s ability to manipulale the build number of the ' +
     'version information is broken. Althought the number can be incremented this is ' +
     'not included in the EXE/DLL and this incrementation is lost when the project is ' +
     'closed. Please turn off the IDE''s version numbering and use ITHelper''s own ' +
     'mechanism for handling version information in the project options dialogue.';
-  (** A resource string messge for incrementing build number but ITHelpers version control is not
-      enabled. **)
-  strMsgIncBuildDisabled = 'You have enabled the incrementation of the build number on ' +
-    'successful compilation but you have not enabled ITHelper''s handling of version ' +
-    'information in the project options dialogue.';
-  (** A resource string messge for broken Open Tools API version control XE2 ONLY!!!! **)
-  strMsgCopyDisabled = 'You have enabled the copying of version information from an ' +
-    'existing executabe but you have not enabled ITHelper''s handling of version ' +
-    'information in the project options dialogue.';
-{$ENDIF}
+  {$ENDIF}
+  {$IFDEF DXE20}
+  (** A resource string for enabling the IDEs version information. **)
+  strBuildConfigVerInfoEnabled = 'Build Configuration "%s" Version Information Enabled!';
+  (** A resource string for disabling the IDEs version information. **)
+  strBuildConfigVerInfoDisabled = 'Build Configuration "%s" Version Information Disabled!';
+  {$ENDIF}
+  (** A resource string for the incrementing build number message. **)
+  strIncrementingBuildFromTo = 'Incrementing %s''s (%s) Build from %d to %d.';
 
 Const
   (** This number of milliseconds in a second. **)
-  iMilliSecInSec = 1000;
+  iMilliSecInSec : Int64 = 1000;
 
 (**
 
@@ -204,74 +233,8 @@ End;
 Procedure TITHelperIDENotifier.BeforeCompile(Const Project: IOTAProject; IsCodeInsight: Boolean;
   Var Cancel: Boolean);
 
-ResourceString
-  strPreCompilation = 'Pre-Compilation';
-  strPreCompilationToolsFailed = 'Pre-Compilation Tools Failed (%s).';
-
-Var
-  iResult: Integer;
-  strProject: String;
-  ProjectOps: IITHProjectOptions;
-  iInterval: Int64;
-  Ops: TITHEnabledOptions;
-  MS: IOTAMessageServices;
-  VersionMgr : IITHVersionManager;
-
 Begin
-  If Project = Nil Then
-    Exit;
-  If IsCodeInsight Then
-    Exit;
-  ProjectOps := FGlobalOps.ProjectOptions(Project);
-  Try
-    iInterval := FGlobalOps.ClearMessages;
-    If iInterval > 0 Then
-      If FMsgMgr.LastMessage < GetTickCount - iInterval * iMilliSecInSec Then
-        TITHToolsAPIFunctions.ClearMessages([cmCompiler, cmGroup]);
-    If Project.ProjectBuilder.ShouldBuild Then
-      Begin
-        FShouldBuildList.Add(Project.FileName);
-        Ops := FGlobalOps.ProjectGroupOps;
-        If eoGroupEnabled In Ops Then
-          Begin
-            Try
-              strProject := TITHToolsAPIFunctions.GetProjectName(Project);
-              If eoCopyVersionInfo In Ops Then
-                CopyVersionInfoFromDependency(Project, strProject, ProjectOps);
-              If eoBefore In Ops Then
-                If Supports(BorlandIDEServices, IOTAMessageServices, MS) Then
-                  Begin
-                    iResult := ProcessCompileInformation(ProjectOps, Project, strPreCompilation);
-                    If iResult > 0 Then
-                      Begin
-                        Cancel := True;
-                        TfrmITHProcessing.ShowProcessing
-                          (Format(strPreCompilationToolsFailed, [strProject]),
-                          FGlobalOps.FontColour[ithfWarning], True);
-                        TITHToolsAPIFunctions.ShowHelperMessages(FGlobalOps.GroupMessages);
-                      End
-                    Else If iResult < 0 Then
-                      If ProjectOps.WarnBefore Then
-                        Begin
-                          FMsgMgr.AddMsg(Format(strBeforeCompileWARNING, [strProject]), fnHeader,
-                            ithfWarning);
-                          TITHToolsAPIFunctions.ShowHelperMessages(FGlobalOps.GroupMessages);
-                        End;
-                  End;
-              If eoBuildVersionResource In Ops Then
-                If ProjectOps.IncITHVerInfo Then
-                  Begin
-                    VersionMgr := TITHVersionManager.Create(FGlobalOps, ProjectOps, Project, FMsgMgr);
-                    VersionMgr.BuildProjectVersionResource;
-                  End;
-            Finally
-              TfrmITHProcessing.HideProcessing;
-            End;
-          End;
-      End;
-  Finally
-    ProjectOps := Nil;
-  End;
+  ProcessBeforeCompile(Project, IsCodeInsight, Cancel);
 End;
 
 (**
@@ -296,6 +259,55 @@ End;
 
 (**
 
+  This method returns the active build configruation for the application and additinally checks for
+  XE2 and whether the version information is switched on as this is broken in XE2.
+
+  @precon  Project must be a valid reference.
+  @postcon Returns the active build configuration.
+
+  @param   Project as an IOTAProject as a constant
+  @return  an IOTABuildConfiguration
+
+**)
+Function TITHelperIDENotifier.CheckProjectOptions(Const Project : IOTAProject) : IOTABuildConfiguration;
+
+Var
+  POC : IOTAProjectOptionsConfigurations;
+
+Begin
+  Result := Nil;
+  If Project.ProjectOptions.QueryInterface(IOTAProjectOptionsConfigurations, POC) = S_OK Then
+    Begin
+      Result := POC.ActiveConfiguration;
+      // Deliberate exception for XE2 where the Version information in the IDE was broken.
+      {$IFDEF VER230}
+      If Result.PropertyExists(sVerInfo_IncludeVerInfo) Then
+        Begin
+          If Result.AsBoolean[sVerInfo_IncludeVerInfo] Then
+            Raise EITHException.Create(strMsgBroken);
+        End;
+      {$ENDIF}
+    End;
+End;
+
+(**
+
+  This method clears the messages inthe message view of the appropriate period of time has elapsed.
+
+  @precon  None.
+  @postcon The message view is cleared is the time periodf has elapsed.
+
+**)
+Procedure TITHelperIDENotifier.ClearMessages;
+
+Begin
+  If FGlobalOps.ClearMessages > 0 Then
+    If FMsgMgr.LastMessage < GetTickCount - FGlobalOps.ClearMessages * iMilliSecInSec Then
+      TITHToolsAPIFunctions.ClearMessages([cmCompiler, cmGroup]);
+End;
+
+(**
+
   This method copies the version information from the first project dependency to this project IF the 
   option is enabled.
 
@@ -303,22 +315,17 @@ End;
   @postcon Copies the version information from the first project dependency to this project IF the 
            option is enabled.
 
+  @param   Ops        as a TITHEnabledOptions as a constant
   @param   Project    as an IOTAProject as a constant
   @param   strProject as a String as a constant
-  @param   ProjectOps as a IITHProjectOptions as a constant
+  @param   ProjectOps as an IITHProjectOptions as a constant
 
 **)
-Procedure TITHelperIDENotifier.CopyVersionInfoFromDependency(Const Project: IOTAProject;
-  Const strProject: String; Const ProjectOps: IITHProjectOptions);
+Procedure TITHelperIDENotifier.CopyVersionInfoFromDependency(Const Ops : TITHEnabledOptions;
+  Const Project: IOTAProject; Const strProject: String; Const ProjectOps: IITHProjectOptions);
 
 Const
   strBugFix = ' abcedfghijklmnopqrstuvwxyz';
-  {$IFNDEF DXE20}
-  strMajorVersion = 'MajorVersion';
-  strMinorVersion = 'MinorVersion';
-  strRelease = 'Release';
-  strBuild = 'Build';
-  {$ENDIF}
 
 ResourceString
   strVersionDependencyFoundForProject = 'Version Dependency (%s) found for project %s.';
@@ -330,75 +337,43 @@ Var
   Group: IOTAProjectGroup;
   strTargetName: String;
   {$IFDEF DXE20}
-  POC: IOTAProjectOptionsConfigurations;
-  AC: IOTABuildConfiguration;
+  ActiveConfig: IOTABuildConfiguration;
   {$ENDIF}
   
 Begin
-  Group := TITHToolsAPIFunctions.ProjectGroup;
-  If Group = Nil Then
-    Exit;
-  strTargetName := TITHToolsAPIFunctions.ExpandMacro(ProjectOps.CopyVerInfo, Project.FileName);
-  If strTargetName <> '' Then
+  If eoCopyVersionInfo In Ops Then
     Begin
-      FMsgMgr.AddMsg(Format(strVersionDependencyFoundForProject,
-        [ExtractFileName(strTargetName), strProject]), fnHeader, ithfDefault);
-      If FileExists(strTargetName) Then
+      Group := TITHToolsAPIFunctions.ProjectGroup;
+      If Group = Nil Then
+        Exit;
+      strTargetName := TITHToolsAPIFunctions.ExpandMacro(ProjectOps.CopyVerInfo, Project.FileName);
+      If strTargetName <> '' Then
         Begin
-          Try
-            BuildNumber(strTargetName, recVersionInfo);
-            FMsgMgr.AddMsg(Format(strDependentBuild, [
-              recVersionInfo.FMajor,
-              recVersionInfo.FMinor,
-              strBugFix[recVersionInfo.FBugfix + 1],
-              recVersionInfo.FMajor,
-              recVersionInfo.FMinor,
-              recVersionInfo.FBugfix,
-              recVersionInfo.FBuild]),
-              fnHeader, ithfDefault);
-            {$IFDEF DXE20}
-            If Project.ProjectOptions.QueryInterface(IOTAProjectOptionsConfigurations, POC) = S_OK Then
-              Begin
-                AC := POC.ActiveConfiguration;
-                If AC.PropertyExists(sVerInfo_IncludeVerInfo) Then
-                  If AC.AsBoolean[sVerInfo_IncludeVerInfo] Then
-                    Raise EITHException.Create(strMsgBroken);
-                  If Not ProjectOps.IncITHVerInfo Then
-                    Raise EITHException.Create(strMsgCopyDisabled)
+          FMsgMgr.AddMsg(Format(strVersionDependencyFoundForProject,
+            [ExtractFileName(strTargetName), strProject]), fnHeader, ithfDefault);
+          If FileExists(strTargetName) Then
+            Begin
+              Try
+                BuildNumber(strTargetName, recVersionInfo);
+                FMsgMgr.AddMsg(Format(strDependentBuild, [recVersionInfo.FMajor, recVersionInfo.FMinor,
+                  strBugFix[recVersionInfo.FBugfix + 1], recVersionInfo.FMajor, recVersionInfo.FMinor,
+                  recVersionInfo.FBugfix, recVersionInfo.FBuild]), fnHeader, ithfDefault);
+                {$IFDEF DXE20}
+                ActiveConfig := CheckProjectOptions(Project);
+                UpdateIDEVerInfo(ActiveConfig, recVersionInfo);
+                {$ELSE}
+                UpdateIDEVerInfo(ProjectOps, Project, recVersionInfo);
+                {$ENDIF}
+                UpdateITHelperVerInfo(ProjectOps, {$IFDEF DXE20} ActiveConfig, {$ENDIF} recVersionInfo);
+              Except
+                On E: EITHException Do
+                  FMsgMgr.AddMsg(Format(E.Message + ' (%s)', [strProject]), fnHeader, ithfWarning);
               End;
-            {$ELSE}
-            If Not ProjectOps.IncITHVerInfo Then
-              Begin
-                If Project.ProjectOptions.Values[strMajorVersion] <> recVersionInfo.FMajor Then
-                  Project.ProjectOptions.Values[strMajorVersion] := recVersionInfo.FMajor;
-                If Project.ProjectOptions.Values[strMinorVersion] <> recVersionInfo.FMinor Then
-                  Project.ProjectOptions.Values[strMinorVersion] := recVersionInfo.FMinor;
-                If Project.ProjectOptions.Values[strRelease] <> recVersionInfo.FBugfix Then
-                  Project.ProjectOptions.Values[strRelease] := recVersionInfo.FBugfix;
-                If Project.ProjectOptions.Values[strBuild] <> recVersionInfo.FBuild Then
-                  Project.ProjectOptions.Values[strBuild] := recVersionInfo.FBuild;
-              End;
-            {$ENDIF}
-              If ProjectOps.IncITHVerInfo Then
-                Begin
-                  If ProjectOps.Major <> recVersionInfo.FMajor Then
-                    ProjectOps.Major := recVersionInfo.FMajor;
-                  If ProjectOps.Minor <> recVersionInfo.FMinor Then
-                    ProjectOps.Minor := recVersionInfo.FMinor;
-                  If ProjectOps.Release <> recVersionInfo.FBugfix Then
-                    ProjectOps.Release := recVersionInfo.FBugfix;
-                  If ProjectOps.Build <> recVersionInfo.FBuild Then
-                    ProjectOps.Build := recVersionInfo.FBuild;
-                End;
-          Except
-            On E: EITHException Do
-              FMsgMgr.AddMsg(Format(E.Message + ' (%s)', [strProject]), fnHeader, ithfWarning);
-          End;
-          TITHToolsAPIFunctions.ShowHelperMessages(FGlobalOps.GroupMessages);
-        End
-      Else
-        FMsgMgr.AddMsg(Format(strDependencyWasNotFound,
-          [strTargetName, strProject]), fnHeader, ithfWarning);
+              TITHToolsAPIFunctions.ShowHelperMessages(FGlobalOps.GroupMessages);
+            End Else
+              FMsgMgr.AddMsg(Format(strDependencyWasNotFound, [strTargetName, strProject]), fnHeader,
+                ithfWarning);
+        End;
     End;
 End;
 
@@ -521,59 +496,117 @@ End;
   @precon  ProjectOps must be a valid instance.
   @postcon Increments the buld number of the passed project IF this is enabled in the options.
 
-  @param   ProjectOps as a IITHProjectOptions as a constant
+  @param   Ops        as a TITHEnabledOptions as a constant
+  @param   ProjectOps as an IITHProjectOptions as a constant
   @param   Project    as an IOTAProject as a constant
   @param   strProject as a String as a constant
 
 **)
-Procedure TITHelperIDENotifier.IncrementBuild(Const ProjectOps : IITHProjectOptions;
-  Const Project: IOTAProject; Const strProject: String);
+Procedure TITHelperIDENotifier.IncrementBuild(Const Ops : TITHEnabledOptions;
+  Const ProjectOps : IITHProjectOptions; Const Project: IOTAProject; Const strProject: String);
 
+{$IFDEF DXE20}
+Var
+  ActiveConfig: IOTABuildConfiguration;
+{$ENDIF}
+
+Begin
+  If eoIncrementBuild In Ops Then
+    If ProjectOps.IncOnCompile Then
+      Begin
+        {$IFDEF DXE20}
+        ActiveConfig := CheckProjectOptions(Project);
+        {$ENDIF}
+        If ProjectOps.IncITHVerInfo Then
+          IncrementITHelperVerInfo( {$IFDEF DXE20} ActiveConfig, {$ENDIF} ProjectOps, strProject)
+        Else
+          IncrementIDEVerInfo( {$IFDEF DXE20} ActiveConfig {$ELSE} Project {$ENDIF}, strProject);
+      End;
+End;
+
+(**
+
+  This method increments the IDE version information.
+
+  @precon  ActiveConfig must be valid instance.
+  @postcon The IDEs build number is incremented.
+
+  @param   ActiveConfig as an IOTABuildConfiguration as a constant
+  @param   strProject   as a String as a constant
+
+**)
+Procedure TITHelperIDENotifier.IncrementIDEVerInfo(
+  Const {$IFDEF DXE20} ActiveConfig: IOTABuildConfiguration; {$ELSE} Project : IOTAProject; {$ENDIF}
+  Const strProject : String);
+
+{$IFDEF DXE20}
 ResourceString
-  strIncrementingBuildFromTo = 'Incrementing %s''s Build from %d to %d.';
+  strBuildConfiguration = 'BuildConfiguration';
+{$ENDIF}
 
 {$IFNDEF DXE20}
 Const
   strBuild = 'Build';
+  strProjectOptions = 'ProjectOptions';
 {$ENDIF}
 
 Var
   iBuild: Integer;
-  {$IFDEF DXE20}
-  POC: IOTAProjectOptionsConfigurations;
-  AC: IOTABuildConfiguration;
+  
+Begin
+  {$IFDEF DXE20} // Multiple Configurations in XE2 and above
+  If Not ActiveConfig.GetBoolean(sVerInfo_IncludeVerInfo, True) Then
+    Begin
+      ActiveConfig.SetBoolean(sVerInfo_IncludeVerInfo, True);
+      FMsgMgr.AddMsg(Format(strBuildConfigVerInfoEnabled, [ActiveConfig.Name]),fnHeader,
+        ithfDefault);
+    End;
+  iBuild := ActiveConfig.GetInteger(sVerInfo_Build, True);
+  FMsgMgr.AddMsg(Format(strIncrementingBuildFromTo,
+    [strProject, strBuildConfiguration, iBuild, iBuild + 1]), fnHeader, ithfDefault);
+  ActiveConfig.SetInteger(sVerInfo_Build, iBuild + 1);
+  {$ELSE}        // Congle Configuration in XE and below
+  iBuild := Project.ProjectOptions.Values[strBuild];
+  FMsgMgr.AddMsg(Format(strIncrementingBuildFromTo,
+    [strProject, strProjectOptions, iBuild, iBuild + 1]), fnHeader, ithfDefault);
+  Project.ProjectOptions.Values[strBuild] := iBuild + 1;
   {$ENDIF}
+End;
+
+(**
+
+  This method increments the ITHelper version information.
+
+  @precon  ActiveConfig and ProjectOps must be valid instances.
+  @postcon The ITHelper build number is incremented.
+
+  @param   ActiveConfig as an IOTABuildConfiguration as a constant
+  @param   ProjectOps   as an IITHProjectOptions as a constant
+  @param   strProject   as a String as a constant
+
+**)
+Procedure TITHelperIDENotifier.IncrementITHelperVerInfo(
+  {$IFDEF DXE20} Const ActiveConfig : IOTABuildConfiguration; {$ENDIF}
+  Const ProjectOps : IITHProjectOptions; Const strProject : String);
+
+ResourceString
+  strITHelper = 'ITHelper';
+  
+Var
+  iBuild: Integer;
 
 Begin
-  If ProjectOps.IncOnCompile Then
+  {$IFDEF DXE20} // Multiple Configurations in XE2 and above
+  If ActiveConfig.GetBoolean(sVerInfo_IncludeVerInfo, True) Then
     Begin
-      iBuild := -1;
-      {$IFDEF DXE20}
-      If Project.ProjectOptions.QueryInterface(IOTAProjectOptionsConfigurations, POC) = S_OK Then
-        Begin
-          AC := POC.ActiveConfiguration;
-          If AC.PropertyExists(sVerInfo_IncludeVerInfo) Then
-            If AC.AsBoolean[sVerInfo_IncludeVerInfo] Then
-              Raise EITHException.Create(strMsgBroken);
-            If Not ProjectOps.IncITHVerInfo Then
-              Raise EITHException.Create(strMsgIncBuildDisabled);
-        End;
-      {$ELSE}
-      If Not ProjectOps.IncITHVerInfo Then
-        iBuild := Project.ProjectOptions.Values[strBuild];
-      {$ENDIF}
-      If ProjectOps.IncITHVerInfo Then
-        iBuild := ProjectOps.Build;
-      If iBuild > -1 Then
-        FMsgMgr.AddMsg(Format(strIncrementingBuildFromTo,
-          [strProject, iBuild, iBuild + 1]), fnHeader, ithfDefault);
-      {$IFNDEF DXE20}
-      If Not ProjectOps.IncITHVerInfo Then
-        Project.ProjectOptions.Values[strBuild] := iBuild + 1;
-      {$ENDIF}
-      If ProjectOps.IncITHVerInfo Then
-        ProjectOps.Build := iBuild + 1;
+      ActiveConfig.SetBoolean(sVerInfo_IncludeVerInfo, False);
+      FMsgMgr.AddMsg(Format(strBuildConfigVerInfoDisabled, [ActiveConfig.Name]),fnHeader, ithfDefault);
     End;
+  {$ENDIF}
+  iBuild := ProjectOps.Build;
+  FMsgMgr.AddMsg(Format(strIncrementingBuildFromTo,
+    [strProject, strITHelper, iBuild, iBuild + 1]), fnHeader, ithfDefault);
+  ProjectOps.Build := iBuild + 1;
 End;
 
 (**
@@ -586,6 +619,7 @@ End;
   @postcon Processes the AfterCompile information.
 
   @nocheck MissingCONSTInParam
+  @nometric Toxicity
 
   @param   Project       as an IOTAProject as a constant
   @param   Succeeded     as a Boolean
@@ -595,76 +629,82 @@ End;
 Procedure TITHelperIDENotifier.ProcessAfterCompile(Const Project: IOTAProject;
   Succeeded, IsCodeInsight: Boolean);
 
-Const
-  strZIPToolFailure = 'ZIP Tool Failure (%s).';
-
-ResourceString
-  strPostCompilation = 'Post-Compilation';
-  strPostCompilationToolsFailed = 'Post-Compilation Tools Failed (%s).';
-
 Var
-  iResult: Integer;
   strProject: String;
   ProjectOps: IITHProjectOptions;
   iIndex: Integer;
   Ops: TITHEnabledOptions;
-  ZipMgr : IITHZipManager;
 
 Begin
-  If Project = Nil Then
-    Exit;
-  If IsCodeInsight Or Not Succeeded Then
-    Exit;
-  iIndex := FShouldBuildList.IndexOf(Project.FileName);
-  If iIndex > -1 Then
+  If Assigned(Project) And Not IsCodeInsight And Succeeded Then
     Begin
-      FShouldBuildList.Delete(iIndex);
-      ProjectOps := FGlobalOps.ProjectOptions(Project);
-      Try
-        Ops := FGlobalOps.ProjectGroupOps;
-        If eoGroupEnabled In Ops Then
+      iIndex := FShouldBuildList.IndexOf(Project.FileName);
+      If iIndex > -1 Then
+        Begin
+          FShouldBuildList.Delete(iIndex);
+          ProjectOps := FGlobalOps.ProjectOptions(Project);
           Try
-            strProject := TITHToolsAPIFunctions.GetProjectName(Project);
-            If eoIncrementBuild In Ops Then
-              IncrementBuild(ProjectOps, Project, strProject);
-            If eoZip In Ops Then
-              Begin
-                ZipMgr := TITHZIPManager.Create(Project, FGlobalOps, ProjectOps, FMsgMgr);
-                iResult := ZipMgr.ZipProjectInformation;
-                If iResult > 0 Then
-                  Begin
-                    TfrmITHProcessing.ShowProcessing(Format(strZIPToolFailure,
-                      [strProject]), FGlobalOps.FontColour[ithfFailure], True);
-                    TITHToolsAPIFunctions.ShowHelperMessages(FGlobalOps.GroupMessages);
-                    Abort;
-                  End;
+            Ops := FGlobalOps.ProjectGroupOps;
+            If eoGroupEnabled In Ops Then
+              Try
+                strProject := TITHToolsAPIFunctions.GetProjectName(Project);
+                IncrementBuild(Ops, ProjectOps, Project, strProject);
+                ZipProjectFiles(Ops, ProjectOps, Project, strProject);
+                If RunPostcompilationTools(Ops, ProjectOps, Project, strProject) Then
+                  Abort;
+                FLastSuccessfulCompile := GetTickCount;
+              Finally
+                TfrmITHProcessing.HideProcessing;
               End;
-            If eoAfter In Ops Then
-              Begin
-                iResult := ProcessCompileInformation(ProjectOps, Project, strPostCompilation);
-                If iResult > 0 Then
-                  Begin
-                    TfrmITHProcessing.ShowProcessing
-                      (Format(strPostCompilationToolsFailed, [strProject]),
-                      FGlobalOps.FontColour[ithfWarning], True);
-                    TITHToolsAPIFunctions.ShowHelperMessages(FGlobalOps.GroupMessages);
-                    Abort;
-                  End
-                Else If iResult < 0 Then
-                  If ProjectOps.WarnAfter Then
-                    Begin
-                      FMsgMgr.AddMsg(Format(strAfterCompileWARNING, [strProject]),
-                        fnHeader, ithfWarning);
-                      TITHToolsAPIFunctions.ShowHelperMessages(FGlobalOps.GroupMessages);
-                    End;
-              End;
-            FLastSuccessfulCompile := GetTickCount;
           Finally
-            TfrmITHProcessing.HideProcessing;
+            ProjectOps := Nil;
           End;
-      Finally
-        ProjectOps := Nil;
-      End;
+        End;
+    End;
+End;
+
+(**
+
+  This method processes information beofer a project is compiled.
+
+  @precon  Project must be a valid instance.
+  @postcon If the options are enabled those elements are processed before the application is compiled.
+
+  @param   Project       as an IOTAProject as a constant
+  @param   IsCodeInsight as a Boolean as a constant
+  @param   Cancel        as a Boolean as a reference
+
+**)
+Procedure TITHelperIDENotifier.ProcessBeforeCompile(Const Project: IOTAProject;
+  Const IsCodeInsight: Boolean; Var Cancel: Boolean);
+
+Var
+  strProject: String;
+  ProjectOps: IITHProjectOptions;
+  Ops: TITHEnabledOptions;
+
+Begin
+  If Assigned(Project) And Not IsCodeInsight Then
+    Begin
+      ProjectOps := FGlobalOps.ProjectOptions(Project);
+      ClearMessages;
+      If Project.ProjectBuilder.ShouldBuild Then
+        Begin
+          FShouldBuildList.Add(Project.FileName);
+          Ops := FGlobalOps.ProjectGroupOps;
+          If eoGroupEnabled In Ops Then
+            Begin
+              Try
+                strProject := TITHToolsAPIFunctions.GetProjectName(Project);
+                CopyVersionInfoFromDependency(Ops, Project, strProject, ProjectOps);
+                Cancel := RunPrecompilationTools(Ops, ProjectOps, Project, strProject);
+                If Not Cancel Then
+                  ProcessVersionInformation(Ops, ProjectOps, Project);
+              Finally
+                TfrmITHProcessing.HideProcessing;
+              End;
+            End;
+        End;
     End;
 End;
 
@@ -757,6 +797,118 @@ End;
 
 (**
 
+  This method creates an instance of the version manager to construct a version control resource.
+
+  @precon  ProjectOps and Project must be valid instances.
+  @postcon If enabled in the options a project version resource is created to be compiled into the
+           project.
+
+  @param   Ops        as a TITHEnabledOptions as a constant
+  @param   ProjectOps as an IITHProjectOptions as a constant
+  @param   Project    as an IOTAProject as a constant
+
+**)
+Procedure TITHelperIDENotifier.ProcessVersionInformation(Const Ops : TITHEnabledOptions;
+  Const ProjectOps : IITHProjectOptions; Const Project : IOTAProject);
+
+Var
+  VersionMgr: IITHVersionManager;
+
+Begin
+  If eoBuildVersionResource In Ops Then
+    If ProjectOps.IncITHVerInfo Then
+      Begin
+        VersionMgr := TITHVersionManager.Create(FGlobalOps, ProjectOps, Project, FMsgMgr);
+        VersionMgr.BuildProjectVersionResource;
+      End;
+End;
+
+(**
+
+  This method runs any configured post-conpilation tools for the given project.
+
+  @precon  ProjectOps an Project must be valid references.
+  @postcon Runs any configured post-conpilation tools for the given project.
+
+  @param   Ops        as a TITHEnabledOptions as a constant
+  @param   ProjectOps as an IITHProjectOptions as a constant
+  @param   Project    as an IOTAProject as a constant
+  @param   strProject as a String as a constant
+  @return  a Boolean
+
+**)
+Function TITHelperIDENotifier.RunPostcompilationTools(Const Ops: TITHEnabledOptions;
+  Const ProjectOps: IITHProjectOptions; Const Project: IOTAProject; Const strProject: String): Boolean;
+
+ResourceString
+  strPostCompilation = 'Post-Compilation';
+  strPostCompilationToolsFailed = 'Post-Compilation Tools Failed (%s).';
+
+Var
+  iResult: Integer;
+
+Begin
+  Result := False;
+  If eoAfter In Ops Then
+    Begin
+      iResult := ProcessCompileInformation(ProjectOps, Project, strPostCompilation);
+      If iResult > 0 Then
+        Begin
+          TfrmITHProcessing.ShowProcessing
+            (Format(strPostCompilationToolsFailed, [strProject]),
+            FGlobalOps.FontColour[ithfWarning], True);
+          TITHToolsAPIFunctions.ShowHelperMessages(FGlobalOps.GroupMessages);
+          Result := True;
+        End Else
+          WarnAfterCompile(iResult, ProjectOps, strProject);
+    End;
+End;
+
+(**
+
+  This method runs any configured pre-conpilation tools for the given project.
+
+  @precon  ProjectOps an Project must be valid references.
+  @postcon Runs any configured pre-conpilation tools for the given project.
+
+  @param   Ops        as a TITHEnabledOptions as a constant
+  @param   ProjectOps as an IITHProjectOptions as a constant
+  @param   Project    as an IOTAProject as a constant
+  @param   strProject as a String as a constant
+  @return  a Boolean
+
+**)
+Function TITHelperIDENotifier.RunPrecompilationTools(Const Ops : TITHEnabledOptions;
+  Const ProjectOps : IITHProjectOptions; Const Project : IOTAProject;
+  Const strProject : String) : Boolean;
+
+ResourceString
+  strPreCompilation = 'Pre-Compilation';
+  strPreCompilationToolsFailed = 'Pre-Compilation Tools Failed (%s).';
+
+Var
+  MS: IOTAMessageServices;
+  iResult: Integer;
+
+Begin
+  Result := False;
+  If eoBefore In Ops Then
+    If Supports(BorlandIDEServices, IOTAMessageServices, MS) Then
+      Begin
+        iResult := ProcessCompileInformation(ProjectOps, Project, strPreCompilation);
+        If iResult > 0 Then
+          Begin
+            Result := True;
+            TfrmITHProcessing.ShowProcessing(Format(strPreCompilationToolsFailed, [
+              strProject]), FGlobalOps.FontColour[ithfWarning], True);
+            TITHToolsAPIFunctions.ShowHelperMessages(FGlobalOps.GroupMessages);
+          End Else
+        WarnBeforeCompile(iResult, ProjectOps, strProject);
+      End;
+End;
+
+(**
+
   This is an on timer event handler for the SuccessfulCompile timer.
 
   @precon  None.
@@ -777,7 +929,197 @@ Begin
     End;
 End;
 
+{$IFDEF DXE20}
+(**
+
+  This method updates the project version information in RAD Studio XE2 and above (multiple configs).
+
+  @precon  ActiveConfig must be a valid reference.
+  @postcon Udates the project version information in RAD Studio XE2 and above (multiple configs).
+
+  @param   ActiveConfig   as an IOTABuildConfiguration as a constant
+  @param   recVersionInfo as a TITHVersionInfo as a constant
+
+**)
+Procedure TITHelperIDENotifier.UpdateIDEVerInfo(Const ActiveConfig: IOTABuildConfiguration;
+  Const recVersionInfo: TITHVersionInfo);
+
+Begin
+  If Not ActiveConfig.GetBoolean(sVerInfo_IncludeVerInfo, True) Then
+    Begin
+      ActiveConfig.SetBoolean(sVerInfo_IncludeVerInfo, True);
+      FMsgMgr.AddMsg(Format(strBuildConfigVerInfoEnabled, [ActiveConfig.Name]),fnHeader,
+        ithfDefault);
+    End;
+  If ActiveConfig.GetInteger(sVerInfo_MajorVer, True) <> recVersionInfo.FMajor Then
+    ActiveConfig.SetInteger(sVerInfo_MajorVer, recVersionInfo.FMajor);
+  If ActiveConfig.GetInteger(sVerInfo_MinorVer, True) <> recVersionInfo.FMinor Then
+    ActiveConfig.SetInteger(sVerInfo_MinorVer, recVersionInfo.FMinor);
+  If ActiveConfig.GetInteger(sVerInfo_Release, True) <> recVersionInfo.FBugFix Then
+    ActiveConfig.SetInteger(sVerInfo_Release, recVersionInfo.FBugFix);
+  If ActiveConfig.GetInteger(sVerInfo_Build, True) <> recVersionInfo.FBuild Then
+    ActiveConfig.SetInteger(sVerInfo_Build, recVersionInfo.FBuild);
+End;
+{$ELSE}
+(**
+
+  This method updates the project version information in RAD Studio XE and below.
+
+  @precon  ProjectOps and Project must be valid references.
+  @postcon The IOTAProjects version information is updated.
+
+  @param   ProjectOps     as an IITHProjectOptions as a constant
+  @param   Project        as an IOTAProject as a constant
+  @param   recVersionInfo as a TITHVersionInfo as a constant
+
+**)
+Procedure TITHelperIDENotifier.UpdateIDEVerInfo(Const ProjectOps: IITHProjectOptions;
+  Const Project: IOTAProject; Const recVersionInfo: TITHVersionInfo);
+
+Const
+  strMajorVersion = 'MajorVersion';
+  strMinorVersion = 'MinorVersion';
+  strRelease = 'Release';
+  strBuild = 'Build';
+
+Begin
+  If Not ProjectOps.IncITHVerInfo Then
+    Begin
+      If Project.ProjectOptions.Values[strMajorVersion] <> recVersionInfo.FMajor Then
+        Project.ProjectOptions.Values[strMajorVersion] := recVersionInfo.FMajor;
+      If Project.ProjectOptions.Values[strMinorVersion] <> recVersionInfo.FMinor Then
+        Project.ProjectOptions.Values[strMinorVersion] := recVersionInfo.FMinor;
+      If Project.ProjectOptions.Values[strRelease] <> recVersionInfo.FBugfix Then
+        Project.ProjectOptions.Values[strRelease] := recVersionInfo.FBugfix;
+      If Project.ProjectOptions.Values[strBuild] <> recVersionInfo.FBuild Then
+        Project.ProjectOptions.Values[strBuild] := recVersionInfo.FBuild;
+    End;
+End;
+{$ENDIF}
+
+(**
+
+  This method updates the ITHelper version information to those values in the version information record.
+
+  @precon  ProjectOps must be a valid instance.
+  @postcon The ITHelper Project options version information is updated.
+
+  @param   ProjectOps     as an IITHProjectOptions as a constant
+  @param   ActiveConfig   as an IOTABuildConfiguration as a constant
+  @param   recVersionInfo as a TITHVersionInfo as a constant
+
+**)
+procedure TITHelperIDENotifier.UpdateITHelperVerInfo(Const ProjectOps: IITHProjectOptions;
+  {$IFDEF DXE20} Const ActiveConfig : IOTABuildConfiguration; {$ENDIF}
+  Const recVersionInfo : TITHVersionInfo);
+
+Begin
+  If ProjectOps.IncITHVerInfo Then
+    Begin
+      {$IFDEF DXE20} // Multiple Configurations in XE2 and above
+      If ActiveConfig.GetBoolean(sVerInfo_IncludeVerInfo, True) Then
+        Begin
+          ActiveConfig.SetBoolean(sVerInfo_IncludeVerInfo, False);
+          FMsgMgr.AddMsg(Format(strBuildConfigVerInfoDisabled, [ActiveConfig.Name]),fnHeader, ithfDefault);
+        End;
+      {$ENDIF}
+      If ProjectOps.Major <> recVersionInfo.FMajor Then
+        ProjectOps.Major := recVersionInfo.FMajor;
+      If ProjectOps.Minor <> recVersionInfo.FMinor Then
+        ProjectOps.Minor := recVersionInfo.FMinor;
+      If ProjectOps.Release <> recVersionInfo.FBugfix Then
+        ProjectOps.Release := recVersionInfo.FBugfix;
+      If ProjectOps.Build <> recVersionInfo.FBuild Then
+        ProjectOps.Build := recVersionInfo.FBuild;
+    End;
+End;
+
+(**
+
+  This method outputs a message warning that there are not post-compilation tools configured.
+
+  @precon  ProjectOps must be a valid instance.
+  @postcon Outputs a message warning that there are not post-compilation tools configured.
+
+  @param   iResult    as an Integer as a constant
+  @param   ProjectOps as an IITHProjectOptions as a constant
+  @param   strProject as a String as a constant
+
+**)
+Procedure TITHelperIDENotifier.WarnAfterCompile(Const iResult: Integer;
+  Const ProjectOps: IITHProjectOptions; Const strProject: String);
+
+Begin
+  If iResult < 0 Then
+    If ProjectOps.WarnAfter Then
+      Begin
+        FMsgMgr.AddMsg(Format(strAfterCompileWARNING, [strProject]),
+          fnHeader, ithfWarning);
+        TITHToolsAPIFunctions.ShowHelperMessages(FGlobalOps.GroupMessages);
+      End;
+End;
+
+(**
+
+  This method outputs a message warning that there are not pre-compilation tools configured.
+
+  @precon  ProjectOps must be a valid instance.
+  @postcon Outputs a message warning that there are not pre-compilation tools configured.
+
+  @param   iResult    as an Integer as a constant
+  @param   ProjectOps as an IITHProjectOptions as a constant
+  @param   strProject as a String as a constant
+
+**)
+Procedure TITHelperIDENotifier.WarnBeforeCompile(Const iResult : Integer;
+  Const ProjectOps : IITHProjectOptions; Const strProject : String);
+
+Begin
+  If iResult < 0 Then
+    If ProjectOps.WarnBefore Then
+      Begin
+        FMsgMgr.AddMsg(Format(strBeforeCompileWARNING, [strProject]), fnHeader,
+          ithfWarning);
+        TITHToolsAPIFunctions.ShowHelperMessages(FGlobalOps.GroupMessages);
+      End;
+End;
+
+(**
+
+  This method zips the projects files if this options is enabled.
+
+  @precon  ProjectOps and Project must be vaild references.
+  @postcon Zips the projects files if this options is enabled.
+
+  @param   Ops        as a TITHEnabledOptions as a constant
+  @param   ProjectOps as an IITHProjectOptions as a constant
+  @param   Project    as an IOTAProject as a constant
+  @param   strProject as a String as a constant
+
+**)
+Procedure TITHelperIDENotifier.ZipProjectFiles(Const Ops : TITHEnabledOptions;
+  Const ProjectOps : IITHProjectOptions; Const Project : IOTAProject; Const strProject : String);
+
+ResourceString
+  strZIPToolFailure = 'ZIP Tool Failure (%s).';
+
+Var
+  iResult: Integer;
+  ZipMgr : IITHZipManager;
+  
+Begin
+  If eoZip In Ops Then
+    Begin
+      ZipMgr := TITHZIPManager.Create(Project, FGlobalOps, ProjectOps, FMsgMgr);
+      iResult := ZipMgr.ZipProjectInformation;
+      If iResult > 0 Then
+        Begin
+          TfrmITHProcessing.ShowProcessing(Format(strZIPToolFailure,
+            [strProject]), FGlobalOps.FontColour[ithfFailure], True);
+          TITHToolsAPIFunctions.ShowHelperMessages(FGlobalOps.GroupMessages);
+          Abort;
+        End;
+    End;
+End;
+
 End.
-
-
-

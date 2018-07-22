@@ -10,7 +10,7 @@ CompileWithBRCC32=0
 MajorVer=2
 MinorVer=0
 ReleaseVer=0
-BuildVer=1576
+BuildVer=1633
 ResourceName=ITHelperVersionInfo
 
 [Zipping]
@@ -36,7 +36,7 @@ C:\Program Files\JPSoft\TCMD13x64\tcc.exe|BuildIndividualITHelper.btm DXE2 Packa
 [VersionInfo]
 CompanyName=Season's Fall Music
 FileDescription=Integrated Testing Helper for Embarcadero RAD Studio
-FileVersion=2.0.0.1576
+FileVersion=2.0.0.1633
 InternalName=ITHelper
 LegalCopyright=Season's Fall Music
 LegalTrademarks=Season's Fall Music
