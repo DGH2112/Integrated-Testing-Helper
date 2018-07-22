@@ -5,28 +5,30 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    18 Jul 2018
+  @Date    22 Jul 2018
   
 **)
 Unit ITHelper.ProjectOptionsFrame;
 
 Interface
 
+{$INCLUDE CompilerDefinitions.inc}
+
 Uses
-  Winapi.Windows,
-  Winapi.Messages,
-  System.SysUtils,
-  System.Variants,
-  System.Classes,
-  Vcl.Graphics,
-  Vcl.Controls,
-  Vcl.Forms,
-  Vcl.Dialogs,
-  Vcl.Buttons,
-  Vcl.ComCtrls,
-  Vcl.Grids,
-  Vcl.ValEdit,
-  Vcl.StdCtrls,
+  Windows,
+  Messages,
+  SysUtils,
+  Variants,
+  Classes,
+  Graphics,
+  Controls,
+  Forms,
+  Dialogs,
+  Buttons,
+  ComCtrls,
+  Grids,
+  ValEdit,
+  StdCtrls,
   ToolsAPI,
   ITHelper.Types,
   ITHelper.Interfaces;
@@ -67,7 +69,7 @@ Type
     Procedure btnGetVersionInfoClick(Sender: TObject);
   Strict Private
     FProject : IOTAProject;
-  Strict Protected
+  {$IFDEF D2010} Strict {$ENDIF} Protected
     Procedure InitialiseOptions(Const GlobalOps: IITHGlobalOptions; Const Project: IOTAProject = Nil;
       Const DlgType : TITHDlgType = dtNA);
     Procedure SaveOptions(Const GlobalOps: IITHGlobalOptions; Const Project: IOTAProject = Nil;
@@ -86,7 +88,11 @@ Uses
   {$IFDEF DEBUG}
   CodeSiteLogging,
   {$ENDIF}
-  System.IniFiles;
+  {$IFDEF DXE20}
+  CommonOptionStrs,
+  {$ENDIF}
+  IniFiles,
+  ITHelper.Constants;
 
 (**
 
@@ -103,11 +109,13 @@ Procedure TframeProjectOptions.btnGetVersionInfoClick(Sender: TObject);
 Const
   strMsg = 'Are you sure you want to replace the current version information with the ' +
     'version information from the IDE?';
+  {$IFNDEF DXE20}
   strMajorVersion = 'MajorVersion';
   strMinorVersion = 'MinorVersion';
   strRelease = 'Release';
   strBuild = 'Build';
   strKeys = 'Keys';
+  {$ENDIF}
 
 Var
   S : TStrings;
@@ -121,32 +129,32 @@ Var
   {$ENDIF}
 
 Begin
-  If MessageDlg(strMsg, mtConfirmation, [mbYes, mbNo], 0) <> mrYes Then
-    Exit;
-  {$IFDEF DXE20}
-  If FProject.ProjectOptions.QueryInterface(IOTAProjectOptionsConfigurations,
-    POC) = S_OK Then
+  If MessageDlg(strMsg, mtConfirmation, [mbYes, mbNo], 0) = mrYes Then
     Begin
-      AC := POC.ActiveConfiguration;
-      upMajor.Position := AC.AsInteger[sVerInfo_MajorVer];
-      upMinor.Position := AC.AsInteger[sVerInfo_MinorVer];
-      upRelease.Position := AC.AsInteger[sVerInfo_Release];
-      upBuild.Position := AC.AsInteger[sVerInfo_Build];
+      {$IFDEF DXE20}
+      If FProject.ProjectOptions.QueryInterface(IOTAProjectOptionsConfigurations, POC) = S_OK Then
+        Begin
+          AC := POC.ActiveConfiguration;
+          upMajor.Position := AC.AsInteger[sVerInfo_MajorVer];
+          upMinor.Position := AC.AsInteger[sVerInfo_MinorVer];
+          upRelease.Position := AC.AsInteger[sVerInfo_Release];
+          upBuild.Position := AC.AsInteger[sVerInfo_Build];
+          S := vleVersionInfo.Strings;
+          S.Text := StringReplace(AC.Value[sVerInfo_Keys], ';', #13#10, [rfReplaceAll]);
+        End;
+      {$ELSE}
+      PO := FProject.ProjectOptions;
+      upMajor.Position := PO.Values[strMajorVersion];
+      upMinor.Position := PO.Values[strMinorVersion];
+      upRelease.Position := PO.Values[strRelease];
+      upBuild.Position := PO.Values[strBuild];
+      i := VarAsType(PO.Values[strKeys], varInteger);
+      sl := TStrings(i);
       S := vleVersionInfo.Strings;
-      S.Text := StringReplace(AC.Value[sVerInfo_Keys], ';', #13#10, [rfReplaceAll]);
+      S.Assign(sl);
+      S.Text := StringReplace(S.Text, ';', #13#10, [rfReplaceAll]);
+      {$ENDIF}
     End;
-  {$ELSE}
-    PO := FProject.ProjectOptions;
-    upMajor.Position := PO.Values[strMajorVersion];
-    upMinor.Position := PO.Values[strMinorVersion];
-    upRelease.Position := PO.Values[strRelease];
-    upBuild.Position := PO.Values[strBuild];
-    i := VarAsType(PO.Values[strKeys], varInteger);
-    sl := TStrings(i);
-    S := vleVersionInfo.Strings;
-    S.Assign(sl);
-    S.Text := StringReplace(S.Text, ';', #13#10, [rfReplaceAll]);
-  {$ENDIF}
 End;
 
 (**
@@ -183,6 +191,7 @@ Procedure TframeProjectOptions.BuildChange(Sender: TObject; Button: TUDBtnType);
 
 Const
   strFileVersion = 'FileVersion';
+  strProductVersion = 'ProductVersion';
 
 Var
   S : TStrings;
@@ -190,9 +199,16 @@ Var
 Begin
   S := vleVersionInfo.Strings;
   If S.IndexOfName(strFileVersion) > -1 Then
-    S.Values[strFileVersion] :=
-      Format('%d.%d.%d.%d', [upMajor.Position, upMinor.Position, upRelease.Position,
-        upBuild.Position]);
+    S.Values[strFileVersion] := Format('%d.%d.%d.%d', [
+      upMajor.Position,
+      upMinor.Position,
+      upRelease.Position,
+      upBuild.Position]);
+  If S.IndexOfName(strProductVersion) > -1 Then
+    S.Values[strProductVersion] := Trim(Format('%d.%d%s', [
+      upMajor.Position,
+      upMinor.Position,
+      strRevisions[Succ(upRelease.Position)]]));
 End;
 
 (**
@@ -287,6 +303,7 @@ Var
   ProjectOps: IITHProjectOptions;
 
 Begin
+  FProject := Project;
   ProjectOps := GlobalOps.ProjectOptions(Project);
   Try
     chkIncrementBuildOnCompile.Checked := ProjectOps.IncOnCompile;

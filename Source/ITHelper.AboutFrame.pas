@@ -4,7 +4,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    18 Jul 2018
+  @Date    19 Jul 2018
 
 **)
 Unit ITHelper.AboutFrame;
@@ -37,7 +37,7 @@ Type
     lblEurekaLog: TLabel;
     lblBuildDate: TLabel;
   Strict Private
-  Strict Protected
+  {$IFDEF D2010} Strict {$ENDIF} Protected
     // IITHOptionsFrame
     Procedure InitialiseOptions(Const GlobalOps: IITHGlobalOptions; Const Project: IOTAProject = Nil;
       Const DlgType: TITHDlgType = dtNA);

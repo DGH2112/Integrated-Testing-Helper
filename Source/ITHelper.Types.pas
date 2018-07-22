@@ -4,12 +4,15 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    17 Jul 2018
+  @Date    22 Jul 2018
   
 **)
 Unit ITHelper.Types;
 
 Interface
+
+Uses
+  SysUtils;
 
 Type
   (** An enumerate to describe which font is to be read or written. **)
@@ -32,6 +35,9 @@ Type
 
   (** An enumerate to define which set of data the dialogue is to work with. **)
   TITHDlgType = (dtNA, dtBefore, dtAfter);
+
+  (** A custom exception for ITHelper problems. **)
+  EITHException = Class(Exception);
 
 Implementation
 

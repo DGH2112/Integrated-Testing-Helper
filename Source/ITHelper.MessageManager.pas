@@ -4,7 +4,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    18 Jul 2018
+  @Date    19 Jul 2018
   
 **)
 Unit ITHelper.MessageManager;
@@ -26,7 +26,7 @@ Type
     FMsgs        : TInterfaceList;
     FParentMsg   : IITHCustomMessage;
     FLastMessage : Int64;
-  Strict Protected
+  {$IFDEF D2010} Strict {$ENDIF} Protected
     // IITHMessageManager
     Function  GetCount : Integer;
     Function  GetItem(Const iIndex : Integer) : IITHCustomMessage;

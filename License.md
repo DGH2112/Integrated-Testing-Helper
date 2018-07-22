@@ -4,7 +4,7 @@ Author:  David Hoyle
 
 Version: 2.0
 
-Date:    05 Jan 2018
+Date:    22 Jul 2018
 
 
 
@@ -24,7 +24,7 @@ the code be used in a commercial product with out the author's consent.
 
 regards
 
-David Hoyle (c) 05 Jan 2018
+David Hoyle (c) 22 Jul 2018
 
 davidghoyle@gmail.com
 

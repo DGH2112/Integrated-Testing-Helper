@@ -5,7 +5,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    18 Jul 2018
+  @Date    19 Jul 2018
   
 **)
 Unit ITHelper.ProjectOptions;
@@ -28,7 +28,7 @@ Type
     FModified   : Boolean;
     FVerInfo    : TStringList;
     FAddZipFiles: TStringList;
-  Strict Protected
+  {$IFDEF D2010} Strict {$ENDIF} Protected
     Function  GetResExtExc: String;
     Function  GetIncOnCompile: Boolean;
     Function  GetCopyVerInfo: String;

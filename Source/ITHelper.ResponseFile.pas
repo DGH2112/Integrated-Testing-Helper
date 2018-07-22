@@ -5,7 +5,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    18 Jul 2018
+  @Date    22 Jul 2018
   
 **)
 Unit ITHelper.ResponseFile;
@@ -30,7 +30,7 @@ Type
     FResponseFile : TStringList;
     FFileName     : String;
     FMsgMgr       : IITHMessageManager;
-  Strict Protected
+  {$IFDEF D2010} Strict {$ENDIF} Protected
     // IITHResponseFile
     Function  GetFileName : String;
     // General Methods
@@ -64,9 +64,9 @@ Uses
   ITHelper.ProcessingForm, 
   ITHelper.CommonFunctions, 
   ITHelper.Types, 
-  System.StrUtils, 
+  StrUtils, 
   ITHelper.PascalParsing, 
-  System.Variants;
+  Variants;
 
 (**
 
@@ -109,12 +109,16 @@ Var
   ModuleInfo: IOTAModuleInfo;
   iFile: Integer;
   slFiles : TStringList;
+  {$IFDEF DXE00}
+  sl: TStringList;
+  {$ENDIF}
 
 Begin
   slFiles := TStringList.Create;
   Try
-    // 160 and above (Delphi 8)
+    {$IFDEF D2010}
     FProject.GetCompleteFileList(slFiles);
+    {$ENDIF}
     For iFile := 0 To slFiles.Count - 1 Do
       AddToList(strBasePath, slFiles[iFile]);
     // Manually
@@ -126,7 +130,17 @@ Begin
         For iFile := 0 To slFiles.Count - 1 Do
           AddToList(strBasePath, slFiles[iFile]);
       End;
-    FProject.GetAssociatedFilesFromModule(slFiles);
+    {$IFDEF DXE00}
+    // Prevent Duplicates
+    sl := TstringList.Create;
+    Try
+      FProject.GetAssociatedFilesFromModule(sl);
+      For iFile := 0 To sl.Count - 1 Do
+        AddToList(strBasePath, sl[iFile]);
+    Finally
+      sl.Free;
+    End;
+    {$ENDIF}
     For iFile := 0 To FProject.ModuleFileCount - 1 Do
       AddToList(strBasePath, FProject.ModuleFileEditors[iFile].FileName);
   Finally
@@ -167,7 +181,8 @@ Begin
           If strNewModuleName <> '' Then
             Begin
               Result := FResponseFile.Find(strNewModuleName, iIndex);
-              FResponseFile.Add(strNewModuleName);
+              If Not Result Then
+                FResponseFile.Add(strNewModuleName);
             End;
         End;
     End;

@@ -4,25 +4,27 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    18 Jul 2018
+  @Date    19 Jul 2018
   
 **)
 Unit ITHelper.FontFrame;
 
 Interface
 
+{$INCLUDE CompilerDefinitions.inc}
+
 Uses
-  Winapi.Windows,
-  Winapi.Messages,
-  System.SysUtils,
-  System.Variants,
-  System.Classes,
-  Vcl.Graphics,
-  Vcl.Controls,
-  Vcl.Forms,
-  Vcl.Dialogs,
-  Vcl.StdCtrls,
-  Vcl.ExtCtrls,
+  Windows,
+  Messages,
+  SysUtils,
+  Variants,
+  Classes,
+  Graphics,
+  Controls,
+  Forms,
+  Dialogs,
+  StdCtrls,
+  ExtCtrls,
   ToolsAPI,
   ITHelper.Types,
   ITHelper.Interfaces;
@@ -50,7 +52,7 @@ Type
     FFontColour: Array [Low(TITHFonts) .. High(TITHFonts)] Of TColor;
     FFontStyle : Array [Low(TITHFonts) .. High(TITHFonts)] Of TFontStyles;
     FUpdating  : Boolean;
-  Strict Protected
+  {$IFDEF D2010} Strict {$ENDIF} Protected
     Procedure InitialiseOptions(Const GlobalOps: IITHGlobalOptions; Const Project: IOTAProject = Nil;
       Const DlgType: TITHDlgType = dtNA);
     Function IsValidated: Boolean;

@@ -5,7 +5,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    18 Jul 2018
+  @Date    19 Jul 2018
 
 **)
 Unit ITHelper.ProjectManagerMenuInterface;
@@ -15,7 +15,6 @@ Interface
 {$INCLUDE 'CompilerDefinitions.inc'}
 
 {$IFDEF D2005}
-
 Uses
   ToolsAPI,
   ITHelper.Wizard,
@@ -25,24 +24,23 @@ Uses
 Type
   (** A class to handle the creation of a menu for the project manager. **)
   TITHProjectManagerMenu = Class(TNotifierObject, IOTANotifier,
-    {$IFNDEF D2010} INTAProjectMenuCreatorNotifier {$ELSE} IOTAProjectMenuItemCreatorNotifier {$ENDIF})
+    {$IFDEF D2010} IOTAProjectMenuItemCreatorNotifier {$ELSE} INTAProjectMenuCreatorNotifier {$ENDIF})
   Strict Private
     FWizard: TITHWizard;
-  Strict Protected
+  {$IFDEF D2010} Strict {$ENDIF} Protected
     // IOTANotifier
     Procedure AfterSave;
     Procedure BeforeSave;
     Procedure Destroyed;
     Procedure Modified;
-    {$IFNDEF D2010}
-    // INTAProjectMenuCreatorNotifier
-    Function AddMenu(Const Ident: String): TMenuItem;
-    Function CanHandle(Const Ident: String): Boolean;
-    {$ENDIF}
     {$IFDEF D2010}
     // IOTAProjectMenuItemCreatorNotifier
     Procedure AddMenu(Const Project: IOTAProject; Const IdentList: TStrings;
       Const ProjectManagerMenuList: IInterfaceList; IsMultiSelect: Boolean);
+    {$ELSE}
+    // INTAProjectMenuCreatorNotifier
+    Function AddMenu(Const Ident: String): TMenuItem;
+    Function CanHandle(Const Ident: String): Boolean;
     {$ENDIF}
     // General Methods
     Procedure OptionsClick(Sender: TObject);
@@ -51,8 +49,7 @@ Type
     Destructor Destroy; Override;
   End;
 
-  {$IFDEF D2010}
-
+{$IFDEF D2010}
 (** A class to define a Delphi 2010 Project Menu Item. **)
   TITHelperProjectMenu = Class(TNotifierObject, IOTALocalMenu, IOTAProjectManagerMenu)
   Strict Private
@@ -94,8 +91,8 @@ Type
       strVerb, strParent: String; Const iPosition: Integer; Const Setting: TSetting);
     Destructor Destroy; Override;
   End;
-  {$ENDIF}
-  {$ENDIF}
+{$ENDIF}
+{$ENDIF}
 
 Implementation
 
@@ -106,6 +103,9 @@ Uses
   CodeSiteLogging,
   {$ENDIF}
   SysUtils,
+  {$IFNDEF D2010}
+  ITHelper.CommonFunctions,
+  {$ENDIF}
   ITHelper.TestingHelperUtils;
 
 ResourceString
@@ -134,57 +134,7 @@ Const
 
 { TProjectManagerMenu }
 
-  {$IFNDEF D2010}
-
-(**
-
-  This method create a menu to be displayed in the project manager for handling
-  the configuration of Integrated Testing Helper Options.
-
-  @precon  None.
-  @postcon Create a menu to be displayed in the project manager for handling
-           the configuration of Integrated Testing Helper Options.
-
-  @param   Ident as a string as a constant
-  @return  a TMenuItem
-
-**)
-Function TProjectManagerMenu.AddMenu(Const Ident: String): TMenuItem;
-
-Var
-  SM: TMenuItem;
-
-Begin
-  Result := Nil;
-  If Like(sProjectContainer, Ident) Then
-    Begin
-      Result         := TMenuItem.Create(Nil);
-      Result.Caption := strMainCaption;
-      SM             := TMenuItem.Create(Nil);
-      SM.Caption     := strProjectCaption;
-      SM.Name        := strProjectName;
-      SM.OnClick     := OptionsClick;
-      Result.Add(SM);
-      SM         := TMenuItem.Create(Nil);
-      SM.Caption := strBeforeCaption;
-      SM.Name    := strBeforeName;
-      SM.OnClick := OptionsClick;
-      Result.Add(SM);
-      SM         := TMenuItem.Create(Nil);
-      SM.Caption := strAfterCaption;
-      SM.Name    := strAfterName;
-      SM.OnClick := OptionsClick;
-      Result.Add(SM);
-      SM         := TMenuItem.Create(Nil);
-      SM.Caption := strZIPCaption;
-      SM.Name    := strZIPName;
-      SM.OnClick := OptionsClick;
-      Result.Add(SM);
-    End;
-End;
-
-{$ELSE}
-
+{$IFDEF D2010}
 (**
 
   This method create a menu to be displayed in the project manager for handling the configuration of 
@@ -242,6 +192,53 @@ Begin
         ProjectManagerMenuList.Add(TITHelperProjectMenu.Create(FWizard, Project,
           strZIPCaption, strZIPName, strZIPName, strMainName, iPosition + 4, seZIP));
       End;
+End;
+{$ELSE}
+(**
+
+  This method create a menu to be displayed in the project manager for handling
+  the configuration of Integrated Testing Helper Options.
+
+  @precon  None.
+  @postcon Create a menu to be displayed in the project manager for handling
+           the configuration of Integrated Testing Helper Options.
+
+  @param   Ident as a string as a constant
+  @return  a TMenuItem
+
+**)
+Function TITHProjectManagerMenu.AddMenu(Const Ident: String): TMenuItem;
+
+Var
+  SM: TMenuItem;
+
+Begin
+  Result := Nil;
+  If Like(sProjectContainer, Ident) Then
+    Begin
+      Result         := TMenuItem.Create(Nil);
+      Result.Caption := strMainCaption;
+      SM             := TMenuItem.Create(Nil);
+      SM.Caption     := strProjectCaption;
+      SM.Name        := strProjectName;
+      SM.OnClick     := OptionsClick;
+      Result.Add(SM);
+      SM         := TMenuItem.Create(Nil);
+      SM.Caption := strBeforeCaption;
+      SM.Name    := strBeforeName;
+      SM.OnClick := OptionsClick;
+      Result.Add(SM);
+      SM         := TMenuItem.Create(Nil);
+      SM.Caption := strAfterCaption;
+      SM.Name    := strAfterName;
+      SM.OnClick := OptionsClick;
+      Result.Add(SM);
+      SM         := TMenuItem.Create(Nil);
+      SM.Caption := strZIPCaption;
+      SM.Name    := strZIPName;
+      SM.OnClick := OptionsClick;
+      Result.Add(SM);
+    End;
 End;
 {$ENDIF}
 

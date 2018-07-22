@@ -4,7 +4,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    18 Jul 2018
+  @Date    19 Jul 2018
   
 **)
 Unit ITHelper.VersionManager;
@@ -23,7 +23,7 @@ Type
     FProjectOps : IITHProjectOptions;
     FProject    : IOTAProject;
     FMsgMgr     : IITHMessageManager;
-  Strict Protected
+  {$IFDEF D2010} Strict {$ENDIF} Protected
     // IITHVersionManager
     Procedure BuildProjectVersionResource();
     // General Methods

@@ -146,6 +146,7 @@ object frameProjectOptions: TframeProjectOptions
       Width = 16
       Height = 24
       Associate = edtMajor
+      Max = 10000
       TabOrder = 1
       OnClick = BuildChange
     end
@@ -159,11 +160,12 @@ object frameProjectOptions: TframeProjectOptions
       Text = '0'
     end
     object upMinor: TUpDown
-      Left = 254
-      Top = 34
+      Left = 260
+      Top = 31
       Width = 16
       Height = 24
       Associate = edtMinor
+      Max = 10000
       TabOrder = 3
       OnClick = BuildChange
     end
@@ -182,6 +184,7 @@ object frameProjectOptions: TframeProjectOptions
       Width = 16
       Height = 24
       Associate = edtRelease
+      Max = 26
       TabOrder = 5
       OnClick = BuildChange
     end
@@ -200,7 +203,7 @@ object frameProjectOptions: TframeProjectOptions
       Width = 16
       Height = 24
       Associate = edtBuild
-      Max = 10000
+      Max = 1000000
       TabOrder = 7
       OnClick = BuildChange
     end
