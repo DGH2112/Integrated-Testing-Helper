@@ -4,7 +4,7 @@
   external tools before and after the compilation of the current project.
 
   @Version 1.0
-  @Date    20 Jul 2018
+  @Date    22 Jul 2018
   @Author  David Hoyle
 
 **)
@@ -111,6 +111,7 @@ Uses
   ITHelper.AboutFrame,
   ITHelper.GlobalOptionsDlg;
 
+{$IFDEF DXE00}
 ResourceString
   (** A string path to the ITHelper About options in the IDEs options dialogue. **)
   strAboutITHelperPath = 'ITHelper';
@@ -118,6 +119,7 @@ ResourceString
   strGlobalOptionsPath = 'ITHelper.Global Options';
   (** A string path to the Fonts Options in the IDEs options dialogue. **)
   strFontsPath = 'ITHelper.Fonts';
+{$ENDIF}
 
 Const
   (** A constant to define the failed state of a wizard / notifier interface. **)
