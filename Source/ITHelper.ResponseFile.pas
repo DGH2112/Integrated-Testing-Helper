@@ -5,7 +5,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    21 Jul 2018
+  @Date    22 Jul 2018
   
 **)
 Unit ITHelper.ResponseFile;
@@ -109,7 +109,9 @@ Var
   ModuleInfo: IOTAModuleInfo;
   iFile: Integer;
   slFiles : TStringList;
+  {$IFDEF DXE00}
   sl: TStringList;
+  {$ENDIF}
 
 Begin
   slFiles := TStringList.Create;
