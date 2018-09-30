@@ -4,7 +4,7 @@
 
   @Version 1.0
   @Author  David Hoyle
-  @Date    05 Jan 2018
+  @Date    21 Sep 2018
 
 **)
 Unit ITHelper.OTAInterfaces;
@@ -48,7 +48,7 @@ Function InitWizard(Const BorlandIDEServices : IBorlandIDEServices; RegisterProc
   Var Terminate: TWizardTerminateProc) : Boolean; StdCall; //FI:O804
 
 Begin
-  Result := BorlandIDEServices <> Nil;
+  Result := Assigned(BorlandIDEServices);
   If Result Then
     RegisterProc(TITHWizard.Create);
 End;
