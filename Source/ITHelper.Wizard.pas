@@ -4,7 +4,7 @@
   external tools before and after the compilation of the current project.
 
   @Version 1.0
-  @Date    22 Jul 2018
+  @Date    30 Sep 2018
   @Author  David Hoyle
 
 **)
@@ -97,7 +97,7 @@ Uses
   ITHelper.ProcessingForm,
   ITHelper.ExternalProcessInfo,
   ITHelper.ProjectManagerMenuInterface,
-  ITHelper.ProjectOptionsDialogue, 
+  ITHelper.ProjectOpsDlg, 
   ITHelper.SplashScreen, 
   ITHelper.AboutBox, 
   ITHelper.IDENotifierInterface, 
@@ -166,7 +166,7 @@ End;
 Procedure TITHWizard.AfterCompilation(Const Project: IOTAProject);
 
 Begin
-  TfrmITHProjectOptionsDialogue.Execute(potAfterCompile, FGlobalOps, Project);
+  TfrmITHProjectOpsDlg.Execute(potAfterCompile, FGlobalOps, Project);
 End;
 
 (**
@@ -241,7 +241,7 @@ End;
 Procedure TITHWizard.BeforeCompilation(Const Project: IOTAProject);
 
 Begin
-  TfrmITHProjectOptionsDialogue.Execute(potBeforeCompile, FGlobalOps, Project);
+  TfrmITHProjectOpsDlg.Execute(potBeforeCompile, FGlobalOps, Project);
 End;
 
 (**
@@ -677,7 +677,7 @@ End;
 Procedure TITHWizard.ProjectOptions(Const Project: IOTAProject);
 
 Begin
-  TfrmITHProjectOptionsDialogue.Execute(potProjectOptions, FGlobalOps, Project);
+  TfrmITHProjectOpsDlg.Execute(potProjectOptions, FGlobalOps, Project);
 End;
 
 (**
@@ -881,7 +881,7 @@ End;
 Procedure TITHWizard.ZIPOptions(Const Project: IOTAProject);
 
 Begin
-  TfrmITHProjectOptionsDialogue.Execute(potZipping, FGlobalOps, Project);
+  TfrmITHProjectOpsDlg.Execute(potZipping, FGlobalOps, Project);
 End;
 
 End.

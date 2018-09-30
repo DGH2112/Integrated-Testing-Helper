@@ -4,7 +4,7 @@
 
   @Version 1.0
   @Author  David Hoyle
-  @Date    15 Jul 2018
+  @Date    30 Sep 2018
 
 **)
 unit ITHelper.TestingHelperUtils;
@@ -14,14 +14,16 @@ interface
 {$INCLUDE 'CompilerDefinitions.inc'}
 
 Uses
-  SysUtils,
   ToolsAPI,
+  SysUtils,
   Windows,
   Graphics,
   Classes,
   Contnrs,
   Menus,
-  ITHelper.Interfaces, ITHelper.Types;
+  Forms,
+  ITHelper.Interfaces,
+  ITHelper.Types;
 
 Type
   (** An enumerate to define the type of information to be returned from
@@ -60,6 +62,8 @@ Type
       Const strShortCut : String; Const iMaskColour : TColor = clLime) : TMenuItem; Static;
     Class Procedure ClearMessages(Const Msg : TClearMessages); Static;
     Class Procedure ShowHelperMessages(Const boolITHGroup : Boolean); Static;
+    Class Procedure RegisterFormClassForTheming(Const AFormClass : TCustomFormClass); Static;
+    Class Procedure ApplyTheming(Const Component : TComponent); Static;
     {$ENDIF}
     Class Function  ProjectGroup: IOTAProjectGroup; Static;
     Class Function  GetProjectName(Const Project : IOTAProject) : String; Static;
@@ -75,7 +79,6 @@ Uses
   {$IFDEF DEBUG}
   CodeSiteLogging,
   {$ENDIF}
-  Forms,
   Controls,
   ActnList,
   {$IFNDEF CONSOLE_TESTRUNNER} 
@@ -351,6 +354,34 @@ Begin
     Result := G.ActiveProject;
 End;
 
+{$IFNDEF CONSOLE_TESTRUNNER}
+(**
+
+  This method wraps the Tools API ApplyTheme method from the IDEThemingServices so that components that
+  do not theme can be handled here on one place.
+
+  @precon  Component must be a valid root component to be themed along with its children.
+  @postcon The component and its children are themed.
+
+  @param   Component as a TComponent as a constant
+
+**)
+Class Procedure TITHToolsAPIFunctions.ApplyTheming(Const Component: TComponent);
+
+{$IFDEF DXE102}
+Var
+  ITS : IOTAIDEThemingServices250;
+{$ENDIF}
+
+Begin
+  {$IFDEF DXE102}
+  If Supports(BorlandIDEServices, IOTAIDEThemingServices, ITS) Then
+    If ITS.IDEThemingEnabled Then
+      ITS.ApplyTheme(Component);
+  {$ENDIF}
+End;
+{$ENDIF}
+
 (**
 
   This method clears the IDE message window of the given message types.
@@ -608,6 +639,33 @@ Begin
       Result := AProjectGroup;
     End;
 end;
+
+{$IFNDEF CONSOLE_TESTRUNNER}
+(**
+
+  This method wraps the IDE Theming Service Register Form Class method to simplify its implementation.
+
+  @precon  None.
+  @postcon The form class passed is registered for theming.
+
+  @param   AFormClass as a TCustomFormClass as a constant
+
+**)
+Class Procedure TITHToolsAPIFunctions.RegisterFormClassForTheming(Const AFormClass : TCustomFormClass);
+
+{$IFDEF DXE102}
+Var
+  ITS : IOTAIDEThemingServices250;
+{$ENDIF}
+
+Begin
+  {$IFDEF DXE102}
+  If Supports(BorlandIDEServices, IOTAIDEThemingServices, ITS) Then
+    If ITS.IDEThemingEnabled Then
+      ITS.RegisterFormClass(AFormClass);
+  {$ENDIF}
+End;
+{$ENDIF}
 
 (**
 

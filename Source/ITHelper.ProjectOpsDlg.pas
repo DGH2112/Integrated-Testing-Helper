@@ -5,10 +5,10 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    18 Jul 2018
+  @Date    30 Sep 2018
 
 **)
-Unit ITHelper.ProjectOptionsDialogue;
+Unit ITHelper.ProjectOpsDlg;
 
 Interface
 
@@ -43,11 +43,11 @@ Type
   TITHOptionsPage = (opProjectOptions, opBeforeCompileTools, opAfterCompileTools, opZipping);
   
   (** A class to represent the project options form. **)
-  TfrmITHProjectOptionsDialogue = Class(TForm)
+  TfrmITHProjectOpsDlg = Class(TForm)
+    pgcProjectOptions: TPageControl;
+    btnHelp: TBitBtn;
     btnOK: TBitBtn;
     btnCancel: TBitBtn;
-    btnHelp: TBitBtn;
-    pgcProjectOptions: TPageControl;
     tabProjectOptions: TTabSheet;
     tabBeforeCompileTools: TTabSheet;
     tabAfterCompileTools: TTabSheet;
@@ -103,7 +103,7 @@ Const
   @param   Sender as a TObject
 
 **)
-Procedure TfrmITHProjectOptionsDialogue.btnHelpClick(Sender: TObject);
+Procedure TfrmITHProjectOpsDlg.btnHelpClick(Sender: TObject);
 
 Const
   strProjectOptions = 'ProjectOptions';
@@ -132,7 +132,7 @@ End;
   @param   Sender as a TObject
 
 **)
-Procedure TfrmITHProjectOptionsDialogue.btnOKClick(Sender: TObject);
+Procedure TfrmITHProjectOpsDlg.btnOKClick(Sender: TObject);
 
 Begin
   If Not (
@@ -155,18 +155,20 @@ End;
   @param   Project           as an IOTAProject as a constant
 
 **)
-Class Procedure TfrmITHProjectOptionsDialogue.Execute(Const ProjectOptionType : TITHProjectOptionType;
+Class Procedure TfrmITHProjectOpsDlg.Execute(Const ProjectOptionType : TITHProjectOptionType;
   Const GlobalOps: IITHGlobalOptions; Const Project: IOTAProject);
 
 ResourceString
   strProjectOptionsFor = 'Project Options for %s';
 
 Var
-  frm: TfrmITHProjectOptionsDialogue;
+  frm: TfrmITHProjectOpsDlg;
 
 Begin
-  frm := TfrmITHProjectOptionsDialogue.Create(Nil);
+  //: @bug TITHToolsAPIFunctions.RegisterFormClassForTheming(TfrmITHProjectOpsDlg);
+  frm := TfrmITHProjectOpsDlg.Create(Nil);
   Try
+    TITHToolsAPIFunctions.ApplyTheming(frm);
     frm.Caption := Format(strProjectOptionsFor, [TITHToolsAPIFunctions.GetProjectName(Project)]);
     frm.LoadSettings(GlobalOps);
     frm.FProjectOptions.InitialiseOptions(GlobalOps, Project);
@@ -202,7 +204,7 @@ End;
   @param   Sender as a TObject
 
 **)
-Procedure TfrmITHProjectOptionsDialogue.FormCreate(Sender: TObject);
+Procedure TfrmITHProjectOpsDlg.FormCreate(Sender: TObject);
 
 ResourceString
   strIITHOptionsFrameNotSupported = 'IITHOptionsFrame not supported!';
@@ -253,7 +255,7 @@ End;
   @param   GlobalOps as an IITHGlobalOptions as a constant
 
 **)
-Procedure TfrmITHProjectOptionsDialogue.LoadSettings(Const GlobalOps: IITHGlobalOptions);
+Procedure TfrmITHProjectOpsDlg.LoadSettings(Const GlobalOps: IITHGlobalOptions);
 
 Var
   iniFile: TMemIniFile;
@@ -280,7 +282,7 @@ End;
   @param   GlobalOps as an IITHGlobalOptions as a constant
 
 **)
-Procedure TfrmITHProjectOptionsDialogue.SaveSettings(Const GlobalOps: IITHGlobalOptions);
+Procedure TfrmITHProjectOpsDlg.SaveSettings(Const GlobalOps: IITHGlobalOptions);
 
 Var
   iniFile: TMemIniFile;

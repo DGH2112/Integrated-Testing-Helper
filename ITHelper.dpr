@@ -4,7 +4,7 @@
   implement an IDE wizard.
 
   @Author  David Hoyle
-  @Date    18 Jul 2018
+  @Date    30 Sep 2018
   @Version 2.0
 
   @nocheck EmptyBEGINEND
@@ -36,7 +36,6 @@ uses
   ITHelper.ProjectManagerMenuInterface in 'Source\ITHelper.ProjectManagerMenuInterface.pas',
   ITHelper.IDENotifierInterface in 'Source\ITHelper.IDENotifierInterface.pas',
   ITHelper.GlobalOptions in 'Source\ITHelper.GlobalOptions.pas',
-  ITHelper.ProjectOptionsDialogue in 'Source\ITHelper.ProjectOptionsDialogue.pas' {frmITHProjectOptionsDialogue},
   ITHelper.SplashScreen in 'Source\ITHelper.SplashScreen.pas',
   ITHelper.CommonFunctions in 'Source\ITHelper.CommonFunctions.pas',
   ITHelper.Constants in 'Source\ITHelper.Constants.pas',
@@ -61,7 +60,8 @@ uses
   ITHelper.AddInOptions in 'Source\ITHelper.AddInOptions.pas',
   ITHelper.AboutFrame in 'Source\ITHelper.AboutFrame.pas' {frameAboutITHelper: TFrame},
   ITHelper.FontFrame in 'Source\ITHelper.FontFrame.pas' {frameFonts: TFrame},
-  ITHelper.GlobalOptionsDlg in 'Source\ITHelper.GlobalOptionsDlg.pas' {frmITHGlobalOptionsDlg};
+  ITHelper.GlobalOptionsDlg in 'Source\ITHelper.GlobalOptionsDlg.pas' {frmITHGlobalOptionsDlg},
+  ITHelper.ProjectOpsDlg in 'Source\ITHelper.ProjectOpsDlg.pas' {frmITHProjectOpsDlg};
 
 {$R *.res}
 

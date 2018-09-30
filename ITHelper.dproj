@@ -119,9 +119,6 @@
         <DCCReference Include="Source\ITHelper.ProjectManagerMenuInterface.pas"/>
         <DCCReference Include="Source\ITHelper.IDENotifierInterface.pas"/>
         <DCCReference Include="Source\ITHelper.GlobalOptions.pas"/>
-        <DCCReference Include="Source\ITHelper.ProjectOptionsDialogue.pas">
-            <Form>frmITHProjectOptionsDialogue</Form>
-        </DCCReference>
         <DCCReference Include="Source\ITHelper.SplashScreen.pas"/>
         <DCCReference Include="Source\ITHelper.CommonFunctions.pas"/>
         <DCCReference Include="Source\ITHelper.Constants.pas"/>
@@ -176,6 +173,10 @@
         </DCCReference>
         <DCCReference Include="Source\ITHelper.GlobalOptionsDlg.pas">
             <Form>frmITHGlobalOptionsDlg</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="Source\ITHelper.ProjectOpsDlg.pas">
+            <Form>frmITHProjectOpsDlg</Form>
             <FormType>dfm</FormType>
         </DCCReference>
         <None Include="Source\CompilerDefinitions.inc"/>
