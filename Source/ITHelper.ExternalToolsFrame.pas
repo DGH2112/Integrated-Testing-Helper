@@ -28,7 +28,7 @@ Uses
   ToolsAPI,
   ITHelper.Types,
   ITHelper.Interfaces,
-  ITHelper.ExternalProcessInfo, System.ImageList;
+  ITHelper.ExternalProcessInfo;
 
 Type
   (** This is a frame for representing the before or after compile tools to be run. **)
