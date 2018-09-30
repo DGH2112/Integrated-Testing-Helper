@@ -5,7 +5,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    19 Jul 2018
+  @Date    30 Sep 2018
   
 **)
 Unit ITHelper.CustomMessages;
@@ -184,6 +184,10 @@ End;
 **)
 Procedure TITHCustomMessage.Draw(Canvas: TCanvas; Const Rect: TRect; Wrap: Boolean); //FI:O804
 
+Var
+  R: TRect;
+  strMsg: String;
+
 Begin
   If Canvas.Brush.Color = clWindow Then
     Begin
@@ -191,9 +195,11 @@ Begin
       Canvas.Brush.Color := FBackColour;
       Canvas.FillRect(Rect);
     End;
+  R := Rect;
+  strMsg := FMsg;
   Canvas.Font.Name := FFontName;
   Canvas.Font.Style := FStyle;
-  Canvas.TextOut(Rect.Left, Rect.Top, FMsg);
+  Canvas.TextRect(R, strMsg, [tfLeft, tfVerticalCenter, tfEndEllipsis]);
 End;
 
 (**
