@@ -5,7 +5,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    02 Mar 2018
+  @Date    30 Sep 2018
 
 **)
 Unit ITHelper.ProcessingForm;
@@ -64,7 +64,7 @@ Implementation
 {$R *.dfm}
 
 Uses
-  Math;
+  Math, ITHelper.TestingHelperUtils;
 
 
 Var
@@ -241,6 +241,7 @@ Begin
   FormInstance.FInfo.Font.Color := iColour;
   FormInstance.FMessage := strMsg;
   CheckWidth;
+  TITHToolsAPIFunctions.ApplyTheming(FormInstance);
   If Not FormInstance.Visible Then
     FormInstance.Show;
   FormInstance.FFileName.Caption := '';
@@ -270,8 +271,10 @@ End;
 
 (** Creates an instance of the form for use in the application. **)
 Initialization
+  //: @bug TITHToolsAPIFunctions.RegisterFormClassForTheming(TfrmITHProcessing);
   FormInstance := TfrmITHProcessing.Create(Nil);
   FormInstance.InitialiseControls;
+  TITHToolsAPIFunctions.ApplyTheming(FormInstance);
 (** Frees the form at unloading. **)
 Finalization
   FormInstance.Free;

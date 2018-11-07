@@ -4,7 +4,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    19 Jul 2018
+  @Date    07 Nov 2018
   
 **)
 Unit ITHelper.FontFrame;
@@ -45,6 +45,9 @@ Type
     cbxHeaderFontName: TComboBox;
     lblToolFontName: TLabel;
     lblHeaderFontName: TLabel;
+    pnlFudgePanel: TPanel;
+    gpnlFontStyles: TGridPanel;
+    pnlFontNames: TPanel;
     Procedure FontStyleClick(Sender: TObject);
     Procedure cbxMessageTypeClick(Sender: TObject);
     procedure clbxFontColourClick(Sender: TObject);

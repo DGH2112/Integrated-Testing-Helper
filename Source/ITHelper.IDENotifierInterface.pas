@@ -5,7 +5,7 @@
 
   @Author  David Hoyle.
   @Version 1.0
-  @Date    22 Jul 2018
+  @Date    07 Nov 2018
 
 **)
 Unit ITHelper.IDENotifierInterface;
@@ -28,8 +28,8 @@ Uses
 
 Type
   (** A class to implement the IDE notifier interfaces **)
-  TITHelperIDENotifier = Class(TNotifierObject, IOTANotifier, IOTAIDENotifier, IOTAIDENotifier50,
-    IOTAIDENotifier80)
+  TITHelperIDENotifier = Class(TNotifierObject, IUnknown, IOTANotifier, IOTAIDENotifier,
+    IOTAIDENotifier50, IOTAIDENotifier80)
   Strict Private
     { Private declarations }
     FGlobalOps             : IITHGlobalOptions;

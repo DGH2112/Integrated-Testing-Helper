@@ -4,7 +4,7 @@
 
   @Version 1.0
   @Author  David Hoyle
-  @Date    19 Jul 2018
+  @Date    07 Nov 2018
   
 **)
 Unit ITHelper.GlobalOptionsFrame;
@@ -26,7 +26,7 @@ Uses
   Buttons,
   ToolsAPI,
   ITHelper.Types,
-  ITHelper.Interfaces;
+  ITHelper.Interfaces, Vcl.ExtCtrls;
 
 Type
   (** A frame to hold the global options. **)
@@ -47,6 +47,7 @@ Type
     lblZipParams: TLabel;
     lblZIPEXE: TLabel;
     lblClearMessagesAfter: TLabel;
+    pnlFudgePanel: TPanel;
     Procedure btnBrowseZipEXEClick(Sender: TObject);
     Procedure lvShortcutsSelectItem(Sender: TObject; Item: TListItem; Selected: Boolean);
     Procedure btnAssignClick(Sender: TObject);

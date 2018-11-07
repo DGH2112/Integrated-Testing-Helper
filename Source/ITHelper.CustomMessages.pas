@@ -5,7 +5,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    19 Jul 2018
+  @Date    07 Nov 2018
   
 **)
 Unit ITHelper.CustomMessages;
@@ -16,13 +16,14 @@ Interface
 
 Uses
   ToolsAPI,
-  Graphics,
-  Windows,
+  VCL.Graphics,
+  VCL.Themes,
+  WinApi.Windows,
   ITHelper.Interfaces;
 
 Type
   (** This class defined a custom message for the IDE. **)
-  TITHCustomMessage = Class(TInterfacedObject, IOTACustomMessage, INTACustomDrawMessage,
+  TITHCustomMessage = Class(TInterfacedObject, IUnknown, IOTACustomMessage, INTACustomDrawMessage,
     IITHCustomMessage)
   Strict Private
     FMsg         : String;
@@ -31,7 +32,10 @@ Type
     FStyle       : TFontStyles;
     FBackColour  : TColor;
     FMessagePntr : Pointer;
-  {$IFDEF D2010} Strict {$ENDIF} Protected
+    {$IFDEF DXE102}
+    FStyleServices : TCustomStyleServices;
+    {$ENDIF}
+  Strict Protected
     // IOTACustomMessage
     Function GetColumnNumber: Integer;
     Function GetFileName: String;
@@ -48,8 +52,8 @@ Type
     // General Methods
   Public
     Constructor Create(Const strMsg : String; Const FontName : String;
-      Const ForeColour : TColor = clBlack; Const Style : TFontStyles = [];
-      Const BackColour : TColor = clWindow);
+      Const ForeColour : TColor = clNone; Const Style : TFontStyles = [];
+      Const BackColour : TColor = clNone);
     Destructor Destroy; Override;
   End;
 
@@ -111,8 +115,8 @@ End;
 
 **)
 Constructor TITHCustomMessage.Create(Const strMsg: String; Const FontName: String;
-  Const ForeColour: TColor = clBlack; Const Style: TFontStyles = [];
-  Const BackColour: TColor = clWindow);
+  Const ForeColour: TColor = clNone; Const Style: TFontStyles = [];
+  Const BackColour: TColor = clNone);
 
 Const
   strValidChars: Set Of AnsiChar = [#10, #13, #32 .. #128];
@@ -120,6 +124,9 @@ Const
 Var
   i: Integer;
   iLength: Integer;
+  {$IFDEF DXE102}
+  ITS : IOTAIDEThemingServices;
+  {$ENDIF}
 
 Begin
   {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Create', tmoTiming);{$ENDIF}
@@ -141,6 +148,12 @@ Begin
   FStyle := Style;
   FBackColour := BackColour;
   FMessagePntr := Nil;
+  {$IFDEF DXE102}
+  FStyleServices := Nil;
+  If Supports(BorlandIDEServices, IOTAIDEThemingServices, ITS) Then
+    If ITS.IDEThemingEnabled Then
+      FStyleServices := ITS.StyleServices;
+  {$ENDIF}
 End;
 
 (**
@@ -184,16 +197,48 @@ End;
 **)
 Procedure TITHCustomMessage.Draw(Canvas: TCanvas; Const Rect: TRect; Wrap: Boolean); //FI:O804
 
+Var
+  R: TRect;
+  strMsg: String;
+  iHighlightColour: TColor;
+  boolIsSelected: Boolean;
+
 Begin
-  If Canvas.Brush.Color = clWindow Then
+  // Determine if the message is selected
+  iHighlightColour := clHighlight;
+  {$IFDEF DXE102}
+  If Assigned(FStyleServices) Then
+    iHighlightColour := FStyleServices.GetSystemColor(clHighlight);
+  {$ENDIF}
+  boolIsSelected := Canvas.Brush.Color = iHighlightColour;
+  // Draw background
+  If Not boolIsSelected Then
+    Begin
+      Canvas.Brush.Color := FBackColour;
+      If Canvas.Brush.Color = clNone Then
+        Canvas.Brush.Color := clWindow;
+      {$IFDEF DXE102}
+      If Assigned(FStyleServices) Then
+        Canvas.Brush.Color := FStyleServices.GetSystemColor(Canvas.Brush.Color);
+      {$ENDIF}
+    End;
+  Canvas.FillRect(Rect);
+  // Draw text
+  If Not boolIsSelected Then
     Begin
       Canvas.Font.Color := FForeColour;
-      Canvas.Brush.Color := FBackColour;
-      Canvas.FillRect(Rect);
+      If Canvas.Font.Color = clNone Then
+        Canvas.Font.Color := clWindowText;
+      {$IFDEF DXE102}
+      If Assigned(FStyleServices) Then
+        Canvas.Font.Color := FStyleServices.GetSystemColor(Canvas.Font.Color);
+      {$ENDIF}
     End;
+  R := Rect;
+  strMsg := FMsg;
   Canvas.Font.Name := FFontName;
   Canvas.Font.Style := FStyle;
-  Canvas.TextOut(Rect.Left, Rect.Top, FMsg);
+  Canvas.TextRect(R, strMsg, [tfLeft, tfVerticalCenter, tfEndEllipsis]);
 End;
 
 (**

@@ -4,7 +4,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    19 Jul 2018
+  @Date    30 Sep 2018
   
 **)
 Unit ITHelper.ExternalToolsFrame;
@@ -263,9 +263,9 @@ Begin
   If iIndex > -1 Then
     Begin
       P := FProcesses[iIndex];
-      strTitle            := P.FTitle;
-      strProgramme        := P.FEXE;
-      strParameters       := P.FParams;
+      strTitle := P.FTitle;
+      strProgramme := P.FEXE;
+      strParameters := P.FParams;
       strWorkingDirectory := P.FDir;
       If TfrmITHProgrammeInfo.Execute(strTitle, strProgramme, strParameters, strWorkingDirectory,
         FGlobalOps.INIFileName) Then
@@ -274,6 +274,7 @@ Begin
           P.FEXE := strProgramme;
           P.FParams := strParameters;
           P.FDir := strWorkingDirectory;
+          FProcesses[iIndex] := P;
           PopulateListView;
         End;
     End;
