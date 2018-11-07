@@ -2,13 +2,13 @@
 
 Author:   David Hoyle
 
-Version:  2.0 Beta 22 Jul 2018
+Version:  2.0 Beta
 
-Date:     22 Jul 2018
+Date:     07 Nov 2018
 
 Web Page: http://www.davidghoyle.co.uk/WordPress/?page_id=874
 
-*Note: The we page does not reflect the changes in this repository!*
+*Note: The web page does not reflect the changes in this repository YET!*
 
 Description
 
