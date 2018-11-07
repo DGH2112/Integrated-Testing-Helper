@@ -4,7 +4,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    19 Jul 2018
+  @Date    07 Nov 2018
 
 **)
 Unit ITHelper.AboutFrame;
@@ -24,7 +24,7 @@ Uses
   StdCtrls,
   ToolsAPI,
   ITHelper.Types,
-  ITHelper.Interfaces;
+  ITHelper.Interfaces, Vcl.ExtCtrls;
 
 Type
   (** A class to represent the options frame. **)
@@ -36,6 +36,7 @@ Type
     lblInformation: TLabel;
     lblEurekaLog: TLabel;
     lblBuildDate: TLabel;
+    pnlFudgePanel: TPanel;
   Strict Private
   {$IFDEF D2010} Strict {$ENDIF} Protected
     // IITHOptionsFrame
