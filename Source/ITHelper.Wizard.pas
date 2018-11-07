@@ -4,7 +4,7 @@
   external tools before and after the compilation of the current project.
 
   @Version 1.0
-  @Date    30 Sep 2018
+  @Date    07 Nov 2018
   @Author  David Hoyle
 
 **)
@@ -26,7 +26,7 @@ Type
 
   (** This class implements the IDE Wizard which provides the IDE interface
       to the package. **)
-  TITHWizard = Class(TNotifierObject, IOTAWizard)
+  TITHWizard = Class(TNotifierObject, IUnknown, IOTANotifier, IOTAWizard)
   Strict Private
     FAboutBoxIndex          : Integer;
     FGlobalOps              : IITHGlobalOptions;

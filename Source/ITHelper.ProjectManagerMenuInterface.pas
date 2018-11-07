@@ -5,7 +5,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    19 Jul 2018
+  @Date    07 Nov 2018
 
 **)
 Unit ITHelper.ProjectManagerMenuInterface;
@@ -23,7 +23,7 @@ Uses
 
 Type
   (** A class to handle the creation of a menu for the project manager. **)
-  TITHProjectManagerMenu = Class(TNotifierObject, IOTANotifier,
+  TITHProjectManagerMenu = Class(TNotifierObject, IUnknown, IOTANotifier,
     {$IFDEF D2010} IOTAProjectMenuItemCreatorNotifier {$ELSE} INTAProjectMenuCreatorNotifier {$ENDIF})
   Strict Private
     FWizard: TITHWizard;
@@ -51,7 +51,8 @@ Type
 
 {$IFDEF D2010}
 (** A class to define a Delphi 2010 Project Menu Item. **)
-  TITHelperProjectMenu = Class(TNotifierObject, IOTALocalMenu, IOTAProjectManagerMenu)
+  TITHelperProjectMenu = Class(TNotifierObject, IUnknown, IOTANotifier, IOTALocalMenu,
+    IOTAProjectManagerMenu)
   Strict Private
     FWizard  : TITHWizard;
     FProject : IOTAProject;

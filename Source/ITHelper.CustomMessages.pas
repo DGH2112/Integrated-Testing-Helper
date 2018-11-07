@@ -5,7 +5,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    30 Sep 2018
+  @Date    07 Nov 2018
   
 **)
 Unit ITHelper.CustomMessages;
@@ -22,7 +22,7 @@ Uses
 
 Type
   (** This class defined a custom message for the IDE. **)
-  TITHCustomMessage = Class(TInterfacedObject, IOTACustomMessage, INTACustomDrawMessage,
+  TITHCustomMessage = Class(TInterfacedObject, IUnknown, IOTACustomMessage, INTACustomDrawMessage,
     IITHCustomMessage)
   Strict Private
     FMsg         : String;

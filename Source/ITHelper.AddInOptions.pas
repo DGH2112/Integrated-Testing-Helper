@@ -5,7 +5,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    19 Jul 2018
+  @Date    07 Nov 2018
   
 **)
 Unit ITHelper.AddInOptions;
@@ -26,7 +26,7 @@ Type
 
   (** An implementation of the INTAAddInOptions interfaces for the global options frames for
       ITHelper. **)
-  TITHAddInOptions = Class(TInterfacedObject, INTAAddInOptions)
+  TITHAddInOptions = Class(TInterfacedObject, IUnknown, INTAAddInOptions)
   Strict Private
     FGlobalOptions: IITHGlobalOptions;
     FFrame:         TCustomFrame;
