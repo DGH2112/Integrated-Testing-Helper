@@ -5,7 +5,7 @@
   available.
 
   @Version 1.0
-  @Date    16 Sep 2018
+  @Date    07 Nov 2018
   @Author  David Hoyle
 
 **)
@@ -442,7 +442,7 @@
   {$DEFINE DXE102}
 {$ENDIF}
 
-// Embarcadero Delphi XE10.3 Carnival (Studio 20.0), Version 26, Package version 260
+// Embarcadero Delphi XE10.3 Rio (Studio 20.0), Version 26, Package version 260
 {$IFDEF VER330}
   {$DEFINE D0001}
   {$DEFINE D0002}
