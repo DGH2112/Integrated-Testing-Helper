@@ -1,22 +1,28 @@
-# Integrated Testing Helper
+ Integrated Testing Helper
+===========================
 
 Author:   David Hoyle
 
 Version:  2.0 Beta
 
-Date:     07 Nov 2018
+Date:     25 Nov 2018
 
-Web Page: http://www.davidghoyle.co.uk/WordPress/?page_id=874
+Web Page: [Integrated Testing Helper](http://www.davidghoyle.co.uk/WordPress/?page_id=874)
 
-*Note: The web page does not reflect the changes in this repository YET!*
+## Overview
 
-Description
+The purpose of the RAD Studio IDE plug-in is to allow you to configure command line tools t0 be run before or after the compilation of each project in your project group. It can also manage version control and zip your project upon completion of a successful compilation.
 
-This is an Embarcadero RAD Studio plug-in to provide the ability to run console applications before and
-after the compilation of a project and also to optionally zip the project for archiving.
+## Use
 
-NOTE: THIS PROJECT IS CURRENTLY UNDERGOING CHANGES.
-STABLE BUILDS WILL BE POSTED HERE WHEN THEY ARE AVAILABLE
+For a full list of instructions on how to use this tool please refer to the web page above.
 
-CURRENTLY THIS CODE BASE IS FOR RAD STUDIO 10.2 TOKYO ONLY WITH BACKWARDLY COMPATABLE TO RAD STUDIO 2009.
+## Current Limitations
 
+Not all the forms are themed as I have issues with implementing the theming that crashes the IDE which unfortunately Embarcadero are unable to reproduce whcih implies there could be an issue with my machine configuration (whcih probably wont get replaced until next year).
+
+## Source Code and Binaries
+
+Note: This project is labelled BETA as it is in the process of being updated to fully support all the modern RAD Studio IDEs.
+
+You can download a binary of this project if you don't want to compile it yourself from the web page above.
