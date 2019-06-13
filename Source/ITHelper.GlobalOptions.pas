@@ -4,7 +4,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    19 Jul 2018
+  @Date    13 Jun 2019
 
 **)
 Unit ITHelper.GlobalOptions;
@@ -434,7 +434,7 @@ Procedure TITHGlobalOptions.LoadSettings;
 Const
   strDefaultZipEXE = 'C:\Program Files\7-Zip\7Z.EXE';
   iDefaultClearMsgInterval = 30;
-  strDefaultZIPParamsKey = '-ouexrPyb @"$RESPONSEFILE$" "$ZIPFILE$"';
+  strDefaultZIPParamsKey = 'a "$ZIPFILE$" @"$RESPONSEFILE$"';
   strDefaultFontName = 'Tahoma';
   strDefaultFontColour = 'clBlack';
 
