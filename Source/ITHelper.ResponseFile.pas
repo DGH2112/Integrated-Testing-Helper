@@ -5,8 +5,8 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    22 Jul 2018
-  
+  @Date    13 Jun 2019
+
 **)
 Unit ITHelper.ResponseFile;
 
@@ -20,7 +20,7 @@ Uses
   ITHelper.Interfaces;
 
 Type
-  (** A class which implements tjhe ITHResponseFile interface for creating and managing a zip 
+  (** A class which implements tjhe ITHResponseFile interface for creating and managing a zip
       response file. **)
   TITHResponseFile = Class(TInterfacedObject, IITHResponseFile)
   Strict Private
@@ -44,9 +44,10 @@ Type
     Function  AddToList(Const strBasePath, strModuleName: String): Boolean;
     Function  BuildResponseFile(Const strBasePath, strProject, strZIPName: String) : Boolean;
     Function  CheckResExts(Const slResExts: TStringList; Const strFileName: String): Boolean;
-    Procedure CheckSourceForInclude(Const strFileName, strInclude : String; 
+    Procedure CheckSourceForInclude(Const strFileName, strInclude : String;
       Const slIncludeFiles: TStringList);
     Function  FileList : String;
+    Function  PatternMatchesFiles(Const strNewModuleName : String) : Boolean;
   Public
     Constructor Create(Const Project: IOTAProject; Const GlobalOps : IITHGlobalOptions;
       Const ProjectOps: IITHProjectOptions; Const MessageManager : IITHMessageManager);
@@ -181,7 +182,7 @@ Begin
           If strNewModuleName <> '' Then
             Begin
               Result := FResponseFile.Find(strNewModuleName, iIndex);
-              If Not Result Then
+              If Not Result And PatternMatchesFiles(strBasePath + strNewModuleName) Then
                 FResponseFile.Add(strNewModuleName);
             End;
         End;
@@ -650,6 +651,32 @@ End;
 
 (**
 
+  This method test whether the filename pattern given matches aby files.
+
+  @precon  None.  
+  @postcon Returns true if the file pattern matches a file.
+
+  @param   strNewModuleName as a String as a constant
+  @return  a Boolean
+
+**)
+Function TITHResponseFile.PatternMatchesFiles(Const strNewModuleName : String) : Boolean;
+
+Var
+  recSearch: TSearchRec;
+  iResult: Integer;
+
+Begin
+  iResult := FindFirst(strNewModuleName, faAnyFile, recSearch);
+  Try
+    Result := iResult = 0;
+  Finally
+    FindClose(recSearch);
+  End;
+End;
+
+(**
+
   This method returns the first non-null occurance of the list of project option values.
 
   @precon  Project must be a valid instance of a IOTAProject interface.
@@ -678,8 +705,3 @@ Begin
 End;
 
 End.
-
-
-
-
-
