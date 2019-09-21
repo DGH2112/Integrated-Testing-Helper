@@ -18,7 +18,6 @@ object frameFonts: TframeFonts
     Align = alClient
     BevelOuter = bvNone
     TabOrder = 0
-    ExplicitHeight = 249
     object gbxMessageColours: TGroupBox
       AlignWithMargins = True
       Left = 3
@@ -28,10 +27,6 @@ object frameFonts: TframeFonts
       Align = alClient
       Caption = 'Message Colours'
       TabOrder = 0
-      ExplicitLeft = 8
-      ExplicitTop = 238
-      ExplicitWidth = 529
-      ExplicitHeight = 123
       DesignSize = (
         538
         333)

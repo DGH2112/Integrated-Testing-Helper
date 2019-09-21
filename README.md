@@ -5,9 +5,9 @@ Author:   David Hoyle
 
 Version:  2.0 Beta
 
-Date:     25 Nov 2018
+Date:     21 Sep 2019
 
-Web Page: [Integrated Testing Helper](http://www.davidghoyle.co.uk/WordPress/?page_id=874)
+Web Page: http://www.davidghoyle.co.uk/WordPress/?page_id=874
 
 ## Overview
 

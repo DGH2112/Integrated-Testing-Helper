@@ -18,10 +18,6 @@ object frameGlobalOptions: TframeGlobalOptions
     Align = alClient
     BevelOuter = bvNone
     TabOrder = 0
-    ExplicitLeft = 3
-    ExplicitTop = 320
-    ExplicitWidth = 523
-    ExplicitHeight = 481
     DesignSize = (
       456
       426)
@@ -50,7 +46,7 @@ object frameGlobalOptions: TframeGlobalOptions
     object lblClearMessagesAfter: TLabel
       Left = 8
       Top = 134
-      Width = 355
+      Width = 270
       Height = 16
       Anchors = [akLeft, akTop, akRight]
       Caption = 'Clear Messages After Period of Time (seconds)'
@@ -63,7 +59,6 @@ object frameGlobalOptions: TframeGlobalOptions
       Anchors = [akLeft, akTop, akRight]
       Caption = '&Group Messages into their own tab.'
       TabOrder = 0
-      ExplicitWidth = 532
     end
     object lvShortcuts: TListView
       Left = 5
@@ -87,8 +82,6 @@ object frameGlobalOptions: TframeGlobalOptions
       TabOrder = 8
       ViewStyle = vsReport
       OnSelectItem = lvShortcutsSelectItem
-      ExplicitWidth = 532
-      ExplicitHeight = 659
     end
     object hkShortcut: THotKey
       Left = 8
@@ -98,8 +91,6 @@ object frameGlobalOptions: TframeGlobalOptions
       Anchors = [akLeft, akRight, akBottom]
       Modifiers = []
       TabOrder = 10
-      ExplicitTop = 837
-      ExplicitWidth = 448
     end
     object edtZipParams: TEdit
       Left = 103
@@ -108,7 +99,6 @@ object frameGlobalOptions: TframeGlobalOptions
       Height = 24
       Anchors = [akLeft, akTop, akRight]
       TabOrder = 4
-      ExplicitWidth = 434
     end
     object edtZipEXE: TEdit
       Left = 103
@@ -117,7 +107,6 @@ object frameGlobalOptions: TframeGlobalOptions
       Height = 24
       Anchors = [akLeft, akTop, akRight]
       TabOrder = 2
-      ExplicitWidth = 394
     end
     object edtClearMessages: TEdit
       Left = 369
@@ -128,7 +117,6 @@ object frameGlobalOptions: TframeGlobalOptions
       ReadOnly = True
       TabOrder = 6
       Text = '0'
-      ExplicitLeft = 448
     end
     object chkSwitchToMessages: TCheckBox
       Left = 5
@@ -138,7 +126,6 @@ object frameGlobalOptions: TframeGlobalOptions
       Anchors = [akLeft, akTop, akRight]
       Caption = '&Switch To Messages after a Successful compile'
       TabOrder = 5
-      ExplicitWidth = 524
     end
     object chkAutoScrollMessages: TCheckBox
       Left = 5
@@ -148,7 +135,6 @@ object frameGlobalOptions: TframeGlobalOptions
       Anchors = [akLeft, akTop, akRight]
       Caption = '&Auto Scroll Messages.'
       TabOrder = 1
-      ExplicitWidth = 532
     end
     object btnBrowseZipEXE: TButton
       Left = 416
@@ -159,7 +145,6 @@ object frameGlobalOptions: TframeGlobalOptions
       Caption = '...'
       TabOrder = 3
       OnClick = btnBrowseZipEXEClick
-      ExplicitLeft = 503
     end
     object btnAssign: TBitBtn
       Left = 375
@@ -171,11 +156,9 @@ object frameGlobalOptions: TframeGlobalOptions
       Enabled = False
       TabOrder = 9
       OnClick = btnAssignClick
-      ExplicitLeft = 462
-      ExplicitTop = 834
     end
     object udClearMessages: TUpDown
-      Left = 434
+      Left = 432
       Top = 131
       Width = 16
       Height = 24
@@ -184,7 +167,6 @@ object frameGlobalOptions: TframeGlobalOptions
       Max = 3600
       Increment = 10
       TabOrder = 7
-      ExplicitLeft = 513
     end
   end
   object dlgOpenEXE: TOpenDialog

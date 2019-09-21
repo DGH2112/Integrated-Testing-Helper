@@ -1,8 +1,8 @@
 object frameAboutITHelper: TframeAboutITHelper
   Left = 0
   Top = 0
-  Width = 491
-  Height = 433
+  Width = 509
+  Height = 485
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -13
@@ -13,8 +13,8 @@ object frameAboutITHelper: TframeAboutITHelper
   object pnlFudgePanel: TPanel
     Left = 0
     Top = 0
-    Width = 491
-    Height = 433
+    Width = 509
+    Height = 485
     Align = alClient
     BevelOuter = bvNone
     TabOrder = 0
@@ -22,7 +22,7 @@ object frameAboutITHelper: TframeAboutITHelper
       AlignWithMargins = True
       Left = 3
       Top = 3
-      Width = 485
+      Width = 503
       Height = 29
       Align = alTop
       Caption = 'Integrated Testing Helper'
@@ -39,7 +39,7 @@ object frameAboutITHelper: TframeAboutITHelper
       AlignWithMargins = True
       Left = 3
       Top = 38
-      Width = 485
+      Width = 503
       Height = 16
       Align = alTop
       Caption = 'lblBuild'
@@ -55,58 +55,35 @@ object frameAboutITHelper: TframeAboutITHelper
       AlignWithMargins = True
       Left = 3
       Top = 82
-      Width = 485
+      Width = 503
       Height = 16
       Align = alTop
-      Caption = 'Author: David Hoyle (c) Season'#39's Fall Music'
+      Caption = 'Author: David Hoyle (c) 2019 GNU GPL 3'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -13
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
-      ExplicitWidth = 248
+      ExplicitWidth = 229
     end
     object lblBuildDate: TLabel
       AlignWithMargins = True
       Left = 3
       Top = 60
-      Width = 485
+      Width = 503
       Height = 16
       Align = alTop
       Caption = 'lblBuildDate'
       ExplicitWidth = 66
     end
-    object lblInformation: TLabel
-      AlignWithMargins = True
-      Left = 3
-      Top = 104
-      Width = 485
-      Height = 165
-      Align = alTop
-      AutoSize = False
-      Caption = 
-        'A RAD Studio IDE plug-in to help you manage the application buil' +
-        'd process:'#13' * Manage Version Control;'#13' * Run tools before or aft' +
-        'er a compilation;'#13' * ZIP the project for backups, uploads and ar' +
-        'chiving.'
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -13
-      Font.Name = 'Tahoma'
-      Font.Style = []
-      ParentFont = False
-      Layout = tlCenter
-      ExplicitTop = 92
-      ExplicitWidth = 523
-    end
     object lblPleaseSelect: TLabel
       AlignWithMargins = True
       Left = 3
-      Top = 275
-      Width = 485
+      Top = 402
+      Width = 503
       Height = 16
-      Align = alTop
+      Align = alBottom
       Caption = 'Please select a sub-options category...'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
@@ -120,10 +97,10 @@ object frameAboutITHelper: TframeAboutITHelper
     object lblEurekaLog: TLabel
       AlignWithMargins = True
       Left = 3
-      Top = 297
-      Width = 485
-      Height = 133
-      Align = alClient
+      Top = 424
+      Width = 503
+      Height = 58
+      Align = alBottom
       AutoSize = False
       Caption = 'EurekaLog'
       Font.Charset = DEFAULT_CHARSET
@@ -133,10 +110,18 @@ object frameAboutITHelper: TframeAboutITHelper
       Font.Style = []
       ParentFont = False
       Layout = tlBottom
-      ExplicitLeft = 6
-      ExplicitTop = 209
-      ExplicitWidth = 523
-      ExplicitHeight = 429
+    end
+    object mmoInformation: TMemo
+      AlignWithMargins = True
+      Left = 3
+      Top = 104
+      Width = 503
+      Height = 292
+      Align = alClient
+      ParentColor = True
+      ReadOnly = True
+      ScrollBars = ssVertical
+      TabOrder = 0
     end
   end
 end
