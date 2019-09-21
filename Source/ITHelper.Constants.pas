@@ -4,7 +4,7 @@
 
   @Version 1.0
   @Author  David Hoyle
-  @Date    10 Dec 2017
+  @Date    21 Sep 2019
   
 **)
 Unit ITHelper.Constants;
@@ -13,7 +13,7 @@ Interface
 
 Const
   (** A constant to represent the bug fix revisions for the version number. **)
-  strRevisions = ' abcedfghijklmnopqrstuvwxyz';
+  strRevisions = ' abcdefghijklmnopqrstuvwxyz';
 
 Implementation
 

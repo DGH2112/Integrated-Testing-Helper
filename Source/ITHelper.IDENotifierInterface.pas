@@ -5,7 +5,7 @@
 
   @Author  David Hoyle.
   @Version 1.0
-  @Date    07 Nov 2018
+  @Date    21 Sep 2019
 
 **)
 Unit ITHelper.IDENotifierInterface;
@@ -122,7 +122,8 @@ Uses
   Variants, 
   ITHelper.ZIPManager, 
   ITHelper.MessageManager, 
-  ITHelper.VersionManager;
+  ITHelper.VersionManager,
+  ITHelper.Constants;
 
 ResourceString
   (** This is the warning shown if there are no after compilation tools. **)
@@ -324,9 +325,6 @@ End;
 Procedure TITHelperIDENotifier.CopyVersionInfoFromDependency(Const Ops : TITHEnabledOptions;
   Const Project: IOTAProject; Const strProject: String; Const ProjectOps: IITHProjectOptions);
 
-Const
-  strBugFix = ' abcedfghijklmnopqrstuvwxyz';
-
 ResourceString
   strVersionDependencyFoundForProject = 'Version Dependency (%s) found for project %s.';
   strDependentBuild = 'Dependent Build %d.%d%s (%d.%d.%d.%d).';
@@ -356,7 +354,7 @@ Begin
               Try
                 BuildNumber(strTargetName, recVersionInfo);
                 FMsgMgr.AddMsg(Format(strDependentBuild, [recVersionInfo.FMajor, recVersionInfo.FMinor,
-                  strBugFix[recVersionInfo.FBugfix + 1], recVersionInfo.FMajor, recVersionInfo.FMinor,
+                  strRevisions[recVersionInfo.FBugfix + 1], recVersionInfo.FMajor, recVersionInfo.FMinor,
                   recVersionInfo.FBugfix, recVersionInfo.FBuild]), fnHeader, ithfDefault);
                 {$IFDEF DXE20}
                 ActiveConfig := CheckProjectOptions(Project);
