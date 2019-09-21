@@ -5,8 +5,28 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    22 Jul 2018
-  
+  @Date    21 Sep 2019
+
+  @license
+
+    Integrated Testing helper is a RAD Studio plug-in for running pre and post
+    build processes.
+    
+    Copyright (C) 2019  David Hoyle (https://github.com/DGH2112/Integrated-Testing-Helper)
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 **)
 Unit ITHelper.ResponseFile;
 
@@ -20,7 +40,7 @@ Uses
   ITHelper.Interfaces;
 
 Type
-  (** A class which implements tjhe ITHResponseFile interface for creating and managing a zip 
+  (** A class which implements tjhe ITHResponseFile interface for creating and managing a zip
       response file. **)
   TITHResponseFile = Class(TInterfacedObject, IITHResponseFile)
   Strict Private
@@ -44,9 +64,10 @@ Type
     Function  AddToList(Const strBasePath, strModuleName: String): Boolean;
     Function  BuildResponseFile(Const strBasePath, strProject, strZIPName: String) : Boolean;
     Function  CheckResExts(Const slResExts: TStringList; Const strFileName: String): Boolean;
-    Procedure CheckSourceForInclude(Const strFileName, strInclude : String; 
+    Procedure CheckSourceForInclude(Const strFileName, strInclude : String;
       Const slIncludeFiles: TStringList);
     Function  FileList : String;
+    Function  PatternMatchesFiles(Const strNewModuleName : String) : Boolean;
   Public
     Constructor Create(Const Project: IOTAProject; Const GlobalOps : IITHGlobalOptions;
       Const ProjectOps: IITHProjectOptions; Const MessageManager : IITHMessageManager);
@@ -181,7 +202,7 @@ Begin
           If strNewModuleName <> '' Then
             Begin
               Result := FResponseFile.Find(strNewModuleName, iIndex);
-              If Not Result Then
+              If Not Result And PatternMatchesFiles(strBasePath + strNewModuleName) Then
                 FResponseFile.Add(strNewModuleName);
             End;
         End;
@@ -650,6 +671,32 @@ End;
 
 (**
 
+  This method test whether the filename pattern given matches aby files.
+
+  @precon  None.  
+  @postcon Returns true if the file pattern matches a file.
+
+  @param   strNewModuleName as a String as a constant
+  @return  a Boolean
+
+**)
+Function TITHResponseFile.PatternMatchesFiles(Const strNewModuleName : String) : Boolean;
+
+Var
+  recSearch: TSearchRec;
+  iResult: Integer;
+
+Begin
+  iResult := FindFirst(strNewModuleName, faAnyFile, recSearch);
+  Try
+    Result := iResult = 0;
+  Finally
+    FindClose(recSearch);
+  End;
+End;
+
+(**
+
   This method returns the first non-null occurance of the list of project option values.
 
   @precon  Project must be a valid instance of a IOTAProject interface.
@@ -678,8 +725,3 @@ Begin
 End;
 
 End.
-
-
-
-
-

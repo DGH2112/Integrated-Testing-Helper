@@ -1,4 +1,28 @@
-//: @nodocumentation @nometrics Disabled metrics @nochecks Disbale checks
+(**
+  
+  @license
+
+    Integrated Testing helper is a RAD Studio plug-in for running pre and post
+    build processes.
+    
+    Copyright (C) 2019  David Hoyle (https://github.com/DGH2112/Integrated-Testing-Helper)
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+  @nodocumentation @nometrics Disabled metrics @nochecks Disbale checks
+  
+**)
 Unit TestGlobalOptions;
 
 Interface
@@ -1596,7 +1620,7 @@ Begin
   DeleteFile(BuildRootKey);
   GOps := TITHGlobalOptions.Create;
   Try
-    CheckEquals('-ouexrPyb @"$RESPONSEFILE$" "$ZIPFILE$"', GOps.ZipParameters);
+    CheckEquals('a "$ZIPFILE$" @"$RESPONSEFILE$"', GOps.ZipParameters);
     GOps.ZipParameters := '-exrp @"$RESPONSEFILE$" "$ZIPFILE$"';
     CheckEquals('-exrp @"$RESPONSEFILE$" "$ZIPFILE$"', GOps.ZipParameters);
   Finally

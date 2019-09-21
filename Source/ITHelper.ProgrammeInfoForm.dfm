@@ -3,7 +3,7 @@ object frmITHProgrammeInfo: TfrmITHProgrammeInfo
   Top = 551
   BorderIcons = []
   Caption = 'Programme Info'
-  ClientHeight = 155
+  ClientHeight = 151
   ClientWidth = 599
   Color = clBtnFace
   Constraints.MaxHeight = 190
@@ -18,7 +18,7 @@ object frmITHProgrammeInfo: TfrmITHProgrammeInfo
   Position = poScreenCenter
   DesignSize = (
     599
-    155)
+    151)
   PixelsPerInch = 96
   TextHeight = 16
   object lblProgramme: TLabel
