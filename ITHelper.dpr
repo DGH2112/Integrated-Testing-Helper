@@ -9,11 +9,6 @@
 
   @nocheck EmptyBEGINEND
 
-  @todo    Create a wrapper for the zip library and use that instead of an external zip programme.
-  @todo    Consider adding a Project Notifier to handle rename / save as for the project .ITHelper file.
-  @todo    Create a command-line app ITHelper.exe which can perform version control, zipping, etc from a
-           .DPR (and implied .ITHelper) file.
-
   @license
 
     Integrated Testing helper is a RAD Studio plug-in for running pre and post
