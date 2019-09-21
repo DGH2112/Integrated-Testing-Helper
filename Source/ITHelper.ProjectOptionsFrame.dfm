@@ -160,8 +160,8 @@ object frameProjectOptions: TframeProjectOptions
       Text = '0'
     end
     object upMinor: TUpDown
-      Left = 260
-      Top = 31
+      Left = 254
+      Top = 34
       Width = 16
       Height = 24
       Associate = edtMinor
