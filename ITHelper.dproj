@@ -61,6 +61,9 @@
         <DCC_UsePackage>DesignIDE;VCL;RTL;$(DCC_UsePackage)</DCC_UsePackage>
         <DCC_UnitSearchPath>$(BDSPROJECTSDIR)\Binaries\CS5\Lib\RX10.3\Win32;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
         <DllSuffix>XE103</DllSuffix>
+        <DCC_Define>EUREKALOG_VER7;EUREKALOG;$(DCC_Define)</DCC_Define>
+        <DCC_MapFile>3</DCC_MapFile>
+        <DCC_GenerateStackFrames>true</DCC_GenerateStackFrames>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Win32)'!=''">
         <VerInfo_Locale>1033</VerInfo_Locale>
@@ -142,42 +145,34 @@
         <DCCReference Include="Source\ITHelper.VersionManager.pas"/>
         <DCCReference Include="Source\ITHelper.ProjectOptionsFrame.pas">
             <Form>frameProjectOptions</Form>
-            <FormType>dfm</FormType>
             <DesignClass>TFrame</DesignClass>
         </DCCReference>
         <DCCReference Include="Source\ITHelper.ExternalToolsFrame.pas">
             <Form>frameExternalTools</Form>
-            <FormType>dfm</FormType>
             <DesignClass>TFrame</DesignClass>
         </DCCReference>
         <DCCReference Include="Source\ITHelper.ZIPFrame.pas">
             <Form>frameZipping</Form>
-            <FormType>dfm</FormType>
             <DesignClass>TFrame</DesignClass>
         </DCCReference>
         <DCCReference Include="Source\ITHelper.GlobalOptionsFrame.pas">
             <Form>frameGlobalOptions</Form>
-            <FormType>dfm</FormType>
             <DesignClass>TFrame</DesignClass>
         </DCCReference>
         <DCCReference Include="Source\ITHelper.AddInOptions.pas"/>
         <DCCReference Include="Source\ITHelper.AboutFrame.pas">
             <Form>frameAboutITHelper</Form>
-            <FormType>dfm</FormType>
             <DesignClass>TFrame</DesignClass>
         </DCCReference>
         <DCCReference Include="Source\ITHelper.FontFrame.pas">
             <Form>frameFonts</Form>
-            <FormType>dfm</FormType>
             <DesignClass>TFrame</DesignClass>
         </DCCReference>
         <DCCReference Include="Source\ITHelper.GlobalOptionsDlg.pas">
             <Form>frmITHGlobalOptionsDlg</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="Source\ITHelper.ProjectOpsDlg.pas">
             <Form>frmITHProjectOpsDlg</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <None Include="Source\CompilerDefinitions.inc"/>
         <None Include="License.md"/>

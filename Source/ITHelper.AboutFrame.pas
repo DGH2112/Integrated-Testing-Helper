@@ -4,7 +4,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    07 Nov 2018
+  @Date    21 Sep 2019
 
 **)
 Unit ITHelper.AboutFrame;
@@ -24,7 +24,8 @@ Uses
   StdCtrls,
   ToolsAPI,
   ITHelper.Types,
-  ITHelper.Interfaces, Vcl.ExtCtrls;
+  ITHelper.Interfaces,
+  Vcl.ExtCtrls;
 
 Type
   (** A class to represent the options frame. **)
@@ -57,9 +58,10 @@ Uses
   CodeSiteLogging,
   {$ENDIF}
   {$IFDEF EUREKALOG_VER7}
-  ExceptionLog7;
+  ExceptionLog7,
   {$ENDIF}
-  ITHelper.CommonFunctions, ITHelper.Constants;
+  ITHelper.CommonFunctions,
+  ITHelper.Constants;
 
 {$R *.dfm}
 

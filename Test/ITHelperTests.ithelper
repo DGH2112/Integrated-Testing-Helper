@@ -11,7 +11,7 @@ CompileWithBRCC32=0
 MajorVer=1
 MinorVer=0
 ReleaseVer=15
-BuildVer=2039
+BuildVer=2040
 ResourceName=ITHelperVersionInfo
 
 [Zipping]
@@ -26,7 +26,7 @@ dcc32.exe||D:\HoylD|dcc32.exe=0
 [VersionInfo]
 CompanyName=Season's Fall Music Limited (c) 1989
 FileDescription=Unit Tets for the ITHelper project
-FileVersion=1.0.15.2039
+FileVersion=1.0.15.2040
 InternalName=ITHelper
 LegalCopyright=Season's Fall Music Limited (c) 1989
 LegalTrademarks=Season's Fall Music Limited (c) 1989

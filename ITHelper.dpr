@@ -26,6 +26,17 @@ Library ITHelper;
 
 uses
   ShareMem,
+  {$IFDEF EurekaLog}
+  EMemLeaks,
+  EResLeaks,
+  ESendMailMAPI,
+  ESendMailSMAPI,
+  EDialogWinAPIMSClassic,
+  EDialogWinAPIEurekaLogDetailed,
+  EDialogWinAPIStepsToReproduce,
+  EDebugExports,
+  ExceptionLog7,
+  {$ENDIF EurekaLog}
   SysUtils,
   Classes,
   ITHelper.Wizard in 'Source\ITHelper.Wizard.pas',
@@ -67,4 +78,5 @@ uses
 
 Begin
 End.
+
 
