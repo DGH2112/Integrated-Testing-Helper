@@ -54,10 +54,10 @@ Type
     lblAuthor: TLabel;
     lblBuild: TLabel;
     lblPleaseSelect: TLabel;
-    lblInformation: TLabel;
     lblEurekaLog: TLabel;
     lblBuildDate: TLabel;
     pnlFudgePanel: TPanel;
+    mmoInformation: TMemo;
   Strict Private
   {$IFDEF D2010} Strict {$ENDIF} Protected
     // IITHOptionsFrame
@@ -137,14 +137,33 @@ End;
 Procedure TframeAboutITHelper.InitialiseOptions(Const GlobalOps: IITHGlobalOptions; //FI:O804
   Const Project: IOTAProject; Const DlgType: TITHDlgType); //FI:O804
 
-Const
+ResourceString
+  strLicense =
+    'A RAD Studio IDE plug-in to help you manage the application build process:'#13#10 +
+    ' * Manage Version Control;'#13#10 +
+    ' * Run tools before or after a compilation;'#13#10 +
+    ' * ZIP the project for backups, uploads and archiving.'#13#10 +
+    ''#13#10 +
+    'Integrated Testing helper is a RAD Studio plug-in for running pre and post build processes.'#13#10 +
+    ''#13#10 +
+    'Copyright (C) 2019  David Hoyle (https://github.com/DGH2112/Integrated-Testing-Helper)'#13#10 +
+    ''#13#10 +
+    'This program is free software: you can redistribute it and/or modify it under the ' +
+    'terms of the GNU General Public License as published by the Free Software ' +
+    'Foundation, either version 3 of the License, or (at your option) any later version.'#13#10 +
+    ''#13#10 +
+    'This program is distributed in the hope that it will be useful, but WITHOUT ANY ' +
+    'WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS ' +
+    'FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.'#13#10 +
+    ''#13#10 +
+    'You should have received a copy of the GNU General Public License along with this ' +
+    'program. If not, see <https://www.gnu.org/licenses/>.';
   strBrowseAndDocIt = 'Integrated Testing Helper %d.%d%s';
   {$IFDEF DEBUG}
-  strDEBUGBuild = 'DEBUG Build %d.%d.%d.%d';
+  strBuild = 'DEBUG Build %d.%d.%d.%d';
   {$ELSE}
   strBuild = 'Build %d.%d.%d.%d';
   {$ENDIF}
-  strBuildDateFmt = 'ddd dd/mmm/yyyy hh:nn';
   strBuildDate = 'Build Date: %s';
   {$IFDEF EUREKALOG_VER7}
   strEurekaLogStatus = 'EurekaLog is compiled into this version:'#13#10 +
@@ -153,6 +172,9 @@ Const
   {$ELSE}
   strEurekaLogStatus = 'EurekaLog is NOT compiled into this version.';
   {$ENDIF}
+
+Const
+  strBuildDateFmt = 'ddd dd/mmm/yyyy hh:nn';
 
 Var
   strModuleName : String;
@@ -167,16 +189,11 @@ Begin
   BuildNumber(strModuleName, recVersionInfo);
   lblITHelper.Caption := Format(strBrowseAndDocIt, [recVersionInfo.FMajor, recVersionInfo.FMinor,
     strRevisions[Succ(recVersionInfo.FBugFix)]]);
-  {$IFDEF DEBUG}
-  lblBuild.Caption := Format(strDEBUGBuild, [recVersionInfo.FMajor, recVersionInfo.FMinor,
-    recVersionInfo.FBugFix, recVersionInfo.FBuild]);
-  lblBuild.Font.Color := clRed;
-  {$ELSE}
   lblBuild.Caption := Format(strBuild, [recVersionInfo.FMajor, recVersionInfo.FMinor,
     recVersionInfo.FBugFix, recVersionInfo.FBuild]);
-  {$ENDIF}
   FileAge(strModuleName, dtDate);
   lblBuildDate.Caption := Format(strBuildDate, [FormatDateTime(strBuildDateFmt, dtDate)]);
+  mmoInformation.lines.Text := strLicense;
   {$IFDEF EUREKALOG_VER7}
   lblEurekaLog.Caption := Format(strEurekaLogStatus, [
     BoolToStr(ExceptionLog7.IsEurekaLogInstalled, True),
