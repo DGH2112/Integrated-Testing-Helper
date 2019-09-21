@@ -1596,7 +1596,7 @@ Begin
   DeleteFile(BuildRootKey);
   GOps := TITHGlobalOptions.Create;
   Try
-    CheckEquals('-ouexrPyb @"$RESPONSEFILE$" "$ZIPFILE$"', GOps.ZipParameters);
+    CheckEquals('a "$ZIPFILE$" @"$RESPONSEFILE$"', GOps.ZipParameters);
     GOps.ZipParameters := '-exrp @"$RESPONSEFILE$" "$ZIPFILE$"';
     CheckEquals('-exrp @"$RESPONSEFILE$" "$ZIPFILE$"', GOps.ZipParameters);
   Finally
