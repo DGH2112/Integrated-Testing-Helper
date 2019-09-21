@@ -36,10 +36,10 @@ ResourceString
   strSplashScreenName = 'Integrated Testing Helper %d.%d%s for %s';
   {$IFDEF DEBUG}
   (** This is another message string to appear in the splash screen **)
-  strSplashScreenBuild = 'Freeware by David Hoyle (DEBUG Build %d.%d.%d.%d)';
+  strSplashScreenBuild = 'David Hoyle (c) 2019 License GNU GPL 3 (DEBUG Build %d.%d.%d.%d)';
   {$ELSE}
   (** This is another message string to appear in the splash screen **)
-  strSplashScreenBuild = 'Freeware by David Hoyle (Build %d.%d.%d.%d)';
+  strSplashScreenBuild = 'David Hoyle (c) 2019 License GNU GPL 3 (Build %d.%d.%d.%d)';
   {$ENDIF}
   (** This is a resourcestring for the message tab name. **)
   strITHelperGroup = 'ITHelper Messages';
