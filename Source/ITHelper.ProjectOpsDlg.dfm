@@ -10,7 +10,7 @@ object frmITHProjectOpsDlg: TfrmITHProjectOpsDlg
   Constraints.MinWidth = 800
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
-  Font.Height = -11
+  Font.Height = -13
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = True
@@ -20,7 +20,7 @@ object frmITHProjectOpsDlg: TfrmITHProjectOpsDlg
     784
     565)
   PixelsPerInch = 96
-  TextHeight = 13
+  TextHeight = 16
   object pgcProjectOptions: TPageControl
     Left = 8
     Top = 8
@@ -55,6 +55,8 @@ object frmITHProjectOpsDlg: TfrmITHProjectOpsDlg
     object tabZipping: TTabSheet
       Caption = 'Zipping'
       ImageIndex = 3
+      ExplicitTop = 24
+      ExplicitHeight = 490
     end
   end
   object btnHelp: TBitBtn

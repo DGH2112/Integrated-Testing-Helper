@@ -4,7 +4,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    21 Sep 2019
+  @Date    27 Oct 2019
 
   @license
 
@@ -44,7 +44,8 @@ Type
   ['{06926CE6-2293-4D1C-91A5-2D991CC1CF04}']
   // Getters and Setters
     Function  GetResExtExc: String;
-    Function  GetIncOnCompile: Boolean;
+    Function  GetIncOnCompile(Const CompileMode : TOTACompileMode;
+      Const strConfigName : String): Boolean;
     Function  GetCopyVerInfo: String;
     Function  GetIncITHVerInfo: Boolean;
     Function  GetMajor: Integer;
@@ -65,7 +66,8 @@ Type
     Function  GetIniFile : TMemIniFile;
     Function  GetSaveModifiedFiles : Boolean;
     Procedure SetResExtExc(Const strValue: String);
-    Procedure SetIncOnCompile(Const boolValue: Boolean);
+    Procedure SetIncOnCompile(Const CompileMode : TOTACompileMode; Const strConfigName : String;
+      Const boolValue: Boolean);
     Procedure SetCopyVerInfo(Const strValue: String);
     Procedure SetIncITHVerInfo(Const boolValue: Boolean);
     Procedure SetMajor(Const iValue: Integer);
@@ -91,14 +93,15 @@ Type
     **)
     Property ResExtExc: String Read GetResExtExc Write SetResExtExc;
     (**
-      This property gets and sets whether the build number should be incremented on a
-      successful file.
+      This property gets and sets whether the build number should be incremented on a successful file.
       @precon  None.
-      @postcon Gets and sets whether the build number should be incremented on a
-               successful file.
+      @postcon Gets and sets whether the build number should be incremented on a successful file.
+      @param   CompileMode   as a TOTACompileMode as a constant
+      @param   strConfigName as a String as a constant
       @return  a Boolean
     **)
-    Property IncOnCompile: Boolean Read GetIncOnCompile Write SetIncOnCompile;
+    Property IncOnCompile[Const CompileMode : TOTACompileMode; Const strConfigName : String]: Boolean
+      Read GetIncOnCompile Write SetIncOnCompile;
     (**
       This property gets and sets the executable from which version information should be
       copied.

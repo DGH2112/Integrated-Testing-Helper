@@ -87,7 +87,8 @@ uses
   ITHelper.AboutFrame in 'Source\ITHelper.AboutFrame.pas' {frameAboutITHelper: TFrame},
   ITHelper.FontFrame in 'Source\ITHelper.FontFrame.pas' {frameFonts: TFrame},
   ITHelper.GlobalOptionsDlg in 'Source\ITHelper.GlobalOptionsDlg.pas' {frmITHGlobalOptionsDlg},
-  ITHelper.ProjectOpsDlg in 'Source\ITHelper.ProjectOpsDlg.pas' {frmITHProjectOpsDlg};
+  ITHelper.ProjectOpsDlg in 'Source\ITHelper.ProjectOpsDlg.pas' {frmITHProjectOpsDlg},
+  ITHelper.CompileNotifier in 'Source\ITHelper.CompileNotifier.pas';
 
 {$R *.res}
 

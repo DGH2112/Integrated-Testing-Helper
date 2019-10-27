@@ -4,7 +4,7 @@
 
   @Version 1.0
   @Author  David Hoyle
-  @Date    21 Sep 2019
+  @Date    27 Oct 2019
   
   @license
 
@@ -31,9 +31,14 @@ Unit ITHelper.Constants;
 
 Interface
 
+Uses
+  ToolsAPI;
+
 Const
   (** A constant to represent the bug fix revisions for the version number. **)
   strRevisions = ' abcdefghijklmnopqrstuvwxyz';
+  (** A constant array of strings for label the compile modes. **)
+  astrCompileMode : Array[TOTACompileMode] Of String = ('Make', 'Build', 'Check', 'MakeUnit');
 
 Implementation
 

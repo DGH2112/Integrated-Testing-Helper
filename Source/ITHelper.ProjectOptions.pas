@@ -5,7 +5,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    21 Sep 2019
+  @Date    27 Oct 2019
   
   @license
 
@@ -50,7 +50,8 @@ Type
     FAddZipFiles: TStringList;
   {$IFDEF D2010} Strict {$ENDIF} Protected
     Function  GetResExtExc: String;
-    Function  GetIncOnCompile: Boolean;
+    Function  GetIncOnCompile(Const CompileMode : TOTACompileMode;
+      Const strConfigName : String): Boolean;
     Function  GetCopyVerInfo: String;
     Function  GetIncITHVerInfo: Boolean;
     Function  GetMajor: Integer;
@@ -71,7 +72,8 @@ Type
     Function  GetIniFile : TMemIniFile;
     Function  GetSaveModifiedFiles: Boolean;
     Procedure SetResExtExc(Const strValue: String);
-    Procedure SetIncOnCompile(Const boolValue: Boolean);
+    Procedure SetIncOnCompile(Const CompileMode : TOTACompileMode; Const strConfigName : String;
+      Const boolValue: Boolean);
     Procedure SetCopyVerInfo(Const strValue: String);
     Procedure SetIncITHVerInfo(Const boolValue: Boolean);
     Procedure SetMajor(Const iValue: Integer);
@@ -102,7 +104,8 @@ Uses
   {$IFDEF DEBUG}
   CodeSiteLogging,
   {$ENDIF}
-  SysUtils;
+  SysUtils,
+  ITHelper.Constants;
 
 Const
   (** An INI Section name for additional file information. **)
@@ -126,7 +129,7 @@ Const
   (** An INI Key for the File version **)
   strFileVersionKey = 'FileVersion';
   (** An INI Key for the INcrement on compile **)
-  strIncBuildKey = 'IncBuild';
+  strIncBuildKey = 'IncBuild.%s.%s';
   (** An INI Key for the include in project **)
   strIncludeInProjectKey = 'IncludeInProject';
   (** An INI Key for the major version **)
@@ -360,16 +363,26 @@ End;
   This is a getter method for the IncOnCompile property.
 
   @precon  None.
-  @postcon Returns whether the build number should be incemented on a successful
-           compilation.
+  @postcon Returns whether the build number should be incemented on a successful compilation.
 
+  @param   CompileMode   as a TOTACompileMode as a constant
+  @param   strConfigName as a String as a constant
   @return  a Boolean
 
 **)
-Function TITHProjectOptions.GetIncOnCompile: Boolean;
+Function TITHProjectOptions.GetIncOnCompile(Const CompileMode : TOTACompileMode;
+  Const strConfigName : String): Boolean;
 
 Begin
-  Result := FINIFile.ReadBool(strSetupSection, strIncBuildKey, False);
+  Result := FINIFile.ReadBool(
+    strSetupSection,
+    Format(
+      strIncBuildKey, [
+        astrCompileMode[CompileMode],
+        strConfigName
+      ]),
+    False
+  );
 End;
 
 (**
@@ -735,13 +748,24 @@ End;
   @precon  None.
   @postcon Sets whether the build number should be incremented on a successful compilation.
 
-  @param   boolValue as a Boolean as a constant
+  @param   CompileMode   as a TOTACompileMode as a constant
+  @param   strConfigName as a String as a constant
+  @param   boolValue     as a Boolean as a constant
 
 **)
-Procedure TITHProjectOptions.SetIncOnCompile(Const boolValue: Boolean);
+Procedure TITHProjectOptions.SetIncOnCompile(Const CompileMode : TOTACompileMode;
+  Const strConfigName : String; Const boolValue: Boolean);
 
 Begin
-  FINIFile.WriteBool(strSetupSection, strIncBuildKey, boolValue);
+  FINIFile.WriteBool(
+    strSetupSection,
+    Format(
+      strIncBuildKey, [
+        astrCompileMode[CompileMode],
+        strConfigName
+      ]),
+    boolValue
+  );
   FModified := True;
 End;
 

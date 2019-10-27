@@ -5,7 +5,7 @@
 
   @Author  David Hoyle.
   @Version 1.0
-  @Date    21 Sep 2019
+  @Date    27 Oct 2019
 
   @license
 
@@ -32,6 +32,8 @@ Unit ITHelper.IDENotifierInterface;
 
 Interface
 
+{$INCLUDE 'CompilerDefinitions.inc'}
+
 Uses
   ToolsAPI,
   Contnrs,
@@ -41,23 +43,26 @@ Uses
   ITHelper.Types, 
   ITHelper.Interfaces,
   ITHelper.ExternalProcessInfo,
-  ITHelper.CommonFunctions, 
+  ITHelper.CommonFunctions,
+  {$IFDEF D2010}
+  ITHelper.CompileNotifier,
+  {$ENDIF D2010}
   ITHelper.TestingHelperUtils;
-
-{$INCLUDE 'CompilerDefinitions.inc'}
 
 Type
   (** A class to implement the IDE notifier interfaces **)
   TITHelperIDENotifier = Class(TNotifierObject, IUnknown, IOTANotifier, IOTAIDENotifier,
     IOTAIDENotifier50, IOTAIDENotifier80)
   Strict Private
-    { Private declarations }
     FGlobalOps             : IITHGlobalOptions;
     FSuccessfulCompile     : TTimer;
     FLastSuccessfulCompile : Int64;
     FShouldBuildList       : TStringList;
     FMsgMgr                : IITHMessageManager;
-  {$IFDEF D2010} Strict {$ENDIF} Protected
+    {$IFDEF D2010}
+    FCompileNotifier       : IITHCompileNotifier;
+    {$ENDIF D2010}
+  Protected
     // IOTANotifier
     // IOTAIDENotifier
     Procedure FileNotification(NotifyCode: TOTAFileNotification; Const FileName: String;
@@ -104,10 +109,11 @@ Type
     Function  CheckProjectOptions (Const Project : IOTAProject) : IOTABuildConfiguration;
     Procedure IncrementITHelperVerInfo(
       {$IFDEF DXE20} Const ActiveConfig : IOTABuildConfiguration; {$ENDIF}
-      Const ProjectOps : IITHProjectOptions; Const strProject: String);
+      Const ProjectOps : IITHProjectOptions; Const strProject: String;
+      Const eCompileMode : TOTACompileMode);
     Procedure IncrementIDEVerInfo(
       Const {$IFDEF DXE20} ActiveConfig: IOTABuildConfiguration; {$ELSE} Project : IOTAProject; {$ENDIF}
-      Const strProject: String);
+      Const strProject: String; Const eCompileMode : TOTACompileMode);
     Procedure UpdateITHelperVerInfo(Const ProjectOps: IITHProjectOptions;
       {$IFDEF DXE20} Const ActiveConfig : IOTABuildConfiguration; {$ENDIF}
       Const recVersionInfo : TITHVersionInfo);
@@ -119,7 +125,8 @@ Type
       Const recVersionInfo : TITHVersionInfo);
     {$ENDIF}
   Public
-    Constructor Create(Const GlobalOps: IITHGlobalOptions);
+    Constructor Create(Const GlobalOps: IITHGlobalOptions {$IFDEF D2010};
+      Const CompileNotfier : IITHCompileNotifier {$ENDIF D2010});
     Destructor Destroy; Override;
   End;
 
@@ -165,7 +172,9 @@ ResourceString
   strBuildConfigVerInfoDisabled = 'Build Configuration "%s" Version Information Disabled!';
   {$ENDIF}
   (** A resource string for the incrementing build number message. **)
-  strIncrementingBuildFromTo = 'Incrementing %s''s (%s) Build from %d to %d.';
+  strIncrementingBuildFromTo = 'Incrementing %s''s (%s, %s) Build from %d to %d.';
+  (** A constant string for a base configuration in XE and below. **)
+  strBASE = 'BASE';
 
 Const
   (** This number of milliseconds in a second. **)
@@ -402,10 +411,12 @@ End;
   @precon  None.
   @postcon Initialises the class.
 
-  @param   GlobalOps as a IITHGlobalOptions as a constant
+  @param   GlobalOps      as an IITHGlobalOptions as a constant
+  @param   CompileNotfier as an IITHCompileNotifier as a constant
 
 **)
-Constructor TITHelperIDENotifier.Create(Const GlobalOps: IITHGlobalOptions);
+Constructor TITHelperIDENotifier.Create(Const GlobalOps: IITHGlobalOptions
+  {$IFDEF D2010}; Const CompileNotfier : IITHCompileNotifier {$ENDIF D2010} );
 
 Const
   iTimerIntervalInMSec = 100;
@@ -414,6 +425,9 @@ Begin
   {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Create', tmoTiming);{$ENDIF}
   Inherited Create;
   FGlobalOps := GlobalOps;
+  {$IFDEF D2010}
+  FCompileNotifier := CompileNotfier;
+  {$ENDIF D2010}
   FMsgMgr := TITHMessageManager.Create(GlobalOps);
   FLastSuccessfulCompile := 0;
   FSuccessfulCompile := TTimer.Create(Nil);
@@ -523,23 +537,36 @@ End;
 Procedure TITHelperIDENotifier.IncrementBuild(Const Ops : TITHEnabledOptions;
   Const ProjectOps : IITHProjectOptions; Const Project: IOTAProject; Const strProject: String);
 
-{$IFDEF DXE20}
+Const
+  strBasicConfig = 'BasicConfig';
+
 Var
+  strConfigName: String;
+  {$IFDEF DXE20}
   ActiveConfig: IOTABuildConfiguration;
-{$ENDIF}
+  {$ENDIF}
 
 Begin
   If eoIncrementBuild In Ops Then
-    If ProjectOps.IncOnCompile Then
-      Begin
-        {$IFDEF DXE20}
-        ActiveConfig := CheckProjectOptions(Project);
-        {$ENDIF}
-        If ProjectOps.IncITHVerInfo Then
-          IncrementITHelperVerInfo( {$IFDEF DXE20} ActiveConfig, {$ENDIF} ProjectOps, strProject)
-        Else
-          IncrementIDEVerInfo( {$IFDEF DXE20} ActiveConfig {$ELSE} Project {$ENDIF}, strProject);
-      End;
+    Begin
+      strConfigName := strBasicConfig;
+      {$IFDEF DXE20}
+      ActiveConfig := CheckProjectOptions(Project);
+      strConfigName := ActiveConfig.Name;
+      {$ENDIF}
+      If ProjectOps.IncOnCompile[
+        {$IFDEF D2010} FCompileNotifier.CompileMode {$ELSE D2010} cmOTAMake {$ENDIF D2010},
+        strConfigName
+        ] Then
+        Begin
+          If ProjectOps.IncITHVerInfo Then
+            IncrementITHelperVerInfo( {$IFDEF DXE20} ActiveConfig, {$ENDIF} ProjectOps, strProject,
+              {$IFDEF D2010} FCompileNotifier.CompileMode {$ELSE D2010} cmOTAMake {$ENDIF D2010})
+          Else
+            IncrementIDEVerInfo( {$IFDEF DXE20} ActiveConfig {$ELSE} Project {$ENDIF}, strProject,
+              {$IFDEF D2010} FCompileNotifier.CompileMode {$ELSE D2010} cmOTAMake {$ENDIF D2010});
+        End;
+    End;
 End;
 
 (**
@@ -551,44 +578,49 @@ End;
 
   @param   ActiveConfig as an IOTABuildConfiguration as a constant
   @param   strProject   as a String as a constant
+  @param   eCompileMode as a TOTACompileMode as a constant
 
 **)
 Procedure TITHelperIDENotifier.IncrementIDEVerInfo(
   Const {$IFDEF DXE20} ActiveConfig: IOTABuildConfiguration; {$ELSE} Project : IOTAProject; {$ENDIF}
-  Const strProject : String);
+  Const strProject : String; Const eCompileMode : TOTACompileMode);
 
-{$IFDEF DXE20}
-ResourceString
-  strBuildConfiguration = 'BuildConfiguration';
-{$ENDIF}
 
 {$IFNDEF DXE20}
 Const
   strBuild = 'Build';
-  strProjectOptions = 'ProjectOptions';
 {$ENDIF}
 
 Var
   iBuild: Integer;
+  strConfigName : String;
   
 Begin
+  strConfigName := strBASE;
   {$IFDEF DXE20} // Multiple Configurations in XE2 and above
   If Not ActiveConfig.GetBoolean(sVerInfo_IncludeVerInfo, True) Then
     Begin
       ActiveConfig.SetBoolean(sVerInfo_IncludeVerInfo, True);
-      FMsgMgr.AddMsg(Format(strBuildConfigVerInfoEnabled, [ActiveConfig.Name]),fnHeader,
-        ithfDefault);
+      FMsgMgr.AddMsg(Format(strBuildConfigVerInfoEnabled, [ActiveConfig.Name]),fnHeader, ithfDefault);
     End;
   iBuild := ActiveConfig.GetInteger(sVerInfo_Build, True);
-  FMsgMgr.AddMsg(Format(strIncrementingBuildFromTo,
-    [strProject, strBuildConfiguration, iBuild, iBuild + 1]), fnHeader, ithfDefault);
   ActiveConfig.SetInteger(sVerInfo_Build, iBuild + 1);
-  {$ELSE}        // Congle Configuration in XE and below
+  strConfigName := ActiveConfig.Name;
+  {$ELSE}        // Single Configuration in XE and below
   iBuild := Project.ProjectOptions.Values[strBuild];
-  FMsgMgr.AddMsg(Format(strIncrementingBuildFromTo,
-    [strProject, strProjectOptions, iBuild, iBuild + 1]), fnHeader, ithfDefault);
   Project.ProjectOptions.Values[strBuild] := iBuild + 1;
   {$ENDIF}
+  FMsgMgr.AddMsg(
+    Format(
+      strIncrementingBuildFromTo, [
+        strProject,
+        strConfigName,
+        astrCompileMode[eCompileMode],
+        iBuild,
+        iBuild + 1
+      ]
+    ),
+    fnHeader,ithfDefault);
 End;
 
 (**
@@ -601,29 +633,42 @@ End;
   @param   ActiveConfig as an IOTABuildConfiguration as a constant
   @param   ProjectOps   as an IITHProjectOptions as a constant
   @param   strProject   as a String as a constant
+  @param   eCompileMode as a TOTACompileMode as a constant
 
 **)
 Procedure TITHelperIDENotifier.IncrementITHelperVerInfo(
   {$IFDEF DXE20} Const ActiveConfig : IOTABuildConfiguration; {$ENDIF}
-  Const ProjectOps : IITHProjectOptions; Const strProject : String);
+  Const ProjectOps : IITHProjectOptions; Const strProject : String;
+  Const eCompileMode : TOTACompileMode);
 
-ResourceString
-  strITHelper = 'ITHelper';
-  
 Var
   iBuild: Integer;
+  strConfigName : String;
 
 Begin
+  strConfigName := strBASE;
   {$IFDEF DXE20} // Multiple Configurations in XE2 and above
   If ActiveConfig.GetBoolean(sVerInfo_IncludeVerInfo, True) Then
     Begin
       ActiveConfig.SetBoolean(sVerInfo_IncludeVerInfo, False);
       FMsgMgr.AddMsg(Format(strBuildConfigVerInfoDisabled, [ActiveConfig.Name]),fnHeader, ithfDefault);
     End;
+  strConfigName := ActiveConfig.Name;
   {$ENDIF}
   iBuild := ProjectOps.Build;
-  FMsgMgr.AddMsg(Format(strIncrementingBuildFromTo,
-    [strProject, strITHelper, iBuild, iBuild + 1]), fnHeader, ithfDefault);
+  FMsgMgr.AddMsg(
+    Format(
+      strIncrementingBuildFromTo, [
+        strProject,
+        strConfigName,
+        astrCompileMode[eCompileMode],
+        iBuild,
+        iBuild + 1
+      ]
+    ),
+    fnHeader,
+    ithfDefault
+  );
   ProjectOps.Build := iBuild + 1;
 End;
 
