@@ -373,7 +373,17 @@ End;
 Function TITHProjectOptions.GetIncOnCompile(Const CompileMode : TOTACompileMode;
   Const strConfigName : String): Boolean;
 
+Const
+  strOldIncBuildKey = 'IncBuild';
+
 Begin
+  // Load old value for Make and Build so settings are not lost
+  Case CompileMode Of
+    cmOTAMake..cmOTABuild:     Result := FINIFile.ReadBool(strSetupSection, strOldIncBuildKey, False);
+  Else
+    Result := False;
+  End;
+  // Load new value
   Result := FINIFile.ReadBool(
     strSetupSection,
     Format(
@@ -381,7 +391,7 @@ Begin
         astrCompileMode[CompileMode],
         strConfigName
       ]),
-    False
+    Result
   );
 End;
 
