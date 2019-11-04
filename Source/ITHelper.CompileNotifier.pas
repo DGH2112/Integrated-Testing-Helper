@@ -5,7 +5,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    27 Oct 2019
+  @Date    04 Nov 2019
   
   @license
 
@@ -33,58 +33,63 @@ Unit ITHelper.CompileNotifier;
 Interface
 
 Uses
-  ToolsAPI;
+  ToolsAPI,
+  Generics.Collections,
+  ITHelper.Interfaces;
 
 {$INCLUDE 'CompilerDefinitions.inc'}
 
 {$IFDEF D2010}
 Type
-  (** A custom interface to add a return function for the compile mode. **)
+  {$IFDEF DXE00}
+  (** A descendant interface for the IOTACompileNotifier to provide an extra method to hook the
+      Compile Information Interface. **)
   IITHCompileNotifier = Interface(IOTACompileNotifier)
-    Function  CompileMode : TOTACompileMode;
+    Procedure HookCompileInformation(Const CompileInformation : IITHCompileInformation);
   End;
+  {$ENDIF DXE00}
 
   (** A class which implements the IOTACompileNotifier interface. **)
-  TITHCompileNotifier = Class(TNotifierObject, IOTACompileNotifier, IITHCompileNotifier)
+  TITHCompileNotifier = Class(TNotifierObject, IOTACompileNotifier
+    {$IFDEF DXE00} , IITHCompileNotifier {$ENDIF DXE00} )
   Strict Private
-    FCompileMode: TOTACompileMode;
+    {$IFDEF DXE00}
+    FCompileInformation : IITHCompileInformation;
+    {$ENDIF DXE00}
+    FMessageMgr         : IITHMessageManager;
   Strict Protected
     // IOTACompileNotifier
     Procedure ProjectCompileFinished(Const Project: IOTAProject; Result: TOTACompileResult);
     Procedure ProjectCompileStarted(Const Project: IOTAProject; Mode: TOTACompileMode);
     Procedure ProjectGroupCompileFinished(Result: TOTACompileResult);
     Procedure ProjectGroupCompileStarted(Mode: TOTACompileMode);
+    {$IFDEF DXE00}
     // IITHCompileNotifier
-    Function  CompileMode: TOTACompileMode;
+    Procedure HookCompileInformation(Const CompileInformation : IITHCompileInformation);
+    {$ENDIF DXE00}
   Public
-    Constructor Create;
+    Constructor Create(Const MessageMgr : IITHMessageManager);
     Destructor Destroy; Override;
   End;
 {$ENDIF D2010}
 
 Implementation
 
-{$IFDEF DEBUG}
 Uses
-  CodeSiteLogging;
-{$ENDIF DEBUG}
+  {$IFDEF DEBUG}
+  CodeSiteLogging,
+  {$ENDIF DEBUG}
+  SysUtils,
+  Variants,
+  ITHelper.Types,
+  ITHelper.Constants,
+  ITHelper.TestingHelperUtils,
+  ITHelper.ProjectCompileNotifier;
 
 {$IFDEF D2010}
-(**
-
-  This method returns the last compile mode notified by the IDE.
-
-  @precon  None.
-  @postcon The last compile mode is returned.
-
-  @return  a TOTACompileMode
-
-**)
-Function TITHCompileNotifier.CompileMode: TOTACompileMode;
-
-Begin
-  Result := FCompileMode;
-End;
+Const
+  (** A constant array of fonts aligned with the compile results. **)
+  aFont : Array[TOTACompileResult] Of TITHFonts = (ithfFailure, ithfSuccess, ithfWarning);
 
 (**
 
@@ -93,12 +98,18 @@ End;
   @precon  None.
   @postcon Does nothing - used for code site tracing to check for memory leaks due to coupling.
 
+  @param   MessageMgr         as an IITHMessageManager as a constant
+
 **)
-Constructor TITHCompileNotifier.Create;
+Constructor TITHCompileNotifier.Create(Const MessageMgr : IITHMessageManager);
 
 Begin
   {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Create', tmoTiming);{$ENDIF}
   Inherited Create;
+  {$IFDEF DXE00}
+  FCompileInformation := Nil;
+  {$ENDIF DXE00}
+  FMessageMgr := MessageMgr;
 End;
 
 (**
@@ -113,8 +124,30 @@ Destructor TITHCompileNotifier.Destroy;
 
 Begin
   {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Destroy', tmoTiming);{$ENDIF}
+  {$IFDEF DXE00}
+  FCompileInformation := Nil;
+  {$ENDIF DXE00}
   Inherited Destroy;
 End;
+
+{$IFDEF DXE00}
+(**
+
+  This method hooks the IITHCompileInformation interface to the class so it can read and write the
+  compile information.
+
+  @precon  None.
+  @postcon The CompileInformation interface is set.
+
+  @param   CompileInformation as an IITHCompileInformation as a constant
+
+**)
+Procedure TITHCompileNotifier.HookCompileInformation(Const CompileInformation : IITHCompileInformation);
+
+Begin
+  FCompileInformation := CompileInformation;
+End;
+{$ENDIF DXE00}
 
 (**
 
@@ -133,8 +166,18 @@ End;
 Procedure TITHCompileNotifier.ProjectCompileFinished(Const Project: IOTAProject;
   Result: TOTACompileResult);
 
-Begin
+ResourceString
+  strMsg = 'Project "%s" finished compiling (Result: %s).';
 
+Begin
+  FMessageMgr.AddMsg(
+    Format(strMsg, [
+      ExtractFileName(Project.FileName),
+      astrCompileResult[Result]
+    ]),
+    fnHeader,
+    aFont[Result]
+  );
 End;
 
 (**
@@ -153,8 +196,39 @@ End;
 **)
 Procedure TITHCompileNotifier.ProjectCompileStarted(Const Project: IOTAProject; Mode: TOTACompileMode);
 
+ResourceString
+  strMsg = 'Project "%s" started compiling (Mode: %s, Config: %s, Platform: %s).';
+
+{$IFNDEF DXE00}
+Const
+  strWin32 = 'Win32';
+  strBaseConfig = 'Base';
+{$ENDIF DXE00}
+
+Var
+  Msg: IITHCustomMessage;
+  {$IFDEF DXE00}
+  CompileInfo : TOTAProjectCompileInfo;
+  {$ENDIF DXE00}
+
 Begin
-  FCompileMode := Mode;
+  {$IFDEF DXE00} If Assigned(FCompileInformation) Then {$ENDIF DXE00}
+    Begin
+      {$IFDEF DXE00}
+      CompileInfo := FCompileInformation.CompileInformation;
+      CompileInfo.Mode := Mode;
+      {$ENDIF DXE00}
+      Msg := FMessageMgr.AddMsg(
+        Format(strMsg, [
+          ExtractFileName(Project.FileName),
+          astrCompileMode[ {$IFDEF DXE00} CompileInfo.Mode {$ELSE} Mode {$ENDIF DXE00} ],
+          {$IFDEF DXE00} CompileInfo.Configuration {$ELSE} strBaseConfig {$ENDIF DXE00},
+          {$IFDEF DXE00} CompileInfo.Platform {$ELSE} strWin32 {$ENDIF DXE00}
+        ]),
+        fnHeader,
+        ithfDefault
+      );
+    End;
 End;
 
 (**
@@ -172,8 +246,17 @@ End;
 **)
 Procedure TITHCompileNotifier.ProjectGroupCompileFinished(Result: TOTACompileResult);
 
-Begin
+ResourceString
+  strMsg = 'Project Group finished compiling (Result: %s).';
 
+Begin
+  FMessageMgr.AddMsg(
+    Format(strMsg, [
+      astrCompileResult[Result]
+    ]),
+    fnHeader,
+    aFont[Result]
+  );
 End;
 
 (**
@@ -191,8 +274,17 @@ End;
 **)
 Procedure TITHCompileNotifier.ProjectGroupCompileStarted(Mode: TOTACompileMode);
 
-Begin
+ResourceString
+  strMsg = 'Project Group started compiling (Mode: %s).';
 
+Begin
+  FMessageMgr.AddMsg(
+    Format(strMsg, [
+      astrCompileMode[Mode]
+    ]),
+    fnHeader,
+    ithfDefault
+  )
 End;
 {$ENDIF D2010}
 

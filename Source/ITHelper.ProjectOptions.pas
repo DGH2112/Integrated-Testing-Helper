@@ -379,7 +379,7 @@ Const
 Begin
   // Load old value for Make and Build so settings are not lost
   Case CompileMode Of
-    cmOTAMake..cmOTABuild:     Result := FINIFile.ReadBool(strSetupSection, strOldIncBuildKey, False);
+    cmOTAMake..cmOTABuild: Result := FINIFile.ReadBool(strSetupSection, strOldIncBuildKey, False);
   Else
     Result := False;
   End;

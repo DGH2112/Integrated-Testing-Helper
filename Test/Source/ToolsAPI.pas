@@ -108,6 +108,10 @@ Type
   End;
 
   TOTACompileMode = (cmOTAMake, cmOTABuild, cmOTACheck, cmOTAMakeUnit);
+  TOTACompileResult = (crOTAFailed, crOTASucceeded, crOTABackground);
+
+  TOTAProjectCompileInfo = Record
+  End;
   
 Var
   BorlandIDEServices : IBorlandIDEServices;

@@ -4,7 +4,7 @@
   external tools before and after the compilation of the current project.
 
   @Version 1.0
-  @Date    27 Oct 2019
+  @Date    04 Nov 2019
   @Author  David Hoyle
 
   @license
@@ -61,6 +61,7 @@ Type
     {$ENDIF}
     {$ENDIF}
     FIDENotifierIndex       : Integer;
+    FMessageMgr             : IITHMessageManager;
     {$IFDEF DXE00}
     FAboutAddin             : INTAAddInOptions;
     FGlobalOptionsAddin     : INTAAddInOptions;
@@ -131,7 +132,7 @@ Uses
   ITHelper.GlobalOptionsFrame,
   ITHelper.AboutFrame,
   ITHelper.GlobalOptionsDlg,
-  ITHelper.CompileNotifier;
+  ITHelper.CompileNotifier, ITHelper.MessageManager;
 
 {$IFDEF DXE00}
 ResourceString
@@ -360,7 +361,7 @@ Var
   PM : IOTAProjectManager;
   {$IFDEF D2010}
   CS : IOTACompileServices;
-  CompileNotifier : IITHCompileNotifier;
+  CompileNotifier : {$IFDEF DXE00} IITHCompileNotifier {$ELSE} IOTACompileNotifier {$ENDIF DXE00};
   {$ENDIF D2010}
   S : IOTAServices;
   {$IFDEF DXE00}
@@ -382,6 +383,7 @@ Begin
     {$ENDIF}
   CreateMenus;
   FGlobalOps := TITHGlobalOptions.Create;
+  FMessageMgr := TITHMessageManager.Create(FGlobalOps);
   {$IFDEF DXE00}
   If Supports(BorlandIDEServices, INTAEnvironmentOptionsServices, EO) Then
     Begin
@@ -397,13 +399,13 @@ Begin
   {$IFDEF D2010}
   If Supports(BorlandIDEServices, IOTACompileServices, CS) Then
     Begin
-      CompileNotifier := TITHCompileNotifier.Create;
+      CompileNotifier := TITHCompileNotifier.Create(FMessageMgr);
       FCompileNotifier := CS.AddNotifier(CompileNotifier);
     End;
   {$ENDIF D2010}
   If Supports(BorlandIDEServices, IOTAServices, S) Then
-    FIDENotifierIndex := S.AddNotifier(TITHelperIDENotifier.Create(
-      FGlobalOps {$IFDEF D2010}, CompileNotifier {$ENDIF D2010}
+    FIDENotifierIndex := S.AddNotifier(TITHelperIDENotifier.Create(FMessageMgr, FGlobalOps
+      {$IFDEF D2010}, CompileNotifier {$ENDIF D2010}
     ));
   //: @debug FHTMLHelpCookie := HTMLHelp(Application.Handle, Nil, HH_INITIALIZE, 0);
 End;
@@ -525,6 +527,7 @@ Var
   
 Begin
   {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Destroy', tmoTiming);{$ENDIF}
+  FMessageMgr.DisableMessaging;
   HTMLHelp(0, Nil, HH_CLOSE_ALL, 0);
   //HTMLHelp(Application.Handle, Nil, HH_UNINITIALIZE, FHTMLHelpCookie);
   If FIDENotifierIndex > iWizardFailState Then

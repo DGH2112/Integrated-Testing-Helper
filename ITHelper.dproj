@@ -56,7 +56,7 @@
         <DCC_SYMBOL_PLATFORM>false</DCC_SYMBOL_PLATFORM>
         <DCC_UNIT_PLATFORM>false</DCC_UNIT_PLATFORM>
         <DCC_DcuOutput>$(Platform)\$(Config)</DCC_DcuOutput>
-        <DCC_ExeOutput>$(Platform)\$(Config)</DCC_ExeOutput>
+        <DCC_ExeOutput>.\</DCC_ExeOutput>
         <UsePackages>true</UsePackages>
         <DCC_UsePackage>DesignIDE;VCL;RTL;$(DCC_UsePackage)</DCC_UsePackage>
         <DCC_UnitSearchPath>$(BDSPROJECTSDIR)\Binaries\CS5\Lib\RX10.3\Win32;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
@@ -175,17 +175,20 @@
             <Form>frmITHProjectOpsDlg</Form>
         </DCCReference>
         <DCCReference Include="Source\ITHelper.CompileNotifier.pas"/>
+        <DCCReference Include="Source\ITHelper.ProjectCompileNotifier.pas"/>
+        <DCCReference Include="Source\ITHelper.ProjectNotifier.pas"/>
+        <DCCReference Include="Source\ITHelper.ModuleNotifierList.pas"/>
         <None Include="Source\CompilerDefinitions.inc"/>
         <None Include="License.md"/>
         <None Include="README.md"/>
         <None Include="Source\LibrarySuffixes.inc"/>
         <None Include="Contributing.md"/>
-        <BuildConfiguration Include="Base">
-            <Key>Base</Key>
-        </BuildConfiguration>
         <BuildConfiguration Include="Debug">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
+        </BuildConfiguration>
+        <BuildConfiguration Include="Base">
+            <Key>Base</Key>
         </BuildConfiguration>
         <BuildConfiguration Include="Release">
             <Key>Cfg_1</Key>

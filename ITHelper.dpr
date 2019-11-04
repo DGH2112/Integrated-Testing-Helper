@@ -4,7 +4,7 @@
   implement an IDE wizard.
 
   @Author  David Hoyle
-  @Date    21 Sep 2019
+  @Date    04 Nov 2019
   @Version 2.0
 
   @nocheck EmptyBEGINEND
@@ -88,7 +88,10 @@ uses
   ITHelper.FontFrame in 'Source\ITHelper.FontFrame.pas' {frameFonts: TFrame},
   ITHelper.GlobalOptionsDlg in 'Source\ITHelper.GlobalOptionsDlg.pas' {frmITHGlobalOptionsDlg},
   ITHelper.ProjectOpsDlg in 'Source\ITHelper.ProjectOpsDlg.pas' {frmITHProjectOpsDlg},
-  ITHelper.CompileNotifier in 'Source\ITHelper.CompileNotifier.pas';
+  ITHelper.CompileNotifier in 'Source\ITHelper.CompileNotifier.pas',
+  ITHelper.ProjectCompileNotifier in 'Source\ITHelper.ProjectCompileNotifier.pas',
+  ITHelper.ProjectNotifier in 'Source\ITHelper.ProjectNotifier.pas',
+  ITHelper.ModuleNotifierList in 'Source\ITHelper.ModuleNotifierList.pas';
 
 {$R *.res}
 
