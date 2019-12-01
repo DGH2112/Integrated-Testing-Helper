@@ -4,7 +4,7 @@
   external tools before and after the compilation of the current project.
 
   @Version 1.0
-  @Date    21 Sep 2019
+  @Date    04 Nov 2019
   @Author  David Hoyle
 
   @license
@@ -55,11 +55,13 @@ Type
     {$IFDEF D2005}
     {$IFDEF D2010}
     FProjectMgrMenuNotifier : IOTAProjectMenuItemCreatorNotifier;
+    FCompileNotifier        : Integer;
     {$ELSE}
     FProjectMgrMenuNotifier : INTAProjectMenuCreatorNotifier;
     {$ENDIF}
     {$ENDIF}
     FIDENotifierIndex       : Integer;
+    FMessageMgr             : IITHMessageManager;
     {$IFDEF DXE00}
     FAboutAddin             : INTAAddInOptions;
     FGlobalOptionsAddin     : INTAAddInOptions;
@@ -129,7 +131,8 @@ Uses
   ITHelper.AddInOptions,
   ITHelper.GlobalOptionsFrame,
   ITHelper.AboutFrame,
-  ITHelper.GlobalOptionsDlg;
+  ITHelper.GlobalOptionsDlg,
+  ITHelper.CompileNotifier, ITHelper.MessageManager;
 
 {$IFDEF DXE00}
 ResourceString
@@ -356,6 +359,10 @@ Constructor TITHWizard.Create;
 
 Var
   PM : IOTAProjectManager;
+  {$IFDEF D2010}
+  CS : IOTACompileServices;
+  CompileNotifier : {$IFDEF DXE00} IITHCompileNotifier {$ELSE} IOTACompileNotifier {$ENDIF DXE00};
+  {$ENDIF D2010}
   S : IOTAServices;
   {$IFDEF DXE00}
   EO : INTAEnvironmentOptionsServices;
@@ -367,10 +374,7 @@ Begin
   FIDENotifierIndex := iWizardFailState;
   InstallSplashScreen;
   FAboutBoxIndex := AddAboutBoxEntry;
-  { $IFDEF D2010}
   FProjectMgrMenuNotifier := TITHProjectManagerMenu.Create(Self);
-  { $ELSE}
-  { $ENDIF}
   If Supports(BorlandIDEServices, IOTAProjectManager, PM) Then
     {$IFDEF D2010}
     FProjectMgrMenuIndex := PM.AddMenuItemCreatorNotifier(FProjectMgrMenuNotifier);
@@ -379,6 +383,7 @@ Begin
     {$ENDIF}
   CreateMenus;
   FGlobalOps := TITHGlobalOptions.Create;
+  FMessageMgr := TITHMessageManager.Create(FGlobalOps);
   {$IFDEF DXE00}
   If Supports(BorlandIDEServices, INTAEnvironmentOptionsServices, EO) Then
     Begin
@@ -391,8 +396,17 @@ Begin
       EO.RegisterAddInOptions(FFontsAddIn);
     End;
   {$ENDIF}
+  {$IFDEF D2010}
+  If Supports(BorlandIDEServices, IOTACompileServices, CS) Then
+    Begin
+      CompileNotifier := TITHCompileNotifier.Create(FMessageMgr);
+      FCompileNotifier := CS.AddNotifier(CompileNotifier);
+    End;
+  {$ENDIF D2010}
   If Supports(BorlandIDEServices, IOTAServices, S) Then
-    FIDENotifierIndex := S.AddNotifier(TITHelperIDENotifier.Create(FGlobalOps));
+    FIDENotifierIndex := S.AddNotifier(TITHelperIDENotifier.Create(FMessageMgr, FGlobalOps
+      {$IFDEF D2010}, CompileNotifier {$ENDIF D2010}
+    ));
   //: @debug FHTMLHelpCookie := HTMLHelp(Application.Handle, Nil, HH_INITIALIZE, 0);
 End;
 
@@ -504,17 +518,25 @@ Destructor TITHWizard.Destroy;
 Var
   PM : IOTAProjectManager;
   S : IOTAServices;
+  {$IFDEF D2010}
+  CS : IOTACompileServices;
+  {$ENDIF D2010}
   {$IFDEF DXE00}
   EO : INTAEnvironmentOptionsServices;
   {$ENDIF}
   
 Begin
   {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Destroy', tmoTiming);{$ENDIF}
+  FMessageMgr.DisableMessaging;
   HTMLHelp(0, Nil, HH_CLOSE_ALL, 0);
   //HTMLHelp(Application.Handle, Nil, HH_UNINITIALIZE, FHTMLHelpCookie);
   If FIDENotifierIndex > iWizardFailState Then
     If Supports(BorlandIDEServices, IOTAServices, S) Then
       S.RemoveNotifier(FIDENotifierIndex);
+  {$IFDEF D2010}
+  If Supports(BorlandIDEServices, IOTACompileServices, CS) Then
+    CS.RemoveNotifier(FCompileNotifier);
+  {$ENDIF D2010}
   {$IFNDEF D2005}
   FMenuTimer.Free;
   {$ENDIF}

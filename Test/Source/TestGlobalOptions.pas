@@ -449,6 +449,9 @@ End;
 
 Procedure TestTITHProjectOptions.TestIncOnCompile;
 
+Const
+  strConfigName = 'DEBUG';
+
 Var
   FProjectOps : IITHProjectOptions;
 
@@ -456,33 +459,33 @@ Begin
   DeleteFile(GetProjectINIFileName);
   FProjectOps := TITHProjectOptions.Create(GetProjectINIFileName, TProjectStub.Create);
   Try
-    CheckEquals(False, FProjectOps.IncOnCompile, 'Default IncOnCompile');
+    CheckEquals(False, FProjectOps.IncOnCompile[cmOTAMake, strConfigName], 'Default IncOnCompile');
   Finally
     FProjectOps := Nil;
   End;
   FProjectOps := TITHProjectOptions.Create(GetProjectINIFileName, TProjectStub.Create);
   Try
-    FProjectOps.IncOnCompile := True;
-    CheckEquals(True, FProjectOps.IncOnCompile, 'IncOnCompile First Set');
+    FProjectOps.IncOnCompile[cmOTAMake, strConfigName] := True;
+    CheckEquals(True, FProjectOps.IncOnCompile[cmOTAMake, strConfigName], 'IncOnCompile First Set');
   Finally
     FProjectOps := Nil;
   End;
   FProjectOps := TITHProjectOptions.Create(GetProjectINIFileName, TProjectStub.Create);
   Try
-    CheckEquals(True, FProjectOps.IncOnCompile, 'IncOnCompile on Reload');
+    CheckEquals(True, FProjectOps.IncOnCompile[cmOTAMake, strConfigName], 'IncOnCompile on Reload');
   Finally
     FProjectOps := Nil;
   End;
   FProjectOps := TITHProjectOptions.Create(GetProjectINIFileName, TProjectStub.Create);
   Try
-    FProjectOps.IncOnCompile := False;
-    CheckEquals(False, FProjectOps.IncOnCompile, 'IncOnCompile Second Set');
+    FProjectOps.IncOnCompile[cmOTAMake, strConfigName] := False;
+    CheckEquals(False, FProjectOps.IncOnCompile[cmOTAMake, strConfigName], 'IncOnCompile Second Set');
   Finally
     FProjectOps := Nil;
   End;
   FProjectOps := TITHProjectOptions.Create(GetProjectINIFileName, TProjectStub.Create);
   Try
-    CheckEquals(False, FProjectOps.IncOnCompile, 'IncOnCompile on Reload');
+    CheckEquals(False, FProjectOps.IncOnCompile[cmOTAMake, strConfigName], 'IncOnCompile on Reload');
   Finally
     FProjectOps := Nil;
   End;
@@ -1019,6 +1022,9 @@ End;
 
 Procedure TestTITHGlobalOptions.TestTITHProjectOptions;
 
+Const
+  strConfigName = 'DEBUG';
+
 Var
   FGOps : IITHGlobalOptions;
   P : IITHProjectOptions;
@@ -1031,7 +1037,7 @@ Begin
     '[TestProjectOptionsProject.dpr.Setup]'#13#10 +
     'WarnBefore=1'#13#10 +
     'WarnAfter=1'#13#10 +
-    'IncBuild=1'#13#10 +
+    'IncBuild.Make.DEBUG=1'#13#10 +
     'CopyVersionInfoFrom=D:\HoylD\Borland Studio Projects\IDE Addins\BrowseAndDocIt\Test\BrowseAndDocItTests2010.exe'#13#10 +
     'ExcludedResExts=.dcr'#13#10 +
     ''#13#10 +
@@ -1055,7 +1061,7 @@ Begin
     P := FGOps.ProjectOptions(ProjectStub);
     CheckEquals(True, P.WarnBefore, 'WB');
     CheckEquals(True, P.WarnAfter, 'WA');
-    CheckEquals(True, P.IncOnCompile, 'IOC');
+    CheckEquals(True, P.IncOnCompile[cmOTAMake, strConfigName], 'IOC');
     CheckEquals('D:\HoylD\Borland Studio Projects\IDE Addins\BrowseAndDocIt\Test\BrowseAndDocItTests2010.exe', P.CopyVerInfo);
     CheckEquals('.dcr', P.ResExtExc);
     CheckEquals(False, P.EnableZipping);
@@ -1071,7 +1077,7 @@ Begin
     P := FGOps.ProjectOptions(ProjectStub);
     CheckEquals(True, P.WarnBefore);
     CheckEquals(True, P.WarnAfter);
-    CheckEquals(True, P.IncOnCompile);
+    CheckEquals(True, P.IncOnCompile[cmOTAMake, strConfigName]);
     CheckEquals('D:\HoylD\Borland Studio Projects\IDE Addins\BrowseAndDocIt\Test\BrowseAndDocItTests2010.exe', P.CopyVerInfo);
     CheckEquals('.dcr', P.ResExtExc);
     CheckEquals(False, P.EnableZipping);
@@ -1087,7 +1093,7 @@ Begin
     '[TestProjectOptionsProject.dpr.Setup]'#13#10 +
     'WarnBefore=0'#13#10 +
     'WarnAfter=0'#13#10 +
-    'IncBuild=0'#13#10 +
+    'IncBuild.Make.DEBUG=0'#13#10 +
     'CopyVersionInfoFrom=D:\HoylD\IDE Addins\BrowseAndDocIt\Test\BrowseAndDocItTests2010.exe'#13#10 +
     'ExcludedResExts=.dcr;.res'#13#10 +
     ''#13#10 +
@@ -1110,7 +1116,7 @@ Begin
     P := FGOps.ProjectOptions(ProjectStub);
     CheckEquals(False, P.WarnBefore, 'WB');
     CheckEquals(False, P.WarnAfter, 'WA');
-    CheckEquals(False, P.IncOnCompile, 'IOC');
+    CheckEquals(False, P.IncOnCompile[cmOTAMake, strConfigName], 'IOC');
     CheckEquals('D:\HoylD\IDE Addins\BrowseAndDocIt\Test\BrowseAndDocItTests2010.exe', P.CopyVerInfo);
     CheckEquals('.dcr;.res', P.ResExtExc);
     CheckEquals(True, P.EnableZipping);

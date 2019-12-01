@@ -4,7 +4,7 @@
 
   @Version 1.0
   @Author  David Hoyle
-  @Date    21 Sep 2019
+  @Date    27 Oct 2019
   
   @license
 
@@ -44,9 +44,10 @@ Uses
   StdCtrls,
   ComCtrls,
   Buttons,
+  ExtCtrls,
   ToolsAPI,
   ITHelper.Types,
-  ITHelper.Interfaces, Vcl.ExtCtrls;
+  ITHelper.Interfaces;
 
 Type
   (** A frame to hold the global options. **)

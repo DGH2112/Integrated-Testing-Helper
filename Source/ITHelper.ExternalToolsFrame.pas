@@ -4,7 +4,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    21 Sep 2019
+  @Date    27 Oct 2019
   
   @license
 
@@ -48,7 +48,7 @@ Uses
   ToolsAPI,
   ITHelper.Types,
   ITHelper.Interfaces,
-  ITHelper.ExternalProcessInfo, System.ImageList;
+  ITHelper.ExternalProcessInfo;
 
 Type
   (** This is a frame for representing the before or after compile tools to be run. **)

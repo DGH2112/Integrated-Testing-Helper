@@ -4,7 +4,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    21 Sep 2019
+  @Date    04 Nov 2019
 
   @license
 
@@ -38,13 +38,16 @@ Uses
   ToolsAPI,
   ITHelper.Types;
 
+{$INCLUDE CompilerDefinitions.inc}
+
 Type
   (** An interface for the Project Options. **)
   IITHProjectOptions = Interface
   ['{06926CE6-2293-4D1C-91A5-2D991CC1CF04}']
   // Getters and Setters
     Function  GetResExtExc: String;
-    Function  GetIncOnCompile: Boolean;
+    Function  GetIncOnCompile(Const CompileMode : TOTACompileMode;
+      Const strConfigName : String): Boolean;
     Function  GetCopyVerInfo: String;
     Function  GetIncITHVerInfo: Boolean;
     Function  GetMajor: Integer;
@@ -65,7 +68,8 @@ Type
     Function  GetIniFile : TMemIniFile;
     Function  GetSaveModifiedFiles : Boolean;
     Procedure SetResExtExc(Const strValue: String);
-    Procedure SetIncOnCompile(Const boolValue: Boolean);
+    Procedure SetIncOnCompile(Const CompileMode : TOTACompileMode; Const strConfigName : String;
+      Const boolValue: Boolean);
     Procedure SetCopyVerInfo(Const strValue: String);
     Procedure SetIncITHVerInfo(Const boolValue: Boolean);
     Procedure SetMajor(Const iValue: Integer);
@@ -91,14 +95,15 @@ Type
     **)
     Property ResExtExc: String Read GetResExtExc Write SetResExtExc;
     (**
-      This property gets and sets whether the build number should be incremented on a
-      successful file.
+      This property gets and sets whether the build number should be incremented on a successful file.
       @precon  None.
-      @postcon Gets and sets whether the build number should be incremented on a
-               successful file.
+      @postcon Gets and sets whether the build number should be incremented on a successful file.
+      @param   CompileMode   as a TOTACompileMode as a constant
+      @param   strConfigName as a String as a constant
       @return  a Boolean
     **)
-    Property IncOnCompile: Boolean Read GetIncOnCompile Write SetIncOnCompile;
+    Property IncOnCompile[Const CompileMode : TOTACompileMode; Const strConfigName : String]: Boolean
+      Read GetIncOnCompile Write SetIncOnCompile;
     (**
       This property gets and sets the executable from which version information should be
       copied.
@@ -422,6 +427,7 @@ Type
     Function  AddMsg(Const strText: String; Const eFontName : TITHFontNames;
       Const eFont : TITHFonts; Const ptrParentMsg : Pointer = Nil): IITHCustomMessage;
     Procedure Clear;
+    Procedure DisableMessaging;
     (**
       This property returns the current number of messages in the managers collection.
       @precon  None.
@@ -469,6 +475,31 @@ Type
       Const DlgType : TITHDlgType = dtNA);
     Function  IsValidated : Boolean;
   End;
+
+  (** An interface to manage a list of module notifiers. **)
+  IITHModuleNotifierList = Interface
+  ['{A0575B43-F4AB-48A5-B7F2-0D92AB385F5E}']
+    Procedure Add(Const strFileName: String; Const iIndex: Integer);
+    Function Remove(Const strFileName: String): Integer;
+    Procedure Rename(Const strOldFileName, strNewFileName: String);
+  End;
+
+  {$IFDEF DXE00}
+  (** An interface to allow compile information to be passed back to the IDE Compiler notifier. **)
+  IITHCompileInformation = Interface
+  ['{16E8A111-2F16-4516-B526-85EE284FBB03}']
+    Function  GetCompileInformation : TOTAProjectCompileInfo;
+    Procedure SetCompileInformation(Const CompileInfo : TOTAProjectCompileInfo);
+    (**
+      This property gets or sets the Compile Information.
+      @precon  None.
+      @postcon Gets or sets the Compile Information.
+      @return  a TOTAProjectCompileInfo
+    **)
+    Property CompileInformation : TOTAProjectCompileInfo Read GetCompileInformation
+      Write SetCompileInformation;
+  End;
+  {$ENDIF DXE00}
 
 Implementation
 

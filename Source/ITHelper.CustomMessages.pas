@@ -5,7 +5,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    21 Sep 2019
+  @Date    27 Oct 2019
   
   @license
 
@@ -36,9 +36,9 @@ Interface
 
 Uses
   ToolsAPI,
-  VCL.Graphics,
-  VCL.Themes,
-  WinApi.Windows,
+  Graphics,
+  Themes,
+  Windows,
   ITHelper.Interfaces;
 
 Type
@@ -55,7 +55,7 @@ Type
     {$IFDEF DXE102}
     FStyleServices : TCustomStyleServices;
     {$ENDIF}
-  Strict Protected
+  {$IFDEF D2010} Strict {$ENDIF D2010} Protected
     // IOTACustomMessage
     Function GetColumnNumber: Integer;
     Function GetFileName: String;
@@ -138,6 +138,9 @@ Constructor TITHCustomMessage.Create(Const strMsg: String; Const FontName: Strin
   Const ForeColour: TColor = clNone; Const Style: TFontStyles = [];
   Const BackColour: TColor = clNone);
 
+ResourceString
+  strITHelper = '[ITHelper] ';
+
 Const
   strValidChars: Set Of AnsiChar = [#10, #13, #32 .. #128];
 
@@ -163,6 +166,7 @@ Begin
         Inc(iLength);
       End;
   SetLength(FMsg, iLength);
+  FMsg := strITHelper + FMsg;
   FFontName := FontName;
   FForeColour := ForeColour;
   FStyle := Style;
