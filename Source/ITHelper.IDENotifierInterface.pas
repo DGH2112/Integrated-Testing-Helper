@@ -59,9 +59,9 @@ Type
     FLastSuccessfulCompile      : Int64;
     FShouldBuildList            : TStringList;
     FMsgMgr                     : IITHMessageManager;
-    {$IFDEF DXE00}
+    {$IFDEF D2010}
     FCompileNotifierIndex       : Integer;
-    {$ENDIF DXE00}
+    {$ENDIF D2010}
     FProjectNotifierList        : IITHModuleNotifierList;
     FProjectCompileNotifierList : IITHModuleNotifierList;
     {$IFDEF DXE00}
@@ -136,8 +136,10 @@ Type
     Procedure InstallNotifier(Const M: IOTAModule);
     procedure UninstallNotifiers(const M: IOTAModule);
     Procedure Rename(Const strOldFileName: String; Const strNewFileName: String);
+    {$IFDEF DXE00}
     Function  GetCompileInformation : TOTAProjectCompileInfo;
     Procedure SetCompileInformation(Const CompileInfo: TOTAProjectCompileInfo);
+    {$ENDIF}
   Public
     Constructor Create(Const MessageMgr: IITHMessageManager; Const GlobalOps : IITHGlobalOptions);
     Destructor Destroy; Override;
@@ -439,11 +441,11 @@ Constructor TITHelperIDENotifier.Create(Const MessageMgr: IITHMessageManager;
 Const
   iTimerIntervalInMSec = 100;
 
+{$IFDEF D2010}
 Var
-  {$IFDEF D2010}
   CS : IOTACompileServices;
   CompileNotifier : {$IFDEF DXE00} IITHCompileNotifier {$ELSE} IOTACompileNotifier {$ENDIF DXE00};
-  {$ENDIF D2010}
+{$ENDIF D2010}
 
 Begin
   {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Create', tmoTiming);{$ENDIF}
@@ -453,7 +455,8 @@ Begin
   {$IFDEF D2010}
   If Supports(BorlandIDEServices, IOTACompileServices, CS) Then
     Begin
-      CompileNotifier := TITHCompileNotifier.Create(MessageMgr, GetCompileInformation);
+      CompileNotifier := TITHCompileNotifier.Create(MessageMgr {$IFDEF DXE00},
+        GetCompileInformation {$ENDIF});
       FCompileNotifierIndex := CS.AddNotifier(CompileNotifier);
     End;
   {$ENDIF D2010}
@@ -478,10 +481,10 @@ End;
 **)
 Destructor TITHelperIDENotifier.Destroy;
 
+{$IFDEF D2010}
 Var
-  {$IFDEF D2010}
   CS : IOTACompileServices;
-  {$ENDIF D2010}
+{$ENDIF D2010}
 
 Begin
   {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Destroy', tmoTiming);{$ENDIF}

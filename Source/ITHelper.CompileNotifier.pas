@@ -63,8 +63,8 @@ Type
     Procedure ProjectGroupCompileFinished(Result: TOTACompileResult);
     Procedure ProjectGroupCompileStarted(Mode: TOTACompileMode);
   Public
-    Constructor Create(Const MessageMgr : IITHMessageManager;
-      Const CompileInformation : TITHGetCompileInformation);
+    Constructor Create(Const MessageMgr : IITHMessageManager {$IFDEF DXE00};
+      Const CompileInformation : TITHGetCompileInformation {$ENDIF});
     Destructor Destroy; Override;
   End;
 {$ENDIF D2010}
@@ -98,8 +98,8 @@ Const
   @param   CompileInformation as a TITHGetCompileInformation as a constant
 
 **)
-Constructor TITHCompileNotifier.Create(Const MessageMgr : IITHMessageManager;
-  Const CompileInformation : TITHGetCompileInformation);
+Constructor TITHCompileNotifier.Create(Const MessageMgr : IITHMessageManager {$IFDEF DXE00};
+  Const CompileInformation : TITHGetCompileInformation {$ENDIF});
 
 Begin
   {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Create', tmoTiming);{$ENDIF}
