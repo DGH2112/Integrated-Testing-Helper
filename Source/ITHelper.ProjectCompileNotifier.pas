@@ -5,7 +5,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    04 Nov 2019
+  @Date    03 Jan 2020
   
   @license
 
@@ -43,12 +43,12 @@ Type
   (** A class which implements the IOTAProjectCompileNotifier interface. **)
   TITHProjectCompileNotifier = Class(TNotifierObject, IOTAProjectCompileNotifier)
   Strict Private
-    FCompileInformation : IITHCompileInformation;
+    FCompileInformation : TITHSetCompileInformation;
   Strict Protected
     Procedure AfterCompile(Var CompileInfo: TOTAProjectCompileInfo);
     Procedure BeforeCompile(Var CompileInfo: TOTAProjectCompileInfo);
   Public
-    Constructor Create(Const CompileInformation : IITHCompileInformation);
+    Constructor Create(Const CompileInformation : TITHSetCompileInformation);
     Destructor Destroy; Override;
   End;
 {$ENDIF DXE00}
@@ -93,7 +93,8 @@ End;
 Procedure TITHProjectCompileNotifier.BeforeCompile(Var CompileInfo: TOTAProjectCompileInfo);
 
 Begin
-  FCompileInformation.CompileInformation := CompileInfo;
+  If Assigned(FCompileInformation) Then
+    FCompileInformation(CompileInfo);
 End;
 
 (**
@@ -103,10 +104,10 @@ End;
   @precon  None.
   @postcon Saves a reference to the callback interface.
 
-  @param   CompileInformation as an IITHCompileInformation as a constant
+  @param   CompileInformation as an TITHSetCompileInformation as a constant
 
 **)
-Constructor TITHProjectCompileNotifier.Create(Const CompileInformation : IITHCompileInformation);
+Constructor TITHProjectCompileNotifier.Create(Const CompileInformation : TITHSetCompileInformation);
 
 Begin
   {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Create', tmoTiming);{$ENDIF}

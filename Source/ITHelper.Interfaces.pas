@@ -4,7 +4,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    04 Nov 2019
+  @Date    03 Jan 2020
 
   @license
 
@@ -485,21 +485,14 @@ Type
   End;
 
   {$IFDEF DXE00}
-  (** An interface to allow compile information to be passed back to the IDE Compiler notifier. **)
-  IITHCompileInformation = Interface
-  ['{16E8A111-2F16-4516-B526-85EE284FBB03}']
-    Function  GetCompileInformation : TOTAProjectCompileInfo;
-    Procedure SetCompileInformation(Const CompileInfo : TOTAProjectCompileInfo);
-    (**
-      This property gets or sets the Compile Information.
-      @precon  None.
-      @postcon Gets or sets the Compile Information.
-      @return  a TOTAProjectCompileInfo
-    **)
-    Property CompileInformation : TOTAProjectCompileInfo Read GetCompileInformation
-      Write SetCompileInformation;
-  End;
+  (** An method to allow compile information to be retrieved. **)
+  TITHSetCompileInformation = Procedure(Const CompileInfo : TOTAProjectCompileInfo) Of Object;
+  (** An method to allow compile information to be set. **)
+  TITHGetCompileInformation = Function : TOTAProjectCompileInfo Of Object;
   {$ENDIF DXE00}
+
+  (** An method to act as a call back mechanism when a project is renamed. **)
+  TITHRenameNotifier = Procedure(Const strOldFileName, strNewFileName : String) Of Object;
 
 Implementation
 

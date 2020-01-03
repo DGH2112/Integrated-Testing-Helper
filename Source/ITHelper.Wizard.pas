@@ -4,7 +4,7 @@
   external tools before and after the compilation of the current project.
 
   @Version 1.0
-  @Date    04 Nov 2019
+  @Date    03 Jan 2020
   @Author  David Hoyle
 
   @license
@@ -55,7 +55,6 @@ Type
     {$IFDEF D2005}
     {$IFDEF D2010}
     FProjectMgrMenuNotifier : IOTAProjectMenuItemCreatorNotifier;
-    FCompileNotifier        : Integer;
     {$ELSE}
     FProjectMgrMenuNotifier : INTAProjectMenuCreatorNotifier;
     {$ENDIF}
@@ -132,7 +131,8 @@ Uses
   ITHelper.GlobalOptionsFrame,
   ITHelper.AboutFrame,
   ITHelper.GlobalOptionsDlg,
-  ITHelper.CompileNotifier, ITHelper.MessageManager;
+  ITHelper.CompileNotifier,
+  ITHelper.MessageManager;
 
 {$IFDEF DXE00}
 ResourceString
@@ -359,10 +359,6 @@ Constructor TITHWizard.Create;
 
 Var
   PM : IOTAProjectManager;
-  {$IFDEF D2010}
-  CS : IOTACompileServices;
-  CompileNotifier : {$IFDEF DXE00} IITHCompileNotifier {$ELSE} IOTACompileNotifier {$ENDIF DXE00};
-  {$ENDIF D2010}
   S : IOTAServices;
   {$IFDEF DXE00}
   EO : INTAEnvironmentOptionsServices;
@@ -396,17 +392,8 @@ Begin
       EO.RegisterAddInOptions(FFontsAddIn);
     End;
   {$ENDIF}
-  {$IFDEF D2010}
-  If Supports(BorlandIDEServices, IOTACompileServices, CS) Then
-    Begin
-      CompileNotifier := TITHCompileNotifier.Create(FMessageMgr);
-      FCompileNotifier := CS.AddNotifier(CompileNotifier);
-    End;
-  {$ENDIF D2010}
   If Supports(BorlandIDEServices, IOTAServices, S) Then
-    FIDENotifierIndex := S.AddNotifier(TITHelperIDENotifier.Create(FMessageMgr, FGlobalOps
-      {$IFDEF D2010}, CompileNotifier {$ENDIF D2010}
-    ));
+    FIDENotifierIndex := S.AddNotifier(TITHelperIDENotifier.Create(FMessageMgr, FGlobalOps));
   //: @debug FHTMLHelpCookie := HTMLHelp(Application.Handle, Nil, HH_INITIALIZE, 0);
 End;
 
@@ -518,9 +505,6 @@ Destructor TITHWizard.Destroy;
 Var
   PM : IOTAProjectManager;
   S : IOTAServices;
-  {$IFDEF D2010}
-  CS : IOTACompileServices;
-  {$ENDIF D2010}
   {$IFDEF DXE00}
   EO : INTAEnvironmentOptionsServices;
   {$ENDIF}
@@ -533,10 +517,6 @@ Begin
   If FIDENotifierIndex > iWizardFailState Then
     If Supports(BorlandIDEServices, IOTAServices, S) Then
       S.RemoveNotifier(FIDENotifierIndex);
-  {$IFDEF D2010}
-  If Supports(BorlandIDEServices, IOTACompileServices, CS) Then
-    CS.RemoveNotifier(FCompileNotifier);
-  {$ENDIF D2010}
   {$IFNDEF D2005}
   FMenuTimer.Free;
   {$ENDIF}
@@ -927,4 +907,6 @@ Begin
 End;
 
 End.
+
+
 

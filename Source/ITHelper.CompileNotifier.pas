@@ -5,7 +5,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    04 Nov 2019
+  @Date    03 Jan 2020
   
   @license
 
@@ -45,7 +45,6 @@ Type
   (** A descendant interface for the IOTACompileNotifier to provide an extra method to hook the
       Compile Information Interface. **)
   IITHCompileNotifier = Interface(IOTACompileNotifier)
-    Procedure HookCompileInformation(Const CompileInformation : IITHCompileInformation);
   End;
   {$ENDIF DXE00}
 
@@ -54,7 +53,7 @@ Type
     {$IFDEF DXE00} , IITHCompileNotifier {$ENDIF DXE00} )
   Strict Private
     {$IFDEF DXE00}
-    FCompileInformation : IITHCompileInformation;
+    FCompileInformation : TITHGetCompileInformation;
     {$ENDIF DXE00}
     FMessageMgr         : IITHMessageManager;
   Strict Protected
@@ -63,12 +62,9 @@ Type
     Procedure ProjectCompileStarted(Const Project: IOTAProject; Mode: TOTACompileMode);
     Procedure ProjectGroupCompileFinished(Result: TOTACompileResult);
     Procedure ProjectGroupCompileStarted(Mode: TOTACompileMode);
-    {$IFDEF DXE00}
-    // IITHCompileNotifier
-    Procedure HookCompileInformation(Const CompileInformation : IITHCompileInformation);
-    {$ENDIF DXE00}
   Public
-    Constructor Create(Const MessageMgr : IITHMessageManager);
+    Constructor Create(Const MessageMgr : IITHMessageManager;
+      Const CompileInformation : TITHGetCompileInformation);
     Destructor Destroy; Override;
   End;
 {$ENDIF D2010}
@@ -99,15 +95,17 @@ Const
   @postcon Does nothing - used for code site tracing to check for memory leaks due to coupling.
 
   @param   MessageMgr         as an IITHMessageManager as a constant
+  @param   CompileInformation as a TITHGetCompileInformation as a constant
 
 **)
-Constructor TITHCompileNotifier.Create(Const MessageMgr : IITHMessageManager);
+Constructor TITHCompileNotifier.Create(Const MessageMgr : IITHMessageManager;
+  Const CompileInformation : TITHGetCompileInformation);
 
 Begin
   {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Create', tmoTiming);{$ENDIF}
   Inherited Create;
   {$IFDEF DXE00}
-  FCompileInformation := Nil;
+  FCompileInformation := CompileInformation;
   {$ENDIF DXE00}
   FMessageMgr := MessageMgr;
 End;
@@ -129,25 +127,6 @@ Begin
   {$ENDIF DXE00}
   Inherited Destroy;
 End;
-
-{$IFDEF DXE00}
-(**
-
-  This method hooks the IITHCompileInformation interface to the class so it can read and write the
-  compile information.
-
-  @precon  None.
-  @postcon The CompileInformation interface is set.
-
-  @param   CompileInformation as an IITHCompileInformation as a constant
-
-**)
-Procedure TITHCompileNotifier.HookCompileInformation(Const CompileInformation : IITHCompileInformation);
-
-Begin
-  FCompileInformation := CompileInformation;
-End;
-{$ENDIF DXE00}
 
 (**
 
@@ -215,7 +194,7 @@ Begin
   {$IFDEF DXE00} If Assigned(FCompileInformation) Then {$ENDIF DXE00}
     Begin
       {$IFDEF DXE00}
-      CompileInfo := FCompileInformation.CompileInformation;
+      CompileInfo := FCompileInformation;
       CompileInfo.Mode := Mode;
       {$ENDIF DXE00}
       Msg := FMessageMgr.AddMsg(

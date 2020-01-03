@@ -5,7 +5,7 @@
 
   @Author  David Hoyle.
   @Version 1.0
-  @Date    04 Nov 2019
+  @Date    03 Jan 2020
 
   @license
 
@@ -44,7 +44,15 @@ Type
   TITHProjectNotifier = Class(TNotifierObject, IOTANotifier, IOTAModuleNotifier, IOTAModuleNotifier80,
     IOTAModuleNotifier90, IOTAProjectNotifier)
   Strict Private
-    FMessageMgr : IITHMessageManager;
+    Type 
+      (** An enumerate to determine whether a rename or copy operation is required (default is
+          rename). **)
+      TITHRenameMode = (rmRename, rmCopy);
+  Strict Private
+    FMessageMgr     : IITHMessageManager;
+    FRenameNotifier : TITHRenameNotifier;
+    FOldFilename    : String;
+    FRenameMode     : TITHRenameMode;
   {$IFDEF D2010} Strict {$ENDIF D2010} Protected
     // IOTANotifier
     Procedure AfterSave;
@@ -66,8 +74,11 @@ Type
     Procedure ModuleAdded(Const AFileName: String);
     Procedure ModuleRemoved(Const AFileName: String);
     Procedure ModuleRenamed(Const AOldFileName: String; Const ANewFileName: String); Overload;
+    // General Methods
+    Procedure Rename(Const AOldFileName: String; Const ANewFileName: String);
   Public
-    Constructor Create(Const MessageMgr : IITHMessageManager);
+    Constructor Create(Const MessageMgr : IITHMessageManager; Const RenameNotifier : TITHRenameNotifier);
+    Destructor  Destroy; Override;
   End;
 
 Implementation
@@ -76,7 +87,60 @@ Uses
   {$IFDEF DEBUG}
   CodeSiteLogging,
   {$ENDIF DEBUG}
-  SysUtils;
+  SysUtils,
+  Windows;
+
+{
+
+  RENAME
+
+  TITHProjectNotifier.Modified
+  TITHProjectNotifier.BeforeRename
+    OldFileName = D:\Documents\RAD Studio\Test Projects\SingleDLLProject\SingleDLLProject07.dproj
+    NewFileName = D:\Documents\RAD Studio\Test Projects\SingleDLLProject\SingleDLLProject08.dproj
+  TITHProjectNotifier.Modified
+  TITHProjectNotifier.ModuleRenamed
+    D:\Documents\RAD Studio\Test Projects\SingleDLLProject\SingleDLLProject08.dproj
+  TITHProjectNotifier.Modified
+  TITHProjectNotifier.Modified
+  TITHProjectNotifier.AfterRename
+    OldFileName = D:\Documents\RAD Studio\Test Projects\SingleDLLProject\SingleDLLProject07.dproj
+    NewFileName = D:\Documents\RAD Studio\Test Projects\SingleDLLProject\SingleDLLProject08.dproj
+  TITHProjectNotifier.AllowSave
+  TITHProjectNotifier.AllowSave
+  TITHProjectNotifier.BeforeSave
+  TITHProjectNotifier.AfterSave
+  TITHProjectNotifier.AllowSave
+
+  SAVEAS
+
+  TITHProjectNotifier.AllowSave
+  TITHProjectNotifier.AllowSave
+  TITHProjectNotifier.CheckOverwrite               // Called ONLY on SaveAs with NEW File
+  TITHProjectNotifier.SetSaveFileName              // Called ONLY on SaveAs with NEW File
+    D:\Documents\RAD Studio\Test Projects\SingleDLLProject\SingleDLLProject10.dproj
+  TITHProjectNotifier.GetOverwriteFileNameCount    // Called ONLY on SaveAs
+  TITHProjectNotifier.GetOverwriteFileName         // Called ONLY on SaveAs
+  TITHProjectNotifier.BeforeRename
+    OldFileName = D:\Documents\RAD Studio\Test Projects\SingleDLLProject\SingleDLLProject09.dproj
+    NewFileName = D:\Documents\RAD Studio\Test Projects\SingleDLLProject\SingleDLLProject10.dproj
+  TITHProjectNotifier.Modified
+  TITHProjectNotifier.ModuleRenamed
+    D:\Documents\RAD Studio\Test Projects\SingleDLLProject\SingleDLLProject10.dproj
+  TITHProjectNotifier.Modified
+  TITHProjectNotifier.Modified
+  TITHProjectNotifier.AfterRename
+    OldFileName = D:\Documents\RAD Studio\Test Projects\SingleDLLProject\SingleDLLProject09.dproj
+    NewFileName = D:\Documents\RAD Studio\Test Projects\SingleDLLProject\SingleDLLProject10.dproj
+  TITHProjectNotifier.BeforeSave
+  TITHProjectNotifier.AfterSave
+  TITHProjectNotifier.AllowSave
+ 
+}
+
+Const
+  (** A constant for the IT Helper filename extension. **)
+  strITHelper = '.ithelper';
 
 (**
 
@@ -95,6 +159,8 @@ Uses
 Procedure TITHProjectNotifier.AfterRename(Const OldFileName, NewFileName: String);
 
 Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'AfterRename', tmoTiming);{$ENDIF}
+  Rename(OldFileName, NewFileName);
 End;
 
 (**
@@ -110,6 +176,7 @@ End;
 Procedure TITHProjectNotifier.AfterSave;
 
 Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'AfterSave', tmoTiming);{$ENDIF}
 End;
 
 (**
@@ -125,7 +192,9 @@ End;
 Function TITHProjectNotifier.AllowSave: Boolean;
 
 Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'AllowSave', tmoTiming);{$ENDIF}
   Result := True;
+  FRenameMode := rmRename; // Reset to default as this is always the last call.
 End;
 
 (**
@@ -145,6 +214,8 @@ End;
 Procedure TITHProjectNotifier.BeforeRename(Const OldFileName, NewFileName: String);
 
 Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'BeforeRename', tmoTiming);{$ENDIF}
+  FOldFilename := OldFilename;
 End;
 
 (**
@@ -160,6 +231,7 @@ End;
 Procedure TITHProjectNotifier.BeforeSave;
 
 Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'BeforeSave', tmoTiming);{$ENDIF}
 End;
 
 (**
@@ -175,6 +247,7 @@ End;
 Function TITHProjectNotifier.CheckOverwrite: Boolean;
 
 Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'CheckOverwrite', tmoTiming);{$ENDIF}
   Result := True;
 End;
 
@@ -185,14 +258,32 @@ End;
   @precon  None.
   @postcon Saves a reference tot he Mesage Manager.
 
-  @param   MessageMgr as an IITHMessageManager as a constant
+  @param   MessageMgr     as an IITHMessageManager as a constant
+  @param   RenameNotifier as a TITHRenameNotifier as a constant
 
 **)
-Constructor TITHProjectNotifier.Create(Const MessageMgr: IITHMessageManager);
+Constructor TITHProjectNotifier.Create(Const MessageMgr : IITHMessageManager;
+  Const RenameNotifier : TITHRenameNotifier);
 
 Begin
   {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Create', tmoTiming);{$ENDIF}
   FMessageMgr := MessageMgr;
+  FRenameNotifier := RenameNotifier;
+End;
+
+(**
+
+  A destructor for the TITHProjectNotifier class.
+
+  @precon  None.
+  @postcon Does nothing.
+
+**)
+Destructor TITHProjectNotifier.Destroy;
+
+Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Destroy', tmoTiming);{$ENDIF}
+  Inherited Destroy;
 End;
 
 (**
@@ -228,7 +319,10 @@ End;
 Function TITHProjectNotifier.GetOverwriteFileName(Index: Integer): String;
 
 Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'GetOverwriteFileName', tmoTiming);{$ENDIF}
   Result := '';
+  If Index = 0 Then
+    Result := ChangeFileExt(FOldFilename, strITHelper);
 End;
 
 (**
@@ -244,7 +338,9 @@ End;
 Function TITHProjectNotifier.GetOverwriteFileNameCount: Integer;
 
 Begin
-  Result := 0;
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'GetOverwriteFileNameCount', tmoTiming);{$ENDIF}
+  Result := 1; //: @note .ITHelper file.
+  FRenameMode := rmCopy; // Set to Copy as this method is only called on a Save As operation.
 End;
 
 (**
@@ -260,6 +356,7 @@ End;
 Procedure TITHProjectNotifier.Modified;
 
 Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Modified', tmoTiming);{$ENDIF}
 End;
 
 (**
@@ -278,6 +375,7 @@ End;
 Procedure TITHProjectNotifier.ModuleAdded(Const AFileName: String);
 
 Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'ModuleAdded', tmoTiming);{$ENDIF}
 End;
 
 (**
@@ -296,6 +394,7 @@ End;
 Procedure TITHProjectNotifier.ModuleRemoved(Const AFileName: String);
 
 Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'ModuleRemoved', tmoTiming);{$ENDIF}
 End;
 
 (**
@@ -314,6 +413,7 @@ End;
 Procedure TITHProjectNotifier.ModuleRenamed(Const NewName: String);
 
 Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'ModuleRenamed', tmoTiming);{$ENDIF}
 End;
 
 (**
@@ -323,17 +423,41 @@ End;
   @precon  None.
   @postcon Renames the .ITHelper file in-line with th name change of the project.
 
+  @nocheck EmptyMethod
+  @nohint  AOldFilename ANewFilename
+
   @param   AOldFileName as a String as a constant
   @param   ANewFileName as a String as a constant
 
 **)
 Procedure TITHProjectNotifier.ModuleRenamed(Const AOldFileName, ANewFileName: String);
 
+Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'ModuleRenamed', tmoTiming);{$ENDIF}
+  //: @note Doesn`t get called on renaming a Project!!!
+End;
+
+(**
+
+  This method renames the .ITHelper file and calls the rename notifier call back for any other renaming
+  that needs to happen.
+
+  @precon  None.
+  @postcon The .ITHelper file is renamed.
+
+  @param   AOldFileName as a String as a constant
+  @param   ANewFileName as a String as a constant
+
+**)
+Procedure TITHProjectNotifier.Rename(Const AOldFileName, ANewFileName: String);
+
 ResourceString
-  strMsg = 'Renaming the ITHelper file from "%s" to "%s"!';
+  strMsg = '%s the ITHelper file from "%s" to "%s"!';
+  strFailedToRename = 'Failed to rename "%s" to "%s"!';
+  strFailedToCopy = 'Failed to copy "%s" to "%s"!';
 
 Const
-  strITHelper = '.ithelper';
+  astrRenameMode : Array[TITHRenameMode] Of String = ('Renaming', 'Copying');
 
 Var
   strOldFileName, strNewFileName : String;
@@ -343,10 +467,20 @@ Begin
   strNewFileName := ChangeFileExt(ANewFileName, strITHelper);
   If FileExists(strOldFileName) Then
     Begin
-      RenameFile(strOldFileName, strNewFileName);
+      Case FRenameMode Of
+        rmRename:
+          If Not RenameFile(strOldFileName, strNewFileName) Then
+            FMessageMgr.AddMsg(Format(strFailedToRename, [AOldFileName, ANewFileName]), fnTools,
+              ithfFailure);
+        rmCopy:
+          If Not CopyFile(PChar(strOldFileName), PChar(strNewFileName), False) Then
+            FMessageMgr.AddMsg(Format(strFailedToCopy, [AOldFileName, ANewFileName]), fnTools,
+              ithfFailure);
+      End;
       FMessageMgr.AddMsg(
         Format(
           strMsg, [
+            astrRenameMode[FRenameMode],
             ExtractFileName(strOldFileName),
             ExtractFileName(strNewFileName)
           ]
@@ -355,6 +489,8 @@ Begin
         ithfDefault
       );
     End;
+  If Assigned(FRenameNotifier) Then
+    FRenameNotifier(AOldFileName, ANewFileName);
 End;
 
 (**
@@ -373,8 +509,10 @@ End;
 Procedure TITHProjectNotifier.SetSaveFileName(Const FileName: String);
 
 Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'SetSaveFileName', tmoTiming);{$ENDIF}
 End;
 
 End.
+
 
 

@@ -5,7 +5,7 @@
 
   @Author  David Hoyle.
   @Version 1.0
-  @Date    04 Nov 2019
+  @Date    03 Jan 2020
 
   @license
 
@@ -52,7 +52,7 @@ Uses
 Type
   (** A class to implement the IDE notifier interfaces **)
   TITHelperIDENotifier = Class(TNotifierObject, IUnknown, IOTANotifier, IOTAIDENotifier,
-    IOTAIDENotifier50, IOTAIDENotifier80 {$IFDEF DXE00}, IITHCompileInformation {$ENDIF DXE00})
+    IOTAIDENotifier50, IOTAIDENotifier80)
   Strict Private
     FGlobalOps                  : IITHGlobalOptions;
     FSuccessfulCompile          : TTimer;
@@ -60,12 +60,11 @@ Type
     FShouldBuildList            : TStringList;
     FMsgMgr                     : IITHMessageManager;
     {$IFDEF DXE00}
-    FCompileNotifier            : IITHCompileNotifier;
+    FCompileNotifierIndex       : Integer;
     {$ENDIF DXE00}
     FProjectNotifierList        : IITHModuleNotifierList;
     FProjectCompileNotifierList : IITHModuleNotifierList;
     {$IFDEF DXE00}
-    FCompileInformation         : IITHCompileInformation;
     FCompileConfiguration       : String;
     FCompilePlatform            : String;
     {$ENDIF DXE00}
@@ -86,11 +85,6 @@ Type
     // IOTAIDENotifier80
     Procedure AfterCompile(Const Project: IOTAProject; Succeeded: Boolean;
       IsCodeInsight: Boolean); Overload;
-    {$IFDEF DXE00}
-    // IITHCompileInformation
-    Function  GetCompileInformation : TOTAProjectCompileInfo;
-    Procedure SetCompileInformation(Const CompileInfo: TOTAProjectCompileInfo);
-    {$ENDIF DXE00}
     // General Methods
     Function ProcessCompileInformation(Const ProjectOps : IITHProjectOptions; Const Project: IOTAProject;
       Const strWhere: String): Integer;
@@ -141,13 +135,11 @@ Type
     {$ENDIF}
     Procedure InstallNotifier(Const M: IOTAModule);
     procedure UninstallNotifiers(const M: IOTAModule);
+    Procedure Rename(Const strOldFileName: String; Const strNewFileName: String);
+    Function  GetCompileInformation : TOTAProjectCompileInfo;
+    Procedure SetCompileInformation(Const CompileInfo: TOTAProjectCompileInfo);
   Public
-    Constructor Create(
-      Const MessageMgr: IITHMessageManager;
-      Const GlobalOps : IITHGlobalOptions
-      {$IFDEF D2010}; Const CompileNotfier :
-        {$IFDEF DXE00} IITHCompileNotifier {$ELSE} IOTACompileNotifier {$ENDIF DXE00}
-      {$ENDIF D2010});
+    Constructor Create(Const MessageMgr: IITHMessageManager; Const GlobalOps : IITHGlobalOptions);
     Destructor Destroy; Override;
   End;
 
@@ -439,34 +431,34 @@ End;
 
   @param   MessageMgr     as an IITHMessageManager as a constant
   @param   GlobalOps      as an IITHGlobalOptions as a constant
-  @param   CompileNotfier as an IITHCompileNotifier as a constant
 
 **)
-Constructor TITHelperIDENotifier.Create(
-    Const MessageMgr: IITHMessageManager;
-    Const GlobalOps : IITHGlobalOptions
-    {$IFDEF D2010}; Const CompileNotfier :
-      {$IFDEF DXE00} IITHCompileNotifier {$ELSE} IOTACompileNotifier {$ENDIF DXE00}
-    {$ENDIF D2010}
-  );
+Constructor TITHelperIDENotifier.Create(Const MessageMgr: IITHMessageManager;
+  Const GlobalOps : IITHGlobalOptions);
 
 Const
   iTimerIntervalInMSec = 100;
+
+Var
+  {$IFDEF D2010}
+  CS : IOTACompileServices;
+  CompileNotifier : {$IFDEF DXE00} IITHCompileNotifier {$ELSE} IOTACompileNotifier {$ENDIF DXE00};
+  {$ENDIF D2010}
 
 Begin
   {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Create', tmoTiming);{$ENDIF}
   Inherited Create;
   FGlobalOps := GlobalOps;
-  {$IFDEF DXE00}
-  FCompileNotifier := CompileNotfier;
-  {$ENDIF DXE00}
   FMsgMgr := MessageMgr;
+  {$IFDEF D2010}
+  If Supports(BorlandIDEServices, IOTACompileServices, CS) Then
+    Begin
+      CompileNotifier := TITHCompileNotifier.Create(MessageMgr, GetCompileInformation);
+      FCompileNotifierIndex := CS.AddNotifier(CompileNotifier);
+    End;
+  {$ENDIF D2010}
   FProjectNotifierList := TITHModuleNotifierList.Create;
   FProjectCompileNotifierList := TITHModuleNotifierList.Create;
-  {$IFDEF DXE00}
-  Supports(Self, IITHCompileInformation, FCompileInformation);
-  FCompileNotifier.HookCompileInformation(FCompileInformation);
-  {$ENDIF DXE00}
   FLastSuccessfulCompile := 0;
   FSuccessfulCompile := TTimer.Create(Nil);
   FSuccessfulCompile.OnTimer := SuccessfulCompile;
@@ -486,12 +478,21 @@ End;
 **)
 Destructor TITHelperIDENotifier.Destroy;
 
+Var
+  {$IFDEF D2010}
+  CS : IOTACompileServices;
+  {$ENDIF D2010}
+
 Begin
   {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Destroy', tmoTiming);{$ENDIF}
   FShouldBuildList.Free;
   FSuccessfulCompile.Enabled := False;
   FSuccessfulCompile.OnTimer := Nil;
   FSuccessfulCompile.Free;
+  {$IFDEF D2010}
+  If Supports(BorlandIDEServices, IOTACompileServices, CS) Then
+    CS.RemoveNotifier(FCompileNotifierIndex);
+  {$ENDIF D2010}
   Inherited Destroy;
 End;
 
@@ -779,13 +780,13 @@ Var
 Begin
   If Supports(M, IOTAProject, P) Then
     Begin
-      PN := TITHProjectNotifier.Create(FMsgMgr);
+      PN := TITHProjectNotifier.Create(FMsgMgr, Rename);
       iModuleIndex := M.AddNotifier(PN);
       FProjectNotifierList.Add(M.FileName, iModuleIndex);
       {$IFDEF DXE00}
       If Assigned(P.ProjectBuilder) Then
         Begin
-          PCN := TITHProjectCompileNotifier.Create(FCompileInformation);
+          PCN := TITHProjectCompileNotifier.Create(SetCompileInformation);
           iModuleIndex := P.ProjectBuilder.AddCompileNotifier(PCN);
           FProjectCompileNotifierList.Add(M.FileName, iModuleIndex);
         End;
@@ -1005,6 +1006,25 @@ Begin
         VersionMgr := TITHVersionManager.Create(FGlobalOps, ProjectOps, Project, FMsgMgr);
         VersionMgr.BuildProjectVersionResource;
       End;
+End;
+
+(**
+
+  This method is called when a project is renamed to allow the project notifier collections to be updated
+  with the new filername.
+
+  @precon  None.
+  @postcon The project notifier collections are updated with the new filename.
+
+  @param   strOldFileName as a String as a constant
+  @param   strNewFileName as a String as a constant
+
+**)
+Procedure TITHelperIDENotifier.Rename(Const strOldFileName, strNewFileName: String);
+
+Begin
+  FProjectNotifierList.Rename(strOldFileName, strNewFileName);
+  FProjectCompileNotifierList.Rename(strOldFileName, strNewFileName);
 End;
 
 (**
@@ -1357,3 +1377,5 @@ Begin
 End;
 
 End.
+
+
