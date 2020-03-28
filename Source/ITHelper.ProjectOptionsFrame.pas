@@ -4,7 +4,7 @@
   in the project options dialgoue.
 
   @Author  David Hoyle
-  @Version 1.193
+  @Version 1.201
   @Date    28 Mar 2020
   
   @license
@@ -433,7 +433,9 @@ Procedure TframeProjectOptions.InitialiseOptions(Const GlobalOps: IITHGlobalOpti
 
 Var
   ProjectOps: IITHProjectOptions;
+  {$IFDEF DXE102}
   ITS : IOTAIDEThemingServices;
+  {$ENDIF DXE102}
 
 Begin
   FProject := Project;
@@ -508,7 +510,9 @@ Const
 
 Var
   iConfig: Integer;
+  {$IFDEF DXE102}
   ITS : IOTAIDEThemingServices;
+  {$ENDIF DXE102}
 
 Begin
   Sender.Canvas.Font.Color := clWindowText;

@@ -4,7 +4,7 @@
   before or after compile information.
 
   @Author  David Hoyle
-  @Version 1.047
+  @Version 1.051
   @Date    28 Mar 2020
 
   @license
@@ -260,7 +260,9 @@ Class Procedure TfrmITHProcessing.ShowProcessing(Const strMsg: String;
   Const iColour: TColor = clWindowText; Const boolWait: Boolean = False);
 
 Var
+  {$IFDEF DXE102}
   ITS : IOTAIDEThemingServices;
+  {$ENDIF DXE102}
   iClr: TColor;
   
 Begin

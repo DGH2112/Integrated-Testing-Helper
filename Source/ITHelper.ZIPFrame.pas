@@ -44,7 +44,7 @@ Uses
   Buttons,
   ToolsAPI,
   ITHelper.Types,
-  ITHelper.Interfaces, System.ImageList, Vcl.ImgList;
+  ITHelper.Interfaces;
 
 Type
   (** A frame to represent the zipping configuration. **)

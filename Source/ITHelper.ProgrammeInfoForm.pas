@@ -44,7 +44,7 @@ Uses
   Dialogs,
   Buttons,
   StdCtrls,
-  ExtCtrls, System.ImageList, Vcl.ImgList;
+  ExtCtrls;
 
 Type
   (** A class to represent the form. **)

@@ -48,7 +48,7 @@ Uses
   StdCtrls,
   Buttons,
   ITHelper.GlobalOptions, 
-  ITHelper.Types, System.ImageList, Vcl.ImgList;
+  ITHelper.Types;
 
 {$INCLUDE 'CompilerDefinitions.inc'}
 

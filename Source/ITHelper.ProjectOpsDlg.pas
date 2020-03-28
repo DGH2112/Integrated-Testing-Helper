@@ -53,7 +53,7 @@ Uses
   ComCtrls,
   ITHelper.ProjectOptionsFrame,
   ITHelper.ExternalToolsFrame,
-  ITHelper.ZIPFrame, System.ImageList, Vcl.ImgList;
+  ITHelper.ZIPFrame;
 
 Type
   (** An enumerate to define the page to display on opening. **)

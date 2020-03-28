@@ -113,7 +113,7 @@ object frameProjectOptions: TframeProjectOptions
           Value = 12.500021384995450000
         end
         item
-          Value = 12.500001683628540000
+          Value = 12.500001683628530000
         end
         item
           SizeStyle = ssAuto
@@ -241,7 +241,6 @@ object frameProjectOptions: TframeProjectOptions
         Align = alClient
         Caption = 'Mi&nor'
         Layout = tlCenter
-        ExplicitLeft = 191
         ExplicitWidth = 32
         ExplicitHeight = 16
       end
@@ -278,7 +277,6 @@ object frameProjectOptions: TframeProjectOptions
         Align = alClient
         Caption = '&Release'
         Layout = tlCenter
-        ExplicitLeft = 379
         ExplicitWidth = 45
         ExplicitHeight = 16
       end
@@ -291,7 +289,6 @@ object frameProjectOptions: TframeProjectOptions
         Align = alClient
         Caption = '&Build'
         Layout = tlCenter
-        ExplicitLeft = 567
         ExplicitWidth = 27
         ExplicitHeight = 16
       end
@@ -299,12 +296,13 @@ object frameProjectOptions: TframeProjectOptions
         AlignWithMargins = True
         Left = 660
         Top = 3
-        Width = 65
+        Width = 81
         Height = 27
         Align = alClient
         ReadOnly = True
         TabOrder = 3
         Text = '0'
+        ExplicitWidth = 65
       end
       object upMajor: TUpDown
         Left = 174
@@ -343,7 +341,7 @@ object frameProjectOptions: TframeProjectOptions
         ExplicitLeft = 535
       end
       object upBuild: TUpDown
-        Left = 725
+        Left = 744
         Top = 3
         Width = 16
         Height = 27
@@ -352,6 +350,7 @@ object frameProjectOptions: TframeProjectOptions
         Max = 1000000
         TabOrder = 7
         OnClick = BuildChange
+        ExplicitLeft = 725
       end
     end
     object gpnlResource: TGridPanel
@@ -419,8 +418,6 @@ object frameProjectOptions: TframeProjectOptions
         Anchors = []
         TabOrder = 0
         Text = 'edtResourceName'
-        ExplicitLeft = 292
-        ExplicitTop = 3
       end
       object btnGetVersionInfo: TButton
         AlignWithMargins = True
@@ -434,10 +431,6 @@ object frameProjectOptions: TframeProjectOptions
         ParentDoubleBuffered = False
         TabOrder = 1
         OnClick = btnGetVersionInfoClick
-        ExplicitLeft = 429
-        ExplicitTop = 12
-        ExplicitWidth = 289
-        ExplicitHeight = 21
       end
     end
   end

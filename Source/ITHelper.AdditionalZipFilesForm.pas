@@ -44,7 +44,7 @@ Uses
   Dialogs,
   Buttons,
   StdCtrls,
-  ToolsAPI, System.ImageList, Vcl.ImgList;
+  ToolsAPI;
 
 Type
   (** This is a class to represents the form interface. **)
