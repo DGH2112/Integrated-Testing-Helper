@@ -4,8 +4,8 @@
   in the project options dialgoue.
 
   @Author  David Hoyle
-  @Version 1.0
-  @Date    27 Oct 2019
+  @Version 1.193
+  @Date    28 Mar 2020
   
   @license
 
@@ -78,7 +78,6 @@ Type
     upRelease: TUpDown;
     edtBuild: TEdit;
     upBuild: TUpDown;
-    btnGetVersionInfo: TBitBtn;
     chkIncludeInProject: TCheckBox;
     chkCompileWithBRCC32: TCheckBox;
     edtResourceName: TEdit;
@@ -89,6 +88,7 @@ Type
     gpnlCopyVerInfo: TGridPanel;
     lvIncrementOnCompileMode: TListView;
     lblIncrementOnCompileMode: TLabel;
+    btnGetVersionInfo: TButton;
     Procedure btnOpenEXEClick(Sender: TObject);
     Procedure chkEnabledClick(Sender: TObject);
     Procedure BuildChange(Sender: TObject; Button: TUDBtnType);
@@ -433,6 +433,7 @@ Procedure TframeProjectOptions.InitialiseOptions(Const GlobalOps: IITHGlobalOpti
 
 Var
   ProjectOps: IITHProjectOptions;
+  ITS : IOTAIDEThemingServices;
 
 Begin
   FProject := Project;
@@ -454,6 +455,18 @@ Begin
     ProjectOps := Nil;
   End;
   chkEnabledClick(Nil);
+  {$IFDEF DXE102}
+  If Supports(BorlandIDEServices, IOTAIDEThemingServices, ITS) And ITS.IDEThemingEnabled Then
+    Begin 
+      vleVersionInfo.Ctl3D := False;
+      vleVersionInfo.DrawingStyle := gdsGradient;
+      vleVersionInfo.FixedColor := ITS.StyleServices.GetSystemColor(clBtnFace);
+      vleVersionInfo.Color := ITS.StyleServices.GetSystemColor(clWindow);
+      vleVersionInfo.GradientStartColor := ITS.StyleServices.GetSystemColor(clBtnFace);
+      vleVersionInfo.GradientEndColor := ITS.StyleServices.GetSystemColor(clBtnFace);
+      vleVersionInfo.Font.Color := ITS.StyleServices.GetSystemColor(clWindowText);
+    End;
+  {$ENDIF DXE102}
 End;
 
 (**
@@ -495,8 +508,19 @@ Const
 
 Var
   iConfig: Integer;
+  ITS : IOTAIDEThemingServices;
 
 Begin
+  Sender.Canvas.Font.Color := clWindowText;
+  {$IFDEF DXE102}
+  If Supports(BorlandIDEServices, IOTAIDEThemingServices, ITS) And ITS.IDEThemingEnabled Then
+    If cdsSelected In State Then
+      Sender.Canvas.Font.Color := ITS.StyleServices.GetSystemColor(clHighlightText)
+    Else
+      Sender.Canvas.Font.Color := ITS.StyleServices.GetSystemColor(clWindowText);
+  If Not Item.Selected Then
+    Sender.Canvas.Font.Color := clBlack;
+  {$ENDIF DXE102}
   Sender.Canvas.Brush.Color := iLightRed;
   iConfig := FindConfig(Item.Caption);
   If iConfig > -1 Then

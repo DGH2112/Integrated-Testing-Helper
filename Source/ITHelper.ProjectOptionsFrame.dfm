@@ -19,7 +19,7 @@ object frameProjectOptions: TframeProjectOptions
     Align = alTop
     Caption = '&Resource Extension Warning Exclusions'
     FocusControl = edtResExts
-    ExplicitTop = 0
+    ExplicitWidth = 225
   end
   object lblIncrementOnCompileMode: TLabel
     AlignWithMargins = True
@@ -29,8 +29,7 @@ object frameProjectOptions: TframeProjectOptions
     Height = 16
     Align = alTop
     Caption = '&Increment on Compile Mode'
-    ExplicitLeft = 12
-    ExplicitTop = 33
+    ExplicitWidth = 161
   end
   object edtResExts: TEdit
     AlignWithMargins = True
@@ -41,7 +40,6 @@ object frameProjectOptions: TframeProjectOptions
     Align = alTop
     TabOrder = 0
     Text = 'edtResExts'
-    ExplicitTop = 11
   end
   object gbxVersionInfo: TGroupBox
     AlignWithMargins = True
@@ -52,10 +50,6 @@ object frameProjectOptions: TframeProjectOptions
     Align = alClient
     Caption = 'Version Info'
     TabOrder = 2
-    ExplicitLeft = 8
-    ExplicitTop = 392
-    ExplicitWidth = 766
-    ExplicitHeight = 325
     object vleVersionInfo: TValueListEditor
       AlignWithMargins = True
       Left = 5
@@ -69,7 +63,6 @@ object frameProjectOptions: TframeProjectOptions
       Strings.Strings = (
         '')
       TabOrder = 0
-      ExplicitHeight = 173
       ColWidths = (
         150
         605)
@@ -86,9 +79,6 @@ object frameProjectOptions: TframeProjectOptions
       Align = alBottom
       Caption = '&Include Resource in Project'
       TabOrder = 1
-      ExplicitLeft = 8
-      ExplicitTop = 258
-      ExplicitWidth = 576
     end
     object chkCompileWithBRCC32: TCheckBox
       AlignWithMargins = True
@@ -99,9 +89,6 @@ object frameProjectOptions: TframeProjectOptions
       Align = alBottom
       Caption = 'Compile Resource with BRCC32'
       TabOrder = 2
-      ExplicitLeft = 8
-      ExplicitTop = 281
-      ExplicitWidth = 576
     end
     object gpnlVerInfo: TGridPanel
       AlignWithMargins = True
@@ -130,7 +117,7 @@ object frameProjectOptions: TframeProjectOptions
         end
         item
           SizeStyle = ssAuto
-          Value = 8.807331748579425000
+          Value = 8.807331748579426000
         end
         item
           Value = 12.499986640766420000
@@ -218,9 +205,6 @@ object frameProjectOptions: TframeProjectOptions
           Value = 100.000000000000000000
         end>
       TabOrder = 3
-      ExplicitLeft = 16
-      ExplicitTop = 128
-      ExplicitWidth = 710
       DesignSize = (
         761
         33)
@@ -228,168 +212,146 @@ object frameProjectOptions: TframeProjectOptions
         AlignWithMargins = True
         Left = 3
         Top = 3
-        Width = 80
-        Height = 25
+        Width = 81
+        Height = 27
         Align = alClient
         Caption = '&Major'
         Layout = tlCenter
-        ExplicitLeft = 8
-        ExplicitTop = 37
         ExplicitWidth = 33
         ExplicitHeight = 16
       end
       object edtMajor: TEdit
         AlignWithMargins = True
-        Left = 89
+        Left = 90
         Top = 3
-        Width = 80
-        Height = 25
+        Width = 81
+        Height = 27
         Align = alClient
         ReadOnly = True
         TabOrder = 0
         Text = '0'
-        ExplicitLeft = 99
-        ExplicitTop = 40
-        ExplicitWidth = 42
-        ExplicitHeight = 24
+        ExplicitWidth = 65
       end
       object lblMinor: TLabel
         AlignWithMargins = True
-        Left = 191
+        Left = 193
         Top = 3
-        Width = 80
-        Height = 25
+        Width = 81
+        Height = 27
         Align = alClient
         Caption = 'Mi&nor'
         Layout = tlCenter
-        ExplicitLeft = 150
-        ExplicitTop = 37
+        ExplicitLeft = 191
         ExplicitWidth = 32
         ExplicitHeight = 16
       end
       object edtMinor: TEdit
         AlignWithMargins = True
-        Left = 277
+        Left = 280
         Top = 3
-        Width = 80
-        Height = 25
+        Width = 81
+        Height = 27
         Align = alClient
         ReadOnly = True
         TabOrder = 1
         Text = '0'
-        ExplicitLeft = 108
-        ExplicitTop = 32
-        ExplicitWidth = 42
-        ExplicitHeight = 24
+        ExplicitWidth = 65
       end
       object edtRelease: TEdit
         AlignWithMargins = True
-        Left = 465
+        Left = 470
         Top = 3
-        Width = 80
-        Height = 25
+        Width = 81
+        Height = 27
         Align = alClient
         ReadOnly = True
         TabOrder = 2
         Text = '0'
-        ExplicitLeft = 150
-        ExplicitTop = 32
-        ExplicitWidth = 42
-        ExplicitHeight = 24
+        ExplicitWidth = 65
       end
       object lblRelease: TLabel
         AlignWithMargins = True
-        Left = 379
+        Left = 383
         Top = 3
-        Width = 80
-        Height = 25
+        Width = 81
+        Height = 27
         Align = alClient
         Caption = '&Release'
         Layout = tlCenter
-        ExplicitLeft = 285
-        ExplicitTop = 37
+        ExplicitLeft = 379
         ExplicitWidth = 45
         ExplicitHeight = 16
       end
       object lblBuild: TLabel
         AlignWithMargins = True
-        Left = 567
+        Left = 573
         Top = 3
-        Width = 80
-        Height = 25
+        Width = 81
+        Height = 27
         Align = alClient
         Caption = '&Build'
         Layout = tlCenter
-        ExplicitLeft = 429
-        ExplicitTop = 37
+        ExplicitLeft = 567
         ExplicitWidth = 27
         ExplicitHeight = 16
       end
       object edtBuild: TEdit
         AlignWithMargins = True
-        Left = 653
+        Left = 660
         Top = 3
-        Width = 80
-        Height = 25
+        Width = 65
+        Height = 27
         Align = alClient
         ReadOnly = True
         TabOrder = 3
         Text = '0'
-        ExplicitLeft = 668
-        ExplicitTop = 4
-        ExplicitWidth = 66
       end
       object upMajor: TUpDown
-        Left = 172
+        Left = 174
         Top = 3
         Width = 16
-        Height = 24
+        Height = 27
         Anchors = []
         Associate = edtMajor
         Max = 10000
         TabOrder = 4
         OnClick = BuildChange
-        ExplicitLeft = 76
-        ExplicitTop = 32
+        ExplicitLeft = 155
       end
       object upMinor: TUpDown
-        Left = 360
+        Left = 364
         Top = 3
         Width = 16
-        Height = 24
+        Height = 27
         Anchors = []
         Associate = edtMinor
         Max = 10000
         TabOrder = 5
         OnClick = BuildChange
-        ExplicitLeft = 150
-        ExplicitTop = 32
+        ExplicitLeft = 345
       end
       object upRelease: TUpDown
-        Left = 548
+        Left = 554
         Top = 3
         Width = 16
-        Height = 24
+        Height = 27
         Anchors = []
         Associate = edtRelease
         Max = 26
         TabOrder = 6
         OnClick = BuildChange
-        ExplicitLeft = 192
-        ExplicitTop = 32
+        ExplicitLeft = 535
       end
       object upBuild: TUpDown
-        Left = 736
+        Left = 725
         Top = 3
         Width = 16
-        Height = 25
+        Height = 27
         Anchors = []
         Associate = edtBuild
         Max = 1000000
         TabOrder = 7
         OnClick = BuildChange
-        ExplicitLeft = 734
-        ExplicitTop = 4
       end
     end
     object gpnlResource: TGridPanel
@@ -399,7 +361,6 @@ object frameProjectOptions: TframeProjectOptions
       Height = 33
       Align = alBottom
       BevelOuter = bvNone
-      Caption = 'gpnlResource'
       ColumnCollection = <
         item
           Value = 49.999992053046100000
@@ -430,9 +391,11 @@ object frameProjectOptions: TframeProjectOptions
       RowCollection = <
         item
           Value = 100.000000000000000000
+        end
+        item
+          SizeStyle = ssAuto
         end>
       TabOrder = 4
-      ExplicitTop = 282
       DesignSize = (
         767
         33)
@@ -445,8 +408,6 @@ object frameProjectOptions: TframeProjectOptions
         Align = alClient
         Caption = 'Resource Path & &Name (exc Ext)'
         Layout = tlCenter
-        ExplicitLeft = 8
-        ExplicitTop = 307
         ExplicitWidth = 177
         ExplicitHeight = 16
       end
@@ -458,10 +419,10 @@ object frameProjectOptions: TframeProjectOptions
         Anchors = []
         TabOrder = 0
         Text = 'edtResourceName'
-        ExplicitLeft = 196
-        ExplicitTop = 518
+        ExplicitLeft = 292
+        ExplicitTop = 3
       end
-      object btnGetVersionInfo: TBitBtn
+      object btnGetVersionInfo: TButton
         AlignWithMargins = True
         Left = 594
         Top = 3
@@ -469,12 +430,14 @@ object frameProjectOptions: TframeProjectOptions
         Height = 27
         Align = alClient
         Caption = '&Get IDE Version Info'
+        DoubleBuffered = True
+        ParentDoubleBuffered = False
         TabOrder = 1
         OnClick = btnGetVersionInfoClick
-        ExplicitLeft = 624
-        ExplicitTop = 516
-        ExplicitWidth = 134
-        ExplicitHeight = 25
+        ExplicitLeft = 429
+        ExplicitTop = 12
+        ExplicitWidth = 289
+        ExplicitHeight = 21
       end
     end
   end
@@ -488,9 +451,6 @@ object frameProjectOptions: TframeProjectOptions
     Caption = '&Enabled ITHelper Version Control'
     TabOrder = 1
     OnClick = chkEnabledClick
-    ExplicitLeft = 24
-    ExplicitTop = 290
-    ExplicitWidth = 766
   end
   object gpnlCopyVerInfo: TGridPanel
     Left = 0
@@ -531,47 +491,39 @@ object frameProjectOptions: TframeProjectOptions
         Value = 100.000000000000000000
       end>
     TabOrder = 3
-    ExplicitTop = 338
     object lblVersionInfo: TLabel
       AlignWithMargins = True
       Left = 3
       Top = 3
-      Width = 356
-      Height = 25
+      Width = 357
+      Height = 27
       Align = alClient
       Caption = '&Copy Version Information from'
       FocusControl = edtVersionInfo
       Layout = tlCenter
-      ExplicitLeft = 4
-      ExplicitTop = 4
-      ExplicitHeight = 30
+      ExplicitWidth = 176
+      ExplicitHeight = 16
     end
     object edtVersionInfo: TEdit
       AlignWithMargins = True
-      Left = 365
+      Left = 366
       Top = 3
-      Width = 356
-      Height = 25
+      Width = 357
+      Height = 27
       Align = alClient
       TabOrder = 0
-      ExplicitLeft = 204
-      ExplicitTop = 197
-      ExplicitWidth = 530
       ExplicitHeight = 24
     end
     object btnOpenEXE: TButton
       AlignWithMargins = True
-      Left = 727
+      Left = 729
       Top = 3
       Width = 44
-      Height = 25
+      Height = 27
       Align = alClient
       Caption = '...'
       TabOrder = 1
       OnClick = btnOpenEXEClick
-      ExplicitLeft = 740
-      ExplicitTop = 195
-      ExplicitWidth = 34
     end
   end
   object lvIncrementOnCompileMode: TListView
@@ -616,7 +568,6 @@ object frameProjectOptions: TframeProjectOptions
     OnCustomDrawSubItem = lvIncrementOnCompileModeCustomDrawSubItem
     OnMouseUp = lvIncrementOnCompileModeMouseUp
     OnResize = lvIncrementOnCompileModeResize
-    ExplicitTop = 133
   end
   object dlgOpenEXE: TOpenDialog
     Filter = 'Executables|*.exe;*.dll;*.bpl'

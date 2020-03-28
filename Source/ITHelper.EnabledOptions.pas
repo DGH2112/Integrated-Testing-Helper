@@ -4,8 +4,8 @@
   are to be enabled.
 
   @Author  David Hoyle
-  @Version 1.0
-  @Date    21 Sep 2019
+  @Version 1.022
+  @Date    28 Mar 2020
 
   @license
 
@@ -48,7 +48,7 @@ Uses
   StdCtrls,
   Buttons,
   ITHelper.GlobalOptions, 
-  ITHelper.Types;
+  ITHelper.Types, System.ImageList, Vcl.ImgList;
 
 {$INCLUDE 'CompilerDefinitions.inc'}
 
@@ -57,15 +57,16 @@ Type
   TfrmITHEnabledOptions = Class(TForm)
     chkEnable: TCheckBox;
     gbxOptions: TGroupBox;
-    btnOK: TBitBtn;
-    btnCancel: TBitBtn;
     chkBefore: TCheckBox;
     chkAfter: TCheckBox;
     chkZip: TCheckBox;
     chkIncBuild: TCheckBox;
     chkBuildRes: TCheckBox;
     chkCopyVerInfo: TCheckBox;
-    btnHelp: TBitBtn;
+    btnOK: TButton;
+    btnCancel: TButton;
+    btnHelp: TButton;
+    ilButtons: TImageList;
     Procedure EnabledClick(Sender: TObject);
     Procedure btnHelpClick(Sender: TObject);
   Private
@@ -81,7 +82,6 @@ Implementation
 
 Uses
   ITHelper.TestingHelperUtils;
-{ TForm2 }
 
 (**
 
@@ -184,6 +184,7 @@ Begin
   Result := False;
   frm := TfrmITHEnabledOptions.Create(Nil);
   Try
+    TITHToolsAPIFunctions.RegisterFormClassForTheming(TfrmITHEnabledOptions, frm);
     frm.Caption           := strProjectGroup + strOptions;
     frm.chkEnable.Checked := eoGroupEnabled In Options;
     frm.EnabledClick(Nil);

@@ -3,8 +3,8 @@
   This module contains a frame for displaying the external tools to be run before or after compilation.
 
   @Author  David Hoyle
-  @Version 1.0
-  @Date    27 Oct 2019
+  @Version 1.005
+  @Date    28 Mar 2020
   
   @license
 
@@ -48,21 +48,22 @@ Uses
   ToolsAPI,
   ITHelper.Types,
   ITHelper.Interfaces,
-  ITHelper.ExternalProcessInfo;
+  ITHelper.ExternalProcessInfo, System.ImageList;
 
 Type
   (** This is a frame for representing the before or after compile tools to be run. **)
   TframeExternalTools = Class(TFrame, IITHOptionsFrame)
     chkWarn: TCheckBox;
     lblCompile: TLabel;
-    btnDown: TBitBtn;
-    btnUp: TBitBtn;
-    btnCopy: TBitBtn;
     lvCompile: TListView;
-    btnAdd: TBitBtn;
-    btnDelete: TBitBtn;
-    btnEdit: TBitBtn;
     ilStatus: TImageList;
+    ilButtons: TImageList;
+    btnDown: TButton;
+    btnUp: TButton;
+    btnCopy: TButton;
+    btnAdd: TButton;
+    btnDelete: TButton;
+    btnEdit: TButton;
     Procedure btnAddClick(Sender: TObject);
     Procedure lvResize(Sender: TObject);
     Procedure btnDeleteClick(Sender: TObject);

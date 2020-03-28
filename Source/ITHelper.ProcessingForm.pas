@@ -4,8 +4,8 @@
   before or after compile information.
 
   @Author  David Hoyle
-  @Version 1.0
-  @Date    21 Sep 2019
+  @Version 1.047
+  @Date    28 Mar 2020
 
   @license
 
@@ -66,7 +66,7 @@ Type
   Protected
     Procedure InitialiseControls;
   Public
-    Class Procedure ShowProcessing(Const strMsg: String; Const iColour: TColor = clBlue;
+    Class Procedure ShowProcessing(Const strMsg: String; Const iColour: TColor = clWindowText;
       Const boolWait: Boolean = False);
     Class Procedure HideProcessing;
     Class Procedure ProcessFileName(Const strFileName: String);
@@ -84,7 +84,9 @@ Implementation
 {$R *.dfm}
 
 Uses
-  Math, ITHelper.TestingHelperUtils;
+  ToolsAPI,
+  Math,
+  ITHelper.TestingHelperUtils;
 
 
 Var
@@ -159,6 +161,8 @@ Begin
   FForm.Name := strPnlFormName;
   FForm.Parent := Self;
   FForm.Align := alClient;
+  FForm.BevelOuter := bvNone;
+  FForm.BevelInner := bvNone;
   FForm.TabOrder := 0;
   FForm.Caption := '';
   FForm.Font.Name := strFontName;
@@ -253,12 +257,21 @@ End;
 
 **)
 Class Procedure TfrmITHProcessing.ShowProcessing(Const strMsg: String;
-  Const iColour: TColor = clBlue; Const boolWait: Boolean = False);
+  Const iColour: TColor = clWindowText; Const boolWait: Boolean = False);
 
+Var
+  ITS : IOTAIDEThemingServices;
+  iClr: TColor;
+  
 Begin
   FormInstance.CanHide := False;
   FormInstance.FInfo.Caption := strMsg;
-  FormInstance.FInfo.Font.Color := iColour;
+  iClr := iColour;
+  {$IFDEF DXE102}
+  If Supports(BorlandIDEServices, IOTAIDEThemingServices, ITS) And ITS.IDEThemingEnabled Then
+    iClr := ITS.StyleServices.GetSystemColor(iColour);
+  {$ENDIF DXE102}
+  FormInstance.FInfo.Font.Color := iClr;
   FormInstance.FMessage := strMsg;
   CheckWidth;
   TITHToolsAPIFunctions.ApplyTheming(FormInstance);
@@ -291,10 +304,9 @@ End;
 
 (** Creates an instance of the form for use in the application. **)
 Initialization
-  //: @bug TITHToolsAPIFunctions.RegisterFormClassForTheming(TfrmITHProcessing);
   FormInstance := TfrmITHProcessing.Create(Nil);
   FormInstance.InitialiseControls;
-  TITHToolsAPIFunctions.ApplyTheming(FormInstance);
+  TITHToolsAPIFunctions.RegisterFormClassForTheming(TfrmITHProcessing, FormInstance);
 (** Frees the form at unloading. **)
 Finalization
   FormInstance.Free;

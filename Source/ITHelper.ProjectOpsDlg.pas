@@ -4,8 +4,8 @@
   the active project can be edited.
 
   @Author  David Hoyle
-  @Version 1.0
-  @Date    27 Oct 2019
+  @Version 1.308
+  @Date    28 Mar 2020
 
   @license
 
@@ -53,7 +53,7 @@ Uses
   ComCtrls,
   ITHelper.ProjectOptionsFrame,
   ITHelper.ExternalToolsFrame,
-  ITHelper.ZIPFrame;
+  ITHelper.ZIPFrame, System.ImageList, Vcl.ImgList;
 
 Type
   (** An enumerate to define the page to display on opening. **)
@@ -65,21 +65,22 @@ Type
   (** A class to represent the project options form. **)
   TfrmITHProjectOpsDlg = Class(TForm)
     pgcProjectOptions: TPageControl;
-    btnHelp: TBitBtn;
-    btnOK: TBitBtn;
-    btnCancel: TBitBtn;
     tabProjectOptions: TTabSheet;
     tabBeforeCompileTools: TTabSheet;
     tabAfterCompileTools: TTabSheet;
     tabZipping: TTabSheet;
+    btnHelp: TButton;
+    btnOK: TButton;
+    btnCancel: TButton;
+    ilButtons: TImageList;
     procedure btnHelpClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure btnOKClick(Sender: TObject);
   Strict Private
-    FProjectOptions     : IITHOptionsFrame;
-    FBeforeCompileTools : IITHOptionsFrame;
-    FAfterCompileTools  : IITHOptionsFrame;
-    FZipping            : IITHOptionsFrame;
+    FProjectOptions          : IITHOptionsFrame;
+    FBeforeCompileTools      : IITHOptionsFrame;
+    FAfterCompileTools       : IITHOptionsFrame;
+    FZipping                 : IITHOptionsFrame;
   Strict Protected
     Procedure LoadSettings(Const GlobalOps: IITHGlobalOptions);
     Procedure SaveSettings(Const GlobalOps: IITHGlobalOptions);
@@ -94,6 +95,9 @@ Implementation
 {$R *.dfm}
 
 Uses
+  {$IFDEF DEBUG}
+  CodeSiteLogging,
+  {$ENDIF DEBUG}
   IniFiles,
   {$IFDEF DXE20}
   CommonOptionStrs,
@@ -185,10 +189,9 @@ Var
   frm: TfrmITHProjectOpsDlg;
 
 Begin
-  //: @bug TITHToolsAPIFunctions.RegisterFormClassForTheming(TfrmITHProjectOpsDlg);
   frm := TfrmITHProjectOpsDlg.Create(Nil);
   Try
-    TITHToolsAPIFunctions.ApplyTheming(frm);
+    TITHToolsAPIFunctions.RegisterFormClassForTheming(TfrmITHProjectOpsDlg, frm);
     frm.Caption := Format(strProjectOptionsFor, [TITHToolsAPIFunctions.GetProjectName(Project)]);
     frm.LoadSettings(GlobalOps);
     frm.FProjectOptions.InitialiseOptions(GlobalOps, Project);
@@ -237,30 +240,53 @@ Const
 
 Var
   F: Tframe;
+  {$IFDEF DXE102}
+  ITS : IOTAIDEThemingServices;
+  {$ENDIF DEX102}
 
 Begin
   F := TframeProjectOptions.Create(Self);
   F.Name := strProjectOptionsFrameName;
   F.Parent := tabProjectOptions;
   F.Align := alClient;
+  {$IFDEF DXE102}
+  F.ParentBackground := False;
+  If Supports(BorlandIDEServices, IOTAIDEThemingServices, ITS) And ITS.IDEThemingEnabled Then
+    F.Color := ITS.StyleServices.GetSystemColor(clBtnFace);
+  {$ENDIF DXE102}
   If Not Supports(F, IITHOptionsFrame, FProjectOptions) Then
     Raise Exception.Create(strIITHOptionsFrameNotSupported);
   F := TframeExternalTools.Create(Self);
   F.Name := strBeforeCompileToolsName;
   F.Parent := tabBeforeCompileTools;
   F.Align := alClient;
+  {$IFDEF DXE102}
+  F.ParentBackground := False;
+  If Supports(BorlandIDEServices, IOTAIDEThemingServices, ITS) And ITS.IDEThemingEnabled Then
+    F.Color := ITS.StyleServices.GetSystemColor(clBtnFace);
+  {$ENDIF DXE102}
   If Not Supports(F, IITHOptionsFrame, FBeforeCompileTools) Then
     Raise Exception.Create(strIITHOptionsFrameNotsupported);
   F := TframeExternalTools.Create(Self);
   F.Name := strAfterCompileToolsName;
   F.Parent := tabAfterCompileTools;
   F.Align := alClient;
+  {$IFDEF DXE102}
+  F.ParentBackground := False;
+  If Supports(BorlandIDEServices, IOTAIDEThemingServices, ITS) And ITS.IDEThemingEnabled Then
+    F.Color := ITS.StyleServices.GetSystemColor(clBtnFace);
+  {$ENDIF DXE102}
   If Not Supports(F, IITHOptionsFrame, FAfterCompileTools) Then
     Raise Exception.Create(strIITHOptionsFrameNotSupported);
   F := TframeZipping.Create(Self);
   F.Name := strZippingName;
   F.Parent := tabZipping;
   F.Align := alClient;
+  {$IFDEF DXE102}
+  F.ParentBackground := False;
+  If Supports(BorlandIDEServices, IOTAIDEThemingServices, ITS) And ITS.IDEThemingEnabled Then
+    F.Color := ITS.StyleServices.GetSystemColor(clBtnFace);
+  {$ENDIF DXE102}
   If Not Supports(F, IITHOptionsFrame, FZipping) Then
     Raise Exception.Create(strIITHOptionsFrameNotSupported);
 End;

@@ -3,8 +3,8 @@
   This module defines a class which represents a form for entering a path and
   wildcards for additional files to be included in the zipping process.
 
-  @Version 1.0
-  @Date    21 Sep 2019
+  @Version 1.015
+  @Date    28 Mar 2020
   @Author  David Hoyle
 
   @license
@@ -44,7 +44,7 @@ Uses
   Dialogs,
   Buttons,
   StdCtrls,
-  ToolsAPI;
+  ToolsAPI, System.ImageList, Vcl.ImgList;
 
 Type
   (** This is a class to represents the form interface. **)
@@ -52,8 +52,9 @@ Type
     lblWildcard: TLabel;
     edtWildcard: TEdit;
     btnBrowse: TButton;
-    btnOK: TBitBtn;
-    btnCancel: TBitBtn;
+    btnOK: TButton;
+    btnCancel: TButton;
+    ilButtons: TImageList;
     Procedure btnBrowseClick(Sender: TObject);
     Procedure btnOKClick(Sender: TObject);
   Private
@@ -148,6 +149,7 @@ Begin
   Result := False;
   frm := TfrmITHAdditionalZipFiles.Create(Nil);
   Try
+    TITHToolsAPIFunctions.RegisterFormClassForTheming(TfrmITHAdditionalZipFiles, frm);
     frm.FProject := Project;
     frm.edtWildcard.Text := strWildcard;
     If frm.ShowModal = mrOK Then

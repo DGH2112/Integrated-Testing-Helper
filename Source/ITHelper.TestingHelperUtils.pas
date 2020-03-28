@@ -2,9 +2,9 @@
 
   This module contains often used code for use through out this application.
 
-  @Version 1.0
+  @Version 1.044
   @Author  David Hoyle
-  @Date    21 Sep 2019
+  @Date    28 Mar 2020
 
   @license
 
@@ -82,7 +82,8 @@ Type
       Const strShortCut : String; Const iMaskColour : TColor = clLime) : TMenuItem; Static;
     Class Procedure ClearMessages(Const Msg : TClearMessages); Static;
     Class Procedure ShowHelperMessages(Const boolITHGroup : Boolean); Static;
-    Class Procedure RegisterFormClassForTheming(Const AFormClass : TCustomFormClass); Static;
+    Class Procedure RegisterFormClassForTheming(Const AFormClass : TCustomFormClass;
+      Const Component : TComponent = Nil); Static;
     Class Procedure ApplyTheming(Const Component : TComponent); Static;
     {$ENDIF}
     Class Function  ProjectGroup: IOTAProjectGroup; Static;
@@ -669,20 +670,34 @@ end;
   @postcon The form class passed is registered for theming.
 
   @param   AFormClass as a TCustomFormClass as a constant
+  @param   Component  as a TComponent as a constant
 
 **)
-Class Procedure TITHToolsAPIFunctions.RegisterFormClassForTheming(Const AFormClass : TCustomFormClass);
+Class Procedure TITHToolsAPIFunctions.RegisterFormClassForTheming(Const AFormClass : TCustomFormClass;
+  Const Component : TComponent = Nil);
 
 {$IFDEF DXE102}
 Var
+  {$IFDEF DXE104}
+  ITS : IOTAIDEThemingServices;
+  {$ELSE}
   ITS : IOTAIDEThemingServices250;
+  {$ENDIF DXE104}
 {$ENDIF}
 
 Begin
   {$IFDEF DXE102}
+  {$IFDEF DXE104}
   If Supports(BorlandIDEServices, IOTAIDEThemingServices, ITS) Then
+  {$ELSE}
+  If Supports(BorlandIDEServices, IOTAIDEThemingServices250, ITS) Then
+  {$ENDIF DXE104}
     If ITS.IDEThemingEnabled Then
-      ITS.RegisterFormClass(AFormClass);
+      Begin
+        ITS.RegisterFormClass(AFormClass);
+        If Assigned(Component) Then
+          ITS.ApplyTheme(Component);
+      End;
   {$ENDIF}
 End;
 {$ENDIF}

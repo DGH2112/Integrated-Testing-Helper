@@ -3,8 +3,8 @@
   This module contains a frame to contain the zipping configuration information.
 
   @Author  David Hoyle
-  @Version 1.0
-  @Date    21 Sep 2019
+  @Version 1.006
+  @Date    28 Mar 2020
   
   @license
 
@@ -44,7 +44,7 @@ Uses
   Buttons,
   ToolsAPI,
   ITHelper.Types,
-  ITHelper.Interfaces;
+  ITHelper.Interfaces, System.ImageList, Vcl.ImgList;
 
 Type
   (** A frame to represent the zipping configuration. **)
@@ -56,9 +56,6 @@ Type
     edtBasePath: TEdit;
     btnBrowseZip: TButton;
     edtZipName: TEdit;
-    btnDeleteZip: TBitBtn;
-    btnEditZip: TBitBtn;
-    btnAddZip: TBitBtn;
     lbAdditionalWildcards: TListBox;
     cbxEnabledZipping: TCheckBox;
     lblZIPBasePath: TLabel;
@@ -66,6 +63,10 @@ Type
     lblAdditionalFiles: TLabel;
     lblZIPName: TLabel;
     lblZipInfo: TLabel;
+    ilButtons: TImageList;
+    btnDeleteZip: TButton;
+    btnEditZip: TButton;
+    btnAddZip: TButton;
     Procedure btnAddZipClick(Sender: TObject);
     Procedure btnBrowseBasePathClick(Sender: TObject);
     Procedure btnBrowseZipClick(Sender: TObject);
