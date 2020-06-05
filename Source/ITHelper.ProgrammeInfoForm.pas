@@ -3,16 +3,16 @@
   This modules contains a form for specifying the EXE, Params and Working
   Directory for external tools.
 
-  @Version 1.022
+  @Version 1.025
   @Author  David Hoyle
-  @Date    28 Mar 2020
+  @Date    05 Jun 2020
 
   @license
 
     Integrated Testing helper is a RAD Studio plug-in for running pre and post
     build processes.
     
-    Copyright (C) 2019  David Hoyle (https://github.com/DGH2112/Integrated-Testing-Helper)
+    Copyright (C) 2020  David Hoyle (https://github.com/DGH2112/Integrated-Testing-Helper)
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -44,7 +44,7 @@ Uses
   Dialogs,
   Buttons,
   StdCtrls,
-  ExtCtrls;
+  ExtCtrls, System.ImageList, Vcl.ImgList;
 
 Type
   (** A class to represent the form. **)

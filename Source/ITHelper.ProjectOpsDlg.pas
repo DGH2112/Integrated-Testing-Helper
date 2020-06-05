@@ -4,15 +4,15 @@
   the active project can be edited.
 
   @Author  David Hoyle
-  @Version 1.308
-  @Date    28 Mar 2020
+  @Version 1.311
+  @Date    05 Jun 2020
 
   @license
 
     Integrated Testing helper is a RAD Studio plug-in for running pre and post
     build processes.
     
-    Copyright (C) 2019  David Hoyle (https://github.com/DGH2112/Integrated-Testing-Helper)
+    Copyright (C) 2020  David Hoyle (https://github.com/DGH2112/Integrated-Testing-Helper)
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -53,7 +53,7 @@ Uses
   ComCtrls,
   ITHelper.ProjectOptionsFrame,
   ITHelper.ExternalToolsFrame,
-  ITHelper.ZIPFrame;
+  ITHelper.ZIPFrame, System.ImageList, Vcl.ImgList;
 
 Type
   (** An enumerate to define the page to display on opening. **)

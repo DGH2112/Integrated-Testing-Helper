@@ -2,14 +2,22 @@
 
   THIS IS A STUB FOR TESTING THE OPEN TOOLS API.
 
-  //: @nodocumentation @nometrics Disabled metrics @nochecks Disbale checks
+  DUnit test for the Integrated Testing Helper.
+
+  @Version 1.012
+  @Author  David Hoyle
+  @Date    05 Jun 2020
+
+  @nodocumentation
+  @nometrics Disabled metrics
+  @nochecks Disbale checks
 
   @license
 
     Integrated Testing helper is a RAD Studio plug-in for running pre and post
     build processes.
-    
-    Copyright (C) 2019  David Hoyle (https://github.com/DGH2112/Integrated-Testing-Helper)
+
+    Copyright (C) 2020  David Hoyle (https://github.com/DGH2112/Integrated-Testing-Helper)
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by

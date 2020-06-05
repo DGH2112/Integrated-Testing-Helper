@@ -3,8 +3,8 @@
   This module defines a class which represents a form for entering a path and
   wildcards for additional files to be included in the zipping process.
 
-  @Version 1.015
-  @Date    28 Mar 2020
+  @Version 1.018
+  @Date    05 Jun 2020
   @Author  David Hoyle
 
   @license
@@ -12,7 +12,7 @@
     Integrated Testing helper is a RAD Studio plug-in for running pre and post
     build processes.
     
-    Copyright (C) 2019  David Hoyle (https://github.com/DGH2112/Integrated-Testing-Helper)
+    Copyright (C) 2020  David Hoyle (https://github.com/DGH2112/Integrated-Testing-Helper)
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -44,7 +44,7 @@ Uses
   Dialogs,
   Buttons,
   StdCtrls,
-  ToolsAPI;
+  ToolsAPI, System.ImageList, Vcl.ImgList;
 
 Type
   (** This is a class to represents the form interface. **)

@@ -296,13 +296,12 @@ object frameProjectOptions: TframeProjectOptions
         AlignWithMargins = True
         Left = 660
         Top = 3
-        Width = 81
+        Width = 65
         Height = 27
         Align = alClient
         ReadOnly = True
         TabOrder = 3
         Text = '0'
-        ExplicitWidth = 65
       end
       object upMajor: TUpDown
         Left = 174
@@ -341,7 +340,7 @@ object frameProjectOptions: TframeProjectOptions
         ExplicitLeft = 535
       end
       object upBuild: TUpDown
-        Left = 744
+        Left = 725
         Top = 3
         Width = 16
         Height = 27
@@ -350,7 +349,6 @@ object frameProjectOptions: TframeProjectOptions
         Max = 1000000
         TabOrder = 7
         OnClick = BuildChange
-        ExplicitLeft = 725
       end
     end
     object gpnlResource: TGridPanel

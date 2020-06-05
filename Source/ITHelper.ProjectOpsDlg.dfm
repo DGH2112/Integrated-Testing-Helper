@@ -35,14 +35,26 @@ object frmITHProjectOpsDlg: TfrmITHProjectOpsDlg
     object tabBeforeCompileTools: TTabSheet
       Caption = 'Before Compilation Tools'
       ImageIndex = 1
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
     end
     object tabAfterCompileTools: TTabSheet
       Caption = 'After Compilation Tools'
       ImageIndex = 2
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
     end
     object tabZipping: TTabSheet
       Caption = 'Zipping'
       ImageIndex = 3
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
     end
   end
   object btnHelp: TButton

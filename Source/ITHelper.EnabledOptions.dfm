@@ -27,7 +27,6 @@ object frmITHEnabledOptions: TfrmITHEnabledOptions
     Caption = '&Enable'
     TabOrder = 0
     OnClick = EnabledClick
-    ExplicitWidth = 240
   end
   object gbxOptions: TGroupBox
     Left = 8
@@ -37,7 +36,6 @@ object frmITHEnabledOptions: TfrmITHEnabledOptions
     Anchors = [akLeft, akTop, akRight, akBottom]
     Caption = 'Options'
     TabOrder = 1
-    ExplicitWidth = 240
     DesignSize = (
       308
       170)
@@ -49,7 +47,6 @@ object frmITHEnabledOptions: TfrmITHEnabledOptions
       Anchors = [akLeft, akTop, akRight]
       Caption = '&Before Compilation Tools'
       TabOrder = 0
-      ExplicitWidth = 224
     end
     object chkAfter: TCheckBox
       Left = 8
@@ -59,7 +56,6 @@ object frmITHEnabledOptions: TfrmITHEnabledOptions
       Anchors = [akLeft, akTop, akRight]
       Caption = '&After Compilation Tools'
       TabOrder = 1
-      ExplicitWidth = 224
     end
     object chkZip: TCheckBox
       Left = 8
@@ -69,7 +65,6 @@ object frmITHEnabledOptions: TfrmITHEnabledOptions
       Anchors = [akLeft, akTop, akRight]
       Caption = '&Zipping of Project Files'
       TabOrder = 2
-      ExplicitWidth = 224
     end
     object chkIncBuild: TCheckBox
       Left = 8
@@ -79,7 +74,6 @@ object frmITHEnabledOptions: TfrmITHEnabledOptions
       Anchors = [akLeft, akTop, akRight]
       Caption = '&Increment Build on Successful Compilation'
       TabOrder = 3
-      ExplicitWidth = 224
     end
     object chkBuildRes: TCheckBox
       Left = 8
@@ -89,7 +83,6 @@ object frmITHEnabledOptions: TfrmITHEnabledOptions
       Anchors = [akLeft, akTop, akRight]
       Caption = '&Build Project Version Infomation Resource'
       TabOrder = 4
-      ExplicitWidth = 224
     end
     object chkCopyVerInfo: TCheckBox
       Left = 8
@@ -99,7 +92,6 @@ object frmITHEnabledOptions: TfrmITHEnabledOptions
       Anchors = [akLeft, akTop, akRight]
       Caption = 'Copy &Project Version Information'
       TabOrder = 5
-      ExplicitWidth = 224
     end
   end
   object btnOK: TButton
@@ -117,7 +109,6 @@ object frmITHEnabledOptions: TfrmITHEnabledOptions
     ModalResult = 1
     ParentDoubleBuffered = False
     TabOrder = 2
-    ExplicitLeft = 254
   end
   object btnCancel: TButton
     Left = 322
@@ -134,7 +125,6 @@ object frmITHEnabledOptions: TfrmITHEnabledOptions
     ModalResult = 2
     ParentDoubleBuffered = False
     TabOrder = 3
-    ExplicitLeft = 254
   end
   object btnHelp: TButton
     Left = 322
@@ -150,7 +140,6 @@ object frmITHEnabledOptions: TfrmITHEnabledOptions
     ParentDoubleBuffered = False
     TabOrder = 4
     OnClick = btnHelpClick
-    ExplicitLeft = 254
   end
   object ilButtons: TImageList
     Left = 272

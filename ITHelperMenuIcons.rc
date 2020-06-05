@@ -1,6 +1,10 @@
-/*
+/**
 
   Images for the IDE menu items.
+
+  @Author  David Hoyle
+  @Version 2.008
+  @Date    05 Jun 2020
 
   @license
 
@@ -22,7 +26,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-*/
+**/
 ITHEnabledImage           BITMAP "Images\ITHelperEnabledImage.bmp"
 ITHGlobalOptionsImage     BITMAP "Images\ITHelperGlobalOptionsImage.bmp"
 ITHProjectOptionsImage    BITMAP "Images\ITHelperProjectOptionsImage.bmp"
