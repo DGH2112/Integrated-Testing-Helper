@@ -454,7 +454,7 @@ Procedure TITHGlobalOptions.LoadSettings;
 Const
   strDefaultZipEXE = 'C:\Program Files\7-Zip\7Z.EXE';
   iDefaultClearMsgInterval = 30;
-  strDefaultZIPParamsKey = 'a "$ZIPFILE$" @"$RESPONSEFILE$"';
+  strDefaultZIPParamsKey = '-bb3 u "$ZIPFILE$" @"$RESPONSEFILE$"';
   strDefaultFontName = 'Tahoma';
   strDefaultFontColour = 'clBlack';
 
