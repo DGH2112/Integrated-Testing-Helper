@@ -3,7 +3,7 @@
   This module contaisn resource string for use throughout the application.
 
   @Author  David Hoyle
-  @Version 1.001
+  @Version 1.002
   @Date    05 Jun 2020
   
   @license
@@ -36,10 +36,10 @@ ResourceString
   strSplashScreenName = 'Integrated Testing Helper %d.%d%s for %s';
   {$IFDEF DEBUG}
   (** This is another message string to appear in the splash screen **)
-  strSplashScreenBuild = 'David Hoyle (c) 2019 License GNU GPL 3 (DEBUG Build %d.%d.%d.%d)';
+  strSplashScreenBuild = 'David Hoyle (c) 2020 License GNU GPL 3 (DEBUG Build %d.%d.%d.%d)';
   {$ELSE}
   (** This is another message string to appear in the splash screen **)
-  strSplashScreenBuild = 'David Hoyle (c) 2019 License GNU GPL 3 (Build %d.%d.%d.%d)';
+  strSplashScreenBuild = 'David Hoyle (c) 2020 License GNU GPL 3 (Build %d.%d.%d.%d)';
   {$ENDIF}
   (** This is a resourcestring for the message tab name. **)
   strITHelperGroup = 'ITHelper Messages';
