@@ -4,8 +4,8 @@
   implement an IDE wizard.
 
   @Author  David Hoyle
-  @Date    05 Jun 2020
-  @Version 2.025
+  @Date    06 Jun 2020
+  @Version 2.049
 
   @nocheck EmptyBEGINEND
 
@@ -13,7 +13,7 @@
 
     Integrated Testing helper is a RAD Studio plug-in for running pre and post
     build processes.
-    
+
     Copyright (C) 2020  David Hoyle (https://github.com/DGH2112/Integrated-Testing-Helper)
 
     This program is free software: you can redistribute it and/or modify
@@ -41,6 +41,17 @@ Library ITHelper;
 
 uses
   ShareMem,
+  {$IFDEF EurekaLog}
+  EMemLeaks,
+  EResLeaks,
+  EDebugExports,
+  EDialogWinAPIMSClassic,
+  EDialogWinAPIEurekaLogDetailed,
+  EDialogWinAPIStepsToReproduce,
+  ESendMailMAPI,
+  ESendMailSMAPI,
+  ExceptionLog7,
+  {$ENDIF EurekaLog}
   SysUtils,
   Classes,
   ITHelper.Wizard in 'Source\ITHelper.Wizard.pas',
@@ -86,5 +97,6 @@ uses
 
 Begin
 End.
+
 
 

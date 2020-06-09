@@ -3,8 +3,8 @@
   This module contains interfaces for use throughout the plug-in to minimise coupling.
 
   @Author  David Hoyle
-  @Version 1.001
-  @Date    05 Jun 2020
+  @Version 1.171
+  @Date    09 Jun 2020
 
   @license
 
@@ -41,15 +41,18 @@ Uses
 {$INCLUDE CompilerDefinitions.inc}
 
 Type
+  (** An enumerate to define when the build number should be incremented. **)
+  TITHIncrementBuildType = (ibtNone, ibtBefore, ibtAfter);
+
   (** An interface for the Project Options. **)
   IITHProjectOptions = Interface
   ['{06926CE6-2293-4D1C-91A5-2D991CC1CF04}']
   // Getters and Setters
     Function  GetResExtExc: String;
     Function  GetIncOnCompile(Const CompileMode : TOTACompileMode;
-      Const strConfigName : String): Boolean;
+      Const strConfigName : String): TITHIncrementBuildType;
     Function  GetCopyVerInfo: String;
-    Function  GetIncITHVerInfo: Boolean;
+    Function  GetEnableVersionInfo : Boolean;
     Function  GetMajor: Integer;
     Function  GetMinor: Integer;
     Function  GetRelease: Integer;
@@ -69,9 +72,9 @@ Type
     Function  GetSaveModifiedFiles : Boolean;
     Procedure SetResExtExc(Const strValue: String);
     Procedure SetIncOnCompile(Const CompileMode : TOTACompileMode; Const strConfigName : String;
-      Const boolValue: Boolean);
+      Const eValue: TITHIncrementBuildType);
     Procedure SetCopyVerInfo(Const strValue: String);
-    Procedure SetIncITHVerInfo(Const boolValue: Boolean);
+    Procedure SetEnableVersionInfo(Const boolValue: Boolean);
     Procedure SetMajor(Const iValue: Integer);
     Procedure SetMinor(Const iValue: Integer);
     Procedure SetRelease(Const iValue: Integer);
@@ -100,10 +103,12 @@ Type
       @postcon Gets and sets whether the build number should be incremented on a successful file.
       @param   CompileMode   as a TOTACompileMode as a constant
       @param   strConfigName as a String as a constant
-      @return  a Boolean
+      @return  a TITHIncrementBuildType
     **)
-    Property IncOnCompile[Const CompileMode : TOTACompileMode; Const strConfigName : String]: Boolean
-      Read GetIncOnCompile Write SetIncOnCompile;
+    Property IncOnCompile[
+               Const CompileMode : TOTACompileMode;
+               Const strConfigName : String
+             ]: TITHIncrementBuildType Read GetIncOnCompile Write SetIncOnCompile;
     (**
       This property gets and sets the executable from which version information should be
       copied.
@@ -121,7 +126,7 @@ Type
                executable.
       @return  a Boolean
     **)
-    Property IncITHVerInfo: Boolean Read GetIncITHVerInfo Write SetIncITHVerInfo;
+    Property EnableVersionInfo : Boolean Read GetEnableVersionInfo Write SetEnableVersionInfo;
     (**
       This property gets and sets the major version number of the version information.
       @precon  None.

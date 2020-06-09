@@ -4,8 +4,8 @@
   compilation events can be handled.
 
   @Author  David Hoyle.
-  @Version 1.001
-  @Date    05 Jun 2020
+  @Date    09 Jun 2020
+  @Version 1.069
 
   @license
 
@@ -88,8 +88,13 @@ Type
     // General Methods
     Function ProcessCompileInformation(Const ProjectOps : IITHProjectOptions; Const Project: IOTAProject;
       Const strWhere: String): Integer;
-    Procedure IncrementBuild(Const Ops : TITHEnabledOptions; Const ProjectOps : IITHProjectOptions;
-      Const Project: IOTAProject; Const strProject: String);
+    Procedure IncrementBuild(
+      Const eBuildType : TITHIncrementBuildType;
+      Const Ops : TITHEnabledOptions;
+      Const ProjectOps : IITHProjectOptions;
+      Const Project: IOTAProject;
+      Const strProject: String
+    );
     Procedure CopyVersionInfoFromDependency(Const Ops : TITHEnabledOptions; Const Project: IOTAProject;
       Const strProject: String; Const ProjectOps: IITHProjectOptions);
     Procedure ProcessBeforeCompile(Const Project: IOTAProject; Const IsCodeInsight: Boolean;
@@ -607,14 +612,20 @@ End;
   @precon  ProjectOps must be a valid instance.
   @postcon Increments the buld number of the passed project IF this is enabled in the options.
 
+  @param   eBuildType as a TITHIncrementBuildType as a constant
   @param   Ops        as a TITHEnabledOptions as a constant
   @param   ProjectOps as an IITHProjectOptions as a constant
   @param   Project    as an IOTAProject as a constant
   @param   strProject as a String as a constant
 
 **)
-Procedure TITHelperIDENotifier.IncrementBuild(Const Ops : TITHEnabledOptions;
-  Const ProjectOps : IITHProjectOptions; Const Project: IOTAProject; Const strProject: String);
+Procedure TITHelperIDENotifier.IncrementBuild(
+            Const eBuildType : TITHIncrementBuildType;
+            Const Ops : TITHEnabledOptions;
+            Const ProjectOps : IITHProjectOptions;
+            Const Project: IOTAProject;
+            Const strProject: String
+          );
 
 Const
   strBasicConfig = 'BasicConfig';
@@ -628,22 +639,31 @@ Var
 Begin
   If eoIncrementBuild In Ops Then
     Begin
+      If (eBuildType = ibtBefore) And Not Project.ProjectBuilder.ShouldBuild Then
+        Exit;
       strConfigName := strBasicConfig;
       {$IFDEF DXE20}
       ActiveConfig := CheckProjectOptions(Project);
       strConfigName := ActiveConfig.Name;
       {$ENDIF}
       If ProjectOps.IncOnCompile[
-        {$IFDEF D2010} FCompileMode {$ELSE D2010} cmOTAMake {$ENDIF D2010},
-        strConfigName
-        ] Then
+           {$IFDEF D2010} FCompileMode {$ELSE D2010} cmOTAMake {$ENDIF D2010},
+           strConfigName
+         ] = eBuildType Then
         Begin
-          If ProjectOps.IncITHVerInfo Then
-            IncrementITHelperVerInfo( {$IFDEF DXE20} ActiveConfig, {$ENDIF} ProjectOps, strProject,
-              {$IFDEF D2010} FCompileMode {$ELSE D2010} cmOTAMake {$ENDIF D2010})
+          If ProjectOps.EnableVersionInfo Then
+            IncrementITHelperVerInfo(
+              {$IFDEF DXE20} ActiveConfig,
+              {$ENDIF} ProjectOps,
+              strProject,
+              {$IFDEF D2010} FCompileMode {$ELSE D2010} cmOTAMake {$ENDIF D2010}
+            )
           Else
-            IncrementIDEVerInfo( {$IFDEF DXE20} ActiveConfig {$ELSE} Project {$ENDIF}, strProject,
-              {$IFDEF D2010} FCompileMode {$ELSE D2010} cmOTAMake {$ENDIF D2010});
+            IncrementIDEVerInfo(
+              {$IFDEF DXE20} ActiveConfig {$ELSE} Project {$ENDIF},
+              strProject,
+              {$IFDEF D2010} FCompileMode {$ELSE D2010} cmOTAMake {$ENDIF D2010}
+            );
         End;
     End;
 End;
@@ -836,7 +856,7 @@ Begin
             If eoGroupEnabled In Ops Then
               Try
                 strProject := TITHToolsAPIFunctions.GetProjectName(Project);
-                IncrementBuild(Ops, ProjectOps, Project, strProject);
+                IncrementBuild(ibtAfter, Ops, ProjectOps, Project, strProject);
                 ZipProjectFiles(Ops, ProjectOps, Project, strProject);
                 If RunPostcompilationTools(Ops, ProjectOps, Project, strProject) Then
                   Abort;
@@ -885,6 +905,7 @@ Begin
               Try
                 strProject := TITHToolsAPIFunctions.GetProjectName(Project);
                 CopyVersionInfoFromDependency(Ops, Project, strProject, ProjectOps);
+                IncrementBuild(ibtBefore, Ops, ProjectOps, Project, strProject);
                 Cancel := RunPrecompilationTools(Ops, ProjectOps, Project, strProject);
                 If Not Cancel Then
                   ProcessVersionInformation(Ops, ProjectOps, Project);
@@ -1004,7 +1025,7 @@ Var
 
 Begin
   If eoBuildVersionResource In Ops Then
-    If ProjectOps.IncITHVerInfo Then
+    If ProjectOps.EnableVersionInfo Then
       Begin
         VersionMgr := TITHVersionManager.Create(FGlobalOps, ProjectOps, Project, FMsgMgr);
         VersionMgr.BuildProjectVersionResource;
@@ -1273,7 +1294,7 @@ procedure TITHelperIDENotifier.UpdateITHelperVerInfo(Const ProjectOps: IITHProje
   Const recVersionInfo : TITHVersionInfo);
 
 Begin
-  If ProjectOps.IncITHVerInfo Then
+  If ProjectOps.EnableVersionInfo Then
     Begin
       {$IFDEF DXE20} // Multiple Configurations in XE2 and above
       If ActiveConfig.GetBoolean(sVerInfo_IncludeVerInfo, True) Then

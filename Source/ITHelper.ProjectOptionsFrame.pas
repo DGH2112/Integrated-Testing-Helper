@@ -4,8 +4,8 @@
   in the project options dialgoue.
 
   @Author  David Hoyle
-  @Version 1.202
-  @Date    05 Jun 2020
+  @Version 1.410
+  @Date    09 Jun 2020
   
   @license
 
@@ -104,7 +104,7 @@ Type
       (** A record to describe the information store for the list of compile mode configuations. **)
       TITHConfigCompileModes = Record
         FConfigName  : String;
-        FCompileMode : Array[TOTACompileMode] Of Boolean;
+        FCompileMode : Array[TOTACompileMode] Of TITHIncrementBuildType;
       End;
     (** An enumerate to define the columns of the increment on compile mode list view. **)
     TITHCompileModeField = (cmfConfigName, cmfMake, cmfBuild, cmfCheck, cmfMakeUnit);
@@ -444,7 +444,7 @@ Begin
     InitialiseCompileModes(ProjectOps);
     edtVersionInfo.Text                := ProjectOps.CopyVerInfo;
     edtResExts.Text                    := ProjectOps.ResExtExc;
-    chkEnabled.Checked                 := ProjectOps.IncITHVerInfo;
+    chkEnabled.Checked                 := ProjectOps.EnableVersionInfo;
     chkIncludeInProject.Checked        := ProjectOps.IncResInProj;
     chkCompileWithBRCC32.Checked       := ProjectOps.CompileRes;
     upMajor.Position                   := ProjectOps.Major;
@@ -507,6 +507,7 @@ Procedure TframeProjectOptions.lvIncrementOnCompileModeCustomDrawSubItem(Sender:
 Const
   iLightRed = $8080FF;
   iLightGreen = $80FF80;
+  iLightBlue = $FFC080;
 
 Var
   iConfig: Integer;
@@ -528,8 +529,10 @@ Begin
   Sender.Canvas.Brush.Color := iLightRed;
   iConfig := FindConfig(Item.Caption);
   If iConfig > -1 Then
-    If FCompileModes[iConfig].FCompileMode[TOTACompileMode(Byte(Pred(SubItem)))] Then
-      Sender.Canvas.Brush.Color := iLightGreen;
+    Case FCompileModes[iConfig].FCompileMode[TOTACompileMode(Byte(Pred(SubItem)))] Of
+      ibtBefore: Sender.Canvas.Brush.Color := iLightGreen;
+      ibtAfter:  Sender.Canvas.Brush.Color := iLightBlue;
+    End;
 End;
 
 (**
@@ -581,6 +584,28 @@ Procedure TframeProjectOptions.lvIncrementOnCompileModeMouseUp(Sender: TObject;
         End;
   End;
 
+  (**
+
+    This method increments the given build type to the next build type or if at the end back to the
+    beginning.
+
+    @precon  one.
+    @postcon Increments the given build type to the next build type or if at the end back to the
+             beginning.
+
+    @param   BuildType as a TITHIncrementBuildType as a reference
+
+  **)
+  Procedure IncrementBuildType(Var BuildType : TITHIncrementBuildType);
+
+  Begin
+    Case BuildType Of
+      ibtNone:   BuildType := ibtBefore;
+      ibtBefore: BuildType := ibtAfter;
+      ibtAfter:  BuildType := ibtNone;
+    End;
+  End;
+
 Var
   Item : TListItem;
   iConfig : Integer;
@@ -599,10 +624,10 @@ Begin
             Begin
               R := FCompileModes[iConfig];
               Case eCompileMode Of
-                cmfMake:     R.FCompileMode[cmOTAMake]     := Not R.FCompileMode[cmOTAMake];
-                cmfBuild:    R.FCompileMode[cmOTABuild]    := Not R.FCompileMode[cmOTABuild];
-                cmfCheck:    R.FCompileMode[cmOTACheck]    := Not R.FCompileMode[cmOTACheck];
-                cmfMakeUnit: R.FCompileMode[cmOTAMakeUnit] := Not R.FCompileMode[cmOTAMakeUnit];
+                cmfMake:     IncrementBuildType(R.FCompileMode[cmOTAMake]);
+                cmfBuild:    IncrementBuildType(R.FCompileMode[cmOTABuild]);
+                cmfCheck:    IncrementBuildType(R.FCompileMode[cmOTACheck]);
+                cmfMakeUnit: IncrementBuildType(R.FCompileMode[cmOTAMakeUnit]);
               End;
               FCompileModes[iConfig] := R;
             End;
@@ -648,7 +673,7 @@ End;
 Procedure TframeProjectOptions.PopulateIncOnCompileModes;
 
 Const
-  astrBoolean : Array[False..True] Of String = ('No', 'Yes');
+  astrBuildType : Array[TITHIncrementBuildType] Of String = ('None', 'Before', 'After');
 
 Var
   Item: TListItem;
@@ -667,7 +692,7 @@ Begin
         Item := lvIncrementOnCompileMode.Items.Add;
         Item.Caption := Config.FConfigName;
         For eCompileMode := Low(TOTACompileMode) To High(TOTACompileMode) Do
-          Item.SubItems.Add(astrBoolean[Config.FCompileMode[eCompileMode]]);
+          Item.SubItems.Add(astrBuildType[Config.FCompileMode[eCompileMode]]);
         If Item.Caption = strSelected Then
           item.Selected := True;
       End;
@@ -702,7 +727,7 @@ Begin
     FinaliseCompileModes(ProjectOps);
     ProjectOps.CopyVerInfo := edtVersionInfo.Text;
     ProjectOps.ResExtExc := edtResExts.Text;
-    ProjectOps.IncITHVerInfo := chkEnabled.Checked;
+    ProjectOps.EnableVersionInfo := chkEnabled.Checked;
     ProjectOps.IncResInProj := chkIncludeInProject.Checked;
     ProjectOps.CompileRes := chkCompileWithBRCC32.Checked;
     ProjectOps.Major := upMajor.Position;

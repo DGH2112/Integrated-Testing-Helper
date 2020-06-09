@@ -49,7 +49,7 @@ object frameProjectOptions: TframeProjectOptions
     Height = 454
     Align = alClient
     Caption = 'Version Info'
-    TabOrder = 2
+    TabOrder = 4
     object vleVersionInfo: TValueListEditor
       AlignWithMargins = True
       Left = 5
@@ -440,7 +440,7 @@ object frameProjectOptions: TframeProjectOptions
     Height = 17
     Align = alTop
     Caption = '&Enabled ITHelper Version Control'
-    TabOrder = 1
+    TabOrder = 3
     OnClick = chkEnabledClick
   end
   object gpnlCopyVerInfo: TGridPanel
@@ -481,7 +481,7 @@ object frameProjectOptions: TframeProjectOptions
       item
         Value = 100.000000000000000000
       end>
-    TabOrder = 3
+    TabOrder = 2
     object lblVersionInfo: TLabel
       AlignWithMargins = True
       Left = 3
@@ -554,7 +554,7 @@ object frameProjectOptions: TframeProjectOptions
     HideSelection = False
     ReadOnly = True
     RowSelect = True
-    TabOrder = 4
+    TabOrder = 1
     ViewStyle = vsReport
     OnCustomDrawSubItem = lvIncrementOnCompileModeCustomDrawSubItem
     OnMouseUp = lvIncrementOnCompileModeMouseUp

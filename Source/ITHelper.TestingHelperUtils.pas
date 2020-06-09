@@ -2,7 +2,7 @@
 
   This module contains often used code for use through out this application.
 
-  @Version 1.045
+  @Version 1.050
   @Author  David Hoyle
   @Date    05 Jun 2020
 
@@ -451,6 +451,7 @@ End;
 
   @note    You should always keep a reference to the Main menu item you create so you can remove you 
            menus from the IDE.
+  @nometric LongParameterList Toxicity
 
   @param   strName       as a String as a constant
   @param   strCaption    as a String as a constant

@@ -1,17 +1,17 @@
 (**
-  
+
   This module contains a class which implements the IITHProjectOptions interface for providing
   project options.
 
   @Author  David Hoyle
-  @Version 1.001
-  @Date    05 Jun 2020
-  
+  @Version 1.369
+  @Date    09 Jun 2020
+
   @license
 
     Integrated Testing helper is a RAD Studio plug-in for running pre and post
     build processes.
-    
+
     Copyright (C) 2020  David Hoyle (https://github.com/DGH2112/Integrated-Testing-Helper)
 
     This program is free software: you can redistribute it and/or modify
@@ -51,9 +51,9 @@ Type
   {$IFDEF D2010} Strict {$ENDIF} Protected
     Function  GetResExtExc: String;
     Function  GetIncOnCompile(Const CompileMode : TOTACompileMode;
-      Const strConfigName : String): Boolean;
+      Const strConfigName : String): TITHIncrementBuildType;
     Function  GetCopyVerInfo: String;
-    Function  GetIncITHVerInfo: Boolean;
+    Function  GetEnableVersionInfo: Boolean;
     Function  GetMajor: Integer;
     Function  GetMinor: Integer;
     Function  GetRelease: Integer;
@@ -73,9 +73,9 @@ Type
     Function  GetSaveModifiedFiles: Boolean;
     Procedure SetResExtExc(Const strValue: String);
     Procedure SetIncOnCompile(Const CompileMode : TOTACompileMode; Const strConfigName : String;
-      Const boolValue: Boolean);
+      Const eValue: TITHIncrementBuildType);
     Procedure SetCopyVerInfo(Const strValue: String);
-    Procedure SetIncITHVerInfo(Const boolValue: Boolean);
+    Procedure SetEnableVersionInfo(Const boolValue: Boolean);
     Procedure SetMajor(Const iValue: Integer);
     Procedure SetMinor(Const iValue: Integer);
     Procedure SetRelease(Const iValue: Integer);
@@ -310,6 +310,22 @@ End;
 
 (**
 
+  This is a getter method for the Enable Version Info property.
+
+  @precon  None.
+  @postcon Returns whether version information is enabled for the project.
+
+  @return  a Boolean
+
+**)
+Function TITHProjectOptions.GetEnableVersionInfo: Boolean;
+
+Begin
+  Result := FINIFile.ReadBool(strSetupSection, strEnabledVersionInfoKey, False);
+End;
+
+(**
+
   This is a getter method for the EnableZipping property.
 
   @precon  None.
@@ -343,23 +359,6 @@ End;
 
 (**
 
-  This is a getter method for the IncITHVerInfo property.
-
-  @precon  None.
-  @postcon Returns whether ITHelpers version information should be included in the project
-           executable.
-
-  @return  a Boolean
-
-**)
-Function TITHProjectOptions.GetIncITHVerInfo: Boolean;
-
-Begin
-  Result := FINIFile.ReadBool(strSetupSection, strEnabledVersionInfoKey, False);
-End;
-
-(**
-
   This is a getter method for the IncOnCompile property.
 
   @precon  None.
@@ -367,32 +366,35 @@ End;
 
   @param   CompileMode   as a TOTACompileMode as a constant
   @param   strConfigName as a String as a constant
-  @return  a Boolean
+  @return  a TITHIncrementBuildType
 
 **)
 Function TITHProjectOptions.GetIncOnCompile(Const CompileMode : TOTACompileMode;
-  Const strConfigName : String): Boolean;
+  Const strConfigName : String): TITHIncrementBuildType;
 
 Const
   strOldIncBuildKey = 'IncBuild';
 
 Begin
+  Result := ibtNone;
   // Load old value for Make and Build so settings are not lost
   Case CompileMode Of
-    cmOTAMake..cmOTABuild: Result := FINIFile.ReadBool(strSetupSection, strOldIncBuildKey, False);
+    cmOTAMake..cmOTABuild:
+      If FINIFile.ReadBool(strSetupSection, strOldIncBuildKey, False) Then
+        Result := ibtAfter;
   Else
-    Result := False;
+    Result := ibtNone;
   End;
   // Load new value
-  Result := FINIFile.ReadBool(
+  Result := TITHIncrementBuildType(Byte(FINIFile.ReadInteger(
     strSetupSection,
     Format(
       strIncBuildKey, [
         astrCompileMode[CompileMode],
         strConfigName
       ]),
-    Result
-  );
+    Integer(Result)
+  )));
 End;
 
 (**
@@ -546,7 +548,7 @@ Const
   strVerInfo =
     'CompanyName='#13#10 +
     'FileDescription='#13#10 +
-    'FileVersion=%d.%d.%d.%d'#13#10 + 
+    'FileVersion=%d.%d.%d.%d'#13#10 +
     'InternalName='#13#10 +
     'LegalCopyright='#13#10 +
     'LegalTrademarks='#13#10 +
@@ -554,7 +556,7 @@ Const
     'ProductName='#13#10 +
     'ProductVersion=%d.%d'#13#10 +
     'Comments=';
-  
+
 Var
   sl: TStringList;
   i : Integer;
@@ -701,6 +703,22 @@ End;
 
 (**
 
+  This is a setter method for the Enable Version Info property.
+
+  @precon  None.
+  @postcon Sets whether the version infromation is enabled for the project.
+
+  @param   boolValue as a Boolean as a constant
+
+**)
+Procedure TITHProjectOptions.SetEnableVersionInfo(Const boolValue: Boolean);
+
+Begin
+  FINIFile.WriteBool(strSetupSection, strEnabledVersionInfoKey, boolValue);
+  FModified := True;
+End;
+(**
+
   This is a setter method for the EnableZipping property.
 
   @precon  None.
@@ -709,6 +727,7 @@ End;
   @param   boolValue as a Boolean as a constant
 
 **)
+
 Procedure TITHProjectOptions.SetEnableZipping(Const boolValue: Boolean);
 
 Begin
@@ -736,23 +755,6 @@ End;
 
 (**
 
-  This is a setter method for the IncITHVerinfo property.
-
-  @precon  None.
-  @postcon Sets whether version information should be included in the executable.
-
-  @param   boolValue as a Boolean as a constant
-
-**)
-Procedure TITHProjectOptions.SetIncITHVerInfo(Const boolValue: Boolean);
-
-Begin
-  FINIFile.WriteBool(strSetupSection, strEnabledVersionInfoKey, boolValue);
-  FModified := True;
-End;
-
-(**
-
   This is a setter method for the IncOnCompile property.
 
   @precon  None.
@@ -760,21 +762,21 @@ End;
 
   @param   CompileMode   as a TOTACompileMode as a constant
   @param   strConfigName as a String as a constant
-  @param   boolValue     as a Boolean as a constant
+  @param   eValue        as a TITHIncrementBuildType as a constant
 
 **)
 Procedure TITHProjectOptions.SetIncOnCompile(Const CompileMode : TOTACompileMode;
-  Const strConfigName : String; Const boolValue: Boolean);
+  Const strConfigName : String; Const eValue: TITHIncrementBuildType);
 
 Begin
-  FINIFile.WriteBool(
+  FINIFile.WriteInteger(
     strSetupSection,
     Format(
       strIncBuildKey, [
         astrCompileMode[CompileMode],
         strConfigName
       ]),
-    boolValue
+    Integer(eValue)
   );
   FModified := True;
 End;
@@ -1017,4 +1019,3 @@ Begin
 End;
 
 End.
-

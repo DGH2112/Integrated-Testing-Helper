@@ -99,7 +99,7 @@ object frmITHProjectOpsDlg: TfrmITHProjectOpsDlg
     Caption = 'Cancel'
     DoubleBuffered = True
     ImageIndex = 0
-    ImageMargins.Left = 5
+    ImageMargins.Right = 5
     Images = ilButtons
     ModalResult = 2
     ParentDoubleBuffered = False
