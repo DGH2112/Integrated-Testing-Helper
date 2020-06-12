@@ -3,8 +3,8 @@
   This module defines a class which represents a form for entering a path and
   wildcards for additional files to be included in the zipping process.
 
-  @Version 1.018
-  @Date    05 Jun 2020
+  @Version 1.019
+  @Date    12 Jun 2020
   @Author  David Hoyle
 
   @license
@@ -44,7 +44,7 @@ Uses
   Dialogs,
   Buttons,
   StdCtrls,
-  ToolsAPI, System.ImageList, Vcl.ImgList;
+  ToolsAPI;
 
 Type
   (** This is a class to represents the form interface. **)

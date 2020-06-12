@@ -10,7 +10,7 @@ CompileWithBRCC32=0
 MajorVer=2
 MinorVer=0
 ReleaseVer=0
-BuildVer=1984
+BuildVer=1988
 ResourceName=ITHelperVersionInfo
 IncBuild.Make.Base=0
 IncBuild.Build.Base=0
@@ -39,7 +39,7 @@ ExclusionFiles=
 [VersionInfo]
 CompanyName=Season's Fall Music
 FileDescription=Integrated Testing Helper for Embarcadero RAD Studio
-FileVersion=2.0.0.1984
+FileVersion=2.0.0.1988
 InternalName=ITHelper
 LegalCopyright=Season's Fall Music
 LegalTrademarks=Season's Fall Music

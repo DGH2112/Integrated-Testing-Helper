@@ -4,8 +4,8 @@
   the active project can be edited.
 
   @Author  David Hoyle
-  @Version 1.312
-  @Date    09 Jun 2020
+  @Version 1.313
+  @Date    12 Jun 2020
 
   @license
 
@@ -53,7 +53,7 @@ Uses
   ComCtrls,
   ITHelper.ProjectOptionsFrame,
   ITHelper.ExternalToolsFrame,
-  ITHelper.ZIPFrame, System.ImageList, Vcl.ImgList;
+  ITHelper.ZIPFrame;
 
 Type
   (** An enumerate to define the page to display on opening. **)

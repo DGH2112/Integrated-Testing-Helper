@@ -4,8 +4,8 @@
   compilation events can be handled.
 
   @Author  David Hoyle.
-  @Date    09 Jun 2020
-  @Version 1.069
+  @Date    12 Jun 2020
+  @Version 1.078
 
   @license
 
@@ -1263,17 +1263,14 @@ Const
   strBuild = 'Build';
 
 Begin
-  If Not ProjectOps.IncITHVerInfo Then
-    Begin
-      If Project.ProjectOptions.Values[strMajorVersion] <> recVersionInfo.FMajor Then
-        Project.ProjectOptions.Values[strMajorVersion] := recVersionInfo.FMajor;
-      If Project.ProjectOptions.Values[strMinorVersion] <> recVersionInfo.FMinor Then
-        Project.ProjectOptions.Values[strMinorVersion] := recVersionInfo.FMinor;
-      If Project.ProjectOptions.Values[strRelease] <> recVersionInfo.FBugfix Then
-        Project.ProjectOptions.Values[strRelease] := recVersionInfo.FBugfix;
-      If Project.ProjectOptions.Values[strBuild] <> recVersionInfo.FBuild Then
-        Project.ProjectOptions.Values[strBuild] := recVersionInfo.FBuild;
-    End;
+  If Project.ProjectOptions.Values[strMajorVersion] <> recVersionInfo.FMajor Then
+    Project.ProjectOptions.Values[strMajorVersion] := recVersionInfo.FMajor;
+  If Project.ProjectOptions.Values[strMinorVersion] <> recVersionInfo.FMinor Then
+    Project.ProjectOptions.Values[strMinorVersion] := recVersionInfo.FMinor;
+  If Project.ProjectOptions.Values[strRelease] <> recVersionInfo.FBugfix Then
+    Project.ProjectOptions.Values[strRelease] := recVersionInfo.FBugfix;
+  If Project.ProjectOptions.Values[strBuild] <> recVersionInfo.FBuild Then
+    Project.ProjectOptions.Values[strBuild] := recVersionInfo.FBuild;
 End;
 {$ENDIF}
 

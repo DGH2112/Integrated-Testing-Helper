@@ -3,8 +3,8 @@
   This module contains a frame for displaying the external tools to be run before or after compilation.
 
   @Author  David Hoyle
-  @Version 1.007
-  @Date    05 Jun 2020
+  @Version 1.008
+  @Date    12 Jun 2020
   
   @license
 
@@ -48,7 +48,7 @@ Uses
   ToolsAPI,
   ITHelper.Types,
   ITHelper.Interfaces,
-  ITHelper.ExternalProcessInfo, System.ImageList;
+  ITHelper.ExternalProcessInfo;
 
 Type
   (** This is a frame for representing the before or after compile tools to be run. **)

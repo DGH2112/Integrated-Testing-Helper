@@ -3,8 +3,8 @@
   This module contains a frame to contain the zipping configuration information.
 
   @Author  David Hoyle
-  @Version 1.009
-  @Date    05 Jun 2020
+  @Version 1.010
+  @Date    12 Jun 2020
   
   @license
 
@@ -44,7 +44,7 @@ Uses
   Buttons,
   ToolsAPI,
   ITHelper.Types,
-  ITHelper.Interfaces, System.ImageList, Vcl.ImgList;
+  ITHelper.Interfaces;
 
 Type
   (** A frame to represent the zipping configuration. **)
