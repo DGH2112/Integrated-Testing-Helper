@@ -4,8 +4,8 @@
   in the project options dialgoue.
 
   @Author  David Hoyle
-  @Version 1.410
-  @Date    09 Jun 2020
+  @Version 1.411
+  @Date    12 Jun 2020
   
   @license
 
@@ -623,7 +623,7 @@ Begin
           If iConfig > -1 Then
             Begin
               R := FCompileModes[iConfig];
-              Case eCompileMode Of
+              Case eCompileMode Of //FI:W535
                 cmfMake:     IncrementBuildType(R.FCompileMode[cmOTAMake]);
                 cmfBuild:    IncrementBuildType(R.FCompileMode[cmOTABuild]);
                 cmfCheck:    IncrementBuildType(R.FCompileMode[cmOTACheck]);

@@ -4,8 +4,8 @@
   the IDE project for zipping into an archive.
 
   @Author  David Hoyle
-  @Version 1.001
-  @Date    05 Jun 2020
+  @Version 1.002
+  @Date    12 Jun 2020
 
   @license
 
@@ -371,7 +371,7 @@ End;
   @param   strBasePath as a String as a constant
 
 **)
-Procedure TITHResponseFile.CheckResponseFilesForIncludeAndRes(Const strProject, strBasePath: String);
+Procedure TITHResponseFile.CheckResponseFilesForIncludeAndRes(Const strProject, strBasePath: String); //FI:C103
 
 Const
   strINCLUDEPattern = '{$INCLUDE';
@@ -501,7 +501,7 @@ Var
   iPos: Integer;
   slTokens: TStringList;
 
-Begin
+Begin //FI:C101
   sl := TStringList.Create;
   Try
     If FileExists(strFileName) Then

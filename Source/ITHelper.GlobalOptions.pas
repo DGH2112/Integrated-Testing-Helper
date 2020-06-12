@@ -3,8 +3,8 @@
   This module contains a class to manage the global options of the application.
 
   @Author  David Hoyle
-  @Version 1.001
-  @Date    05 Jun 2020
+  @Version 1.002
+  @Date    12 Jun 2020
 
   @license
 
@@ -449,7 +449,7 @@ End;
   @postcon Loads the applications global settings from the main INI file.
 
 **)
-Procedure TITHGlobalOptions.LoadSettings;
+Procedure TITHGlobalOptions.LoadSettings; //FI:C103
 
 Const
   strDefaultZipEXE = 'C:\Program Files\7-Zip\7Z.EXE';
@@ -469,7 +469,7 @@ Var
   boolNeedsSaving : Boolean;
   iniFile : TMemIniFile;
 
-Begin
+Begin //FI:C101
   boolNeedsSaving := False;
   iniFile := TMemIniFile.Create(FINIFileName);
   Try
@@ -547,7 +547,7 @@ End;
   @return  an IITHProjectOptions
 
 **)
-Function TITHGlobalOptions.ProjectOptions(Const Project: IOTAProject): IITHProjectOptions;
+Function TITHGlobalOptions.ProjectOptions(Const Project: IOTAProject): IITHProjectOptions; //FI:C103
 
 Const
   strSections: Array [1 .. 5] Of String = (strSetupSection, 'Pre-Compilation', 'Post-Compilation',

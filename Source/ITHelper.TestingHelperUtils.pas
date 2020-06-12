@@ -2,9 +2,9 @@
 
   This module contains often used code for use through out this application.
 
-  @Version 1.050
+  @Version 1.063
   @Author  David Hoyle
-  @Date    05 Jun 2020
+  @Date    12 Jun 2020
 
   @license
 
@@ -465,9 +465,13 @@ End;
   @return  a TMenuItem
 
 **)
-Class Function TITHToolsAPIFunctions.CreateMenuItem(Const strName, strCaption, strParentMenu : String;
-  Const ClickProc, UpdateProc : TNotifyEvent; Const boolBefore, boolChildMenu : Boolean;
-  Const strShortCut : String; Const iMaskColour : TColor = clLime) : TMenuItem;
+Class Function TITHToolsAPIFunctions.CreateMenuItem( //FI:C102
+                 Const strName, strCaption, strParentMenu : String;
+                 Const ClickProc, UpdateProc : TNotifyEvent;
+                 Const boolBefore, boolChildMenu : Boolean;
+                 Const strShortCut : String;
+                 Const iMaskColour : TColor = clLime
+               ) : TMenuItem;
 
 Const
   strActionNameSuffix = 'Action';
@@ -482,7 +486,7 @@ Var
   //{$ENDIF}
   iImageIndex : Integer;
 
-begin
+begin //FI:C101
   Result := Nil;
   If Supports(BorlandIDEServices, INTAServices, NS) Then
     Begin

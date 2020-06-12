@@ -4,8 +4,8 @@
   tracked. Used to rename to .ITHelper support file.
 
   @Author  David Hoyle.
-  @Version 1.001
-  @Date    05 Jun 2020
+  @Version 1.010
+  @Date    12 Jun 2020
 
   @license
 
@@ -175,7 +175,7 @@ End;
 **)
 Procedure TITHProjectNotifier.AfterSave;
 
-Begin
+Begin //FI:W519
   {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'AfterSave', tmoTiming);{$ENDIF}
 End;
 
@@ -211,7 +211,7 @@ End;
   @param   NewFileName as a String as a constant
 
 **)
-Procedure TITHProjectNotifier.BeforeRename(Const OldFileName, NewFileName: String);
+Procedure TITHProjectNotifier.BeforeRename(Const OldFileName, NewFileName: String); //FI:O804
 
 Begin
   {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'BeforeRename', tmoTiming);{$ENDIF}
@@ -230,7 +230,7 @@ End;
 **)
 Procedure TITHProjectNotifier.BeforeSave;
 
-Begin
+Begin //FI:W519
   {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'BeforeSave', tmoTiming);{$ENDIF}
 End;
 
@@ -298,7 +298,7 @@ End;
 **)
 Procedure TITHProjectNotifier.Destroyed;
 
-Begin
+Begin //FI:W519
   {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Destroyed', tmoTiming);{$ENDIF}
 End;
 
@@ -355,7 +355,7 @@ End;
 **)
 Procedure TITHProjectNotifier.Modified;
 
-Begin
+Begin //FI:W519
   {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Modified', tmoTiming);{$ENDIF}
 End;
 
@@ -374,7 +374,7 @@ End;
 **)
 Procedure TITHProjectNotifier.ModuleAdded(Const AFileName: String);
 
-Begin
+Begin //FI:W519
   {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'ModuleAdded', tmoTiming);{$ENDIF}
 End;
 
@@ -393,7 +393,7 @@ End;
 **)
 Procedure TITHProjectNotifier.ModuleRemoved(Const AFileName: String);
 
-Begin
+Begin //FI:W519
   {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'ModuleRemoved', tmoTiming);{$ENDIF}
 End;
 
@@ -412,7 +412,7 @@ End;
 **)
 Procedure TITHProjectNotifier.ModuleRenamed(Const NewName: String);
 
-Begin
+Begin //FI:W519
   {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'ModuleRenamed', tmoTiming);{$ENDIF}
 End;
 
@@ -432,7 +432,7 @@ End;
 **)
 Procedure TITHProjectNotifier.ModuleRenamed(Const AOldFileName, ANewFileName: String);
 
-Begin
+Begin //FI:W519
   {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'ModuleRenamed', tmoTiming);{$ENDIF}
   //: @note Doesn`t get called on renaming a Project!!!
 End;
@@ -508,7 +508,7 @@ End;
 **)
 Procedure TITHProjectNotifier.SetSaveFileName(Const FileName: String);
 
-Begin
+Begin //FI:W519
   {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'SetSaveFileName', tmoTiming);{$ENDIF}
 End;
 

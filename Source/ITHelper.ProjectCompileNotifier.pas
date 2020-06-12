@@ -4,8 +4,8 @@
   only way that the actual compile config asnd platform can be found out for Build Groups.
 
   @Author  David Hoyle
-  @Version 1.001
-  @Date    05 Jun 2020
+  @Version 1.002
+  @Date    12 Jun 2020
   
   @license
 
@@ -77,7 +77,7 @@ Uses
 **)
 Procedure TITHProjectCompileNotifier.AfterCompile(Var CompileInfo: TOTAProjectCompileInfo);
 
-Begin
+Begin //FI:W519
 End;
 
 (**
