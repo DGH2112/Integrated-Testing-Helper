@@ -4,8 +4,8 @@
   are to be enabled.
 
   @Author  David Hoyle
-  @Version 1.025
-  @Date    05 Jun 2020
+  @Version 1.026
+  @Date    12 Jun 2020
 
   @license
 
@@ -48,7 +48,7 @@ Uses
   StdCtrls,
   Buttons,
   ITHelper.GlobalOptions, 
-  ITHelper.Types, System.ImageList, Vcl.ImgList;
+  ITHelper.Types;
 
 {$INCLUDE 'CompilerDefinitions.inc'}
 

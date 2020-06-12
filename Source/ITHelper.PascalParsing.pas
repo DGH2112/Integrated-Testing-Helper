@@ -3,8 +3,8 @@
   This module contains code for tokenizing object pascal code.
 
   @Author  David Hoyle
-  @Version 1.001
-  @Date    05 Jun 2020
+  @Version 1.002
+  @Date    12 Jun 2020
   
   @license
 
@@ -80,7 +80,7 @@ Var
   iTokenLen: Integer;
   i: Integer;
 
-Begin
+Begin //FI:C101
   Result := TStringList.Create;
   BlockType := btNoBlock;
   strToken := '';

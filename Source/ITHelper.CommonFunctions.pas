@@ -3,8 +3,8 @@
   This module contains common functions (non-OTA) for use throughout the application.
 
   @Author  David Hoyle
-  @Version 1.001
-  @Date    05 Jun 2020
+  @Version 1.002
+  @Date    12 Jun 2020
   
   @license
 
@@ -198,7 +198,7 @@ End;
   @return  an Integer
 
 **)
-Function  DGHCreateProcess(Const Process : TITHProcessInfo;
+Function  DGHCreateProcess(Const Process : TITHProcessInfo;  //FI:C103
   Const ProcessMsgHandler : TITHProcessMsgHandler; Const IdleHandler : TITHIdleHandler) : Integer;
 
 Type
@@ -285,7 +285,7 @@ Var
   ProcessInfo : TProcessInformation;
   iExitCode : Cardinal;
 
-Begin
+Begin //FI:C101
   Result := 0;
   boolAbort := False;
   FillChar(SecurityAttrib, SizeOf(SecurityAttrib), 0);

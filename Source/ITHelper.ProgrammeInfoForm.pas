@@ -3,9 +3,9 @@
   This modules contains a form for specifying the EXE, Params and Working
   Directory for external tools.
 
-  @Version 1.025
+  @Version 1.026
   @Author  David Hoyle
-  @Date    05 Jun 2020
+  @Date    12 Jun 2020
 
   @license
 
@@ -44,7 +44,7 @@ Uses
   Dialogs,
   Buttons,
   StdCtrls,
-  ExtCtrls, System.ImageList, Vcl.ImgList;
+  ExtCtrls;
 
 Type
   (** A class to represent the form. **)

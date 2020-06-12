@@ -1,13 +1,12 @@
- Integrated Testing Helper
-===========================
+# Integrated Testing Helper
 
-Author:   David Hoyle
+Author:   David Hoyle (davidghoyle@gmail.com / [https://github.com/DGH2112](https://github.com/DGH2112))
 
 Version:  2.0 Beta
 
-Date:     21 Sep 2019
+Date:     12 Jun 2020
 
-Web Page: http://www.davidghoyle.co.uk/WordPress/?page_id=874
+Web Page: [http://www.davidghoyle.co.uk/WordPress/?page_id=874](http://www.davidghoyle.co.uk/WordPress/?page_id=874)
 
 ## Overview
 
