@@ -4,15 +4,15 @@
   are to be enabled.
 
   @Author  David Hoyle
-  @Version 1.0
-  @Date    21 Sep 2019
+  @Version 1.026
+  @Date    12 Jun 2020
 
   @license
 
     Integrated Testing helper is a RAD Studio plug-in for running pre and post
     build processes.
     
-    Copyright (C) 2019  David Hoyle (https://github.com/DGH2112/Integrated-Testing-Helper)
+    Copyright (C) 2020  David Hoyle (https://github.com/DGH2112/Integrated-Testing-Helper)
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -57,15 +57,16 @@ Type
   TfrmITHEnabledOptions = Class(TForm)
     chkEnable: TCheckBox;
     gbxOptions: TGroupBox;
-    btnOK: TBitBtn;
-    btnCancel: TBitBtn;
     chkBefore: TCheckBox;
     chkAfter: TCheckBox;
     chkZip: TCheckBox;
     chkIncBuild: TCheckBox;
     chkBuildRes: TCheckBox;
     chkCopyVerInfo: TCheckBox;
-    btnHelp: TBitBtn;
+    btnOK: TButton;
+    btnCancel: TButton;
+    btnHelp: TButton;
+    ilButtons: TImageList;
     Procedure EnabledClick(Sender: TObject);
     Procedure btnHelpClick(Sender: TObject);
   Private
@@ -81,7 +82,6 @@ Implementation
 
 Uses
   ITHelper.TestingHelperUtils;
-{ TForm2 }
 
 (**
 
@@ -184,6 +184,7 @@ Begin
   Result := False;
   frm := TfrmITHEnabledOptions.Create(Nil);
   Try
+    TITHToolsAPIFunctions.RegisterFormClassForTheming(TfrmITHEnabledOptions, frm);
     frm.Caption           := strProjectGroup + strOptions;
     frm.chkEnable.Checked := eoGroupEnabled In Options;
     frm.EnabledClick(Nil);

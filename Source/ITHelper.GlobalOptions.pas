@@ -3,15 +3,15 @@
   This module contains a class to manage the global options of the application.
 
   @Author  David Hoyle
-  @Version 1.0
-  @Date    21 Sep 2019
+  @Version 1.002
+  @Date    12 Jun 2020
 
   @license
 
     Integrated Testing helper is a RAD Studio plug-in for running pre and post
     build processes.
     
-    Copyright (C) 2019  David Hoyle (https://github.com/DGH2112/Integrated-Testing-Helper)
+    Copyright (C) 2020  David Hoyle (https://github.com/DGH2112/Integrated-Testing-Helper)
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -449,12 +449,12 @@ End;
   @postcon Loads the applications global settings from the main INI file.
 
 **)
-Procedure TITHGlobalOptions.LoadSettings;
+Procedure TITHGlobalOptions.LoadSettings; //FI:C103
 
 Const
   strDefaultZipEXE = 'C:\Program Files\7-Zip\7Z.EXE';
   iDefaultClearMsgInterval = 30;
-  strDefaultZIPParamsKey = 'a "$ZIPFILE$" @"$RESPONSEFILE$"';
+  strDefaultZIPParamsKey = '-bb3 u "$ZIPFILE$" @"$RESPONSEFILE$"';
   strDefaultFontName = 'Tahoma';
   strDefaultFontColour = 'clBlack';
 
@@ -469,7 +469,7 @@ Var
   boolNeedsSaving : Boolean;
   iniFile : TMemIniFile;
 
-Begin
+Begin //FI:C101
   boolNeedsSaving := False;
   iniFile := TMemIniFile.Create(FINIFileName);
   Try
@@ -547,7 +547,7 @@ End;
   @return  an IITHProjectOptions
 
 **)
-Function TITHGlobalOptions.ProjectOptions(Const Project: IOTAProject): IITHProjectOptions;
+Function TITHGlobalOptions.ProjectOptions(Const Project: IOTAProject): IITHProjectOptions; //FI:C103
 
 Const
   strSections: Array [1 .. 5] Of String = (strSetupSection, 'Pre-Compilation', 'Post-Compilation',

@@ -2,14 +2,22 @@
 
   THIS IS A STUB FOR TESTING THE OPEN TOOLS API.
 
-  //: @nodocumentation @nometrics Disabled metrics @nochecks Disbale checks
+  DUnit test for the Integrated Testing Helper.
+
+  @Version 1.012
+  @Author  David Hoyle
+  @Date    05 Jun 2020
+
+  @nodocumentation
+  @nometrics Disabled metrics
+  @nochecks Disbale checks
 
   @license
 
     Integrated Testing helper is a RAD Studio plug-in for running pre and post
     build processes.
-    
-    Copyright (C) 2019  David Hoyle (https://github.com/DGH2112/Integrated-Testing-Helper)
+
+    Copyright (C) 2020  David Hoyle (https://github.com/DGH2112/Integrated-Testing-Helper)
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -49,37 +57,57 @@ Type
   ['{46A12208-E8AE-44C4-BA13-08110B0DD23C}']
   End;
 
+  IOTAProjectOptions = Interface
+  ['{0FC4C69A-3BE8-4ADF-9F7A-4E5F5610A6D2}']
+  End;
+
   IOTAProject = Interface(IOTAModule)
   ['{FCF17BAF-DF97-440F-A66B-1915515A0763}']
-    Function GetFileName : String;
-    Function GetModuleFileCount : Integer;
-    Function GetModuleFileEditors(iIndex : Integer) : IOTAEditor;
-    Property FileName : String Read GetFileName;
-    Property ModuleFileCount : Integer Read GetModuleFileCount;
-    Property ModuleFileEditors[iIndex : Integer] : IOTAEditor Read GetModuleFileEditors;
+    Function  GetFileName : String;
+    Function  GetModuleFileCount : Integer;
+    Function  GetModuleFileEditors(iIndex : Integer) : IOTAEditor;
+    Function  GetProjectOptions : IOTAProjectOptions;
+    Property  FileName : String Read GetFileName;
+    Property  ModuleFileCount : Integer Read GetModuleFileCount;
+    Property  ModuleFileEditors[iIndex : Integer] : IOTAEditor Read GetModuleFileEditors;
+    Property  ProjectOptions : IOTAProjectOptions Read GetProjectOptions;
   End;
 
   IOTAModuleServices = Interface
   ['{70643581-3591-4282-963E-6254344EE724}']
     Function  GetModuleCount : Integer;
     Function  GetModules(iIndex : Integer) : IOTAModule;
-    Property ModuleCount : Integer Read GetModuleCount;
-    Property Modules[iIndex : Integer] : IOTAModule Read GetModules;
+    Property  ModuleCount : Integer Read GetModuleCount;
+    Property  Modules[iIndex : Integer] : IOTAModule Read GetModules;
+  End;
+
+  IOTAProjectOptionsConfigurations = Interface
+  ['{F13D1130-0288-4228-AA50-0A3D08F2017D}']
+    Function  GetActiveConfigurationName : String;
+    Property  ActiveConfigurationName : String Read GetActiveConfigurationName;
+  End;
+
+  TProjectOptionsMock = Class(TInterfacedObject, IOTAProjectOptions, IOTAProjectOptionsConfigurations)
+  Public
+    Function GetActiveConfigurationName: string;
   End;
 
   TProjectStub = Class(TInterfacedObject, IOTAModule, IOTAProject)
-    Function GetFileName : String;
-    Function GetModuleFileCount: Integer;
-    Function GetModuleFileEditors(iIndex : Integer) : IOTAEditor;
+  Public
+    Function  GetFileName : String;
+    Function  GetModuleFileCount: Integer;
+    Function  GetModuleFileEditors(iIndex : Integer) : IOTAEditor;
+    Function  GetProjectOptions : IOTAProjectOptions;
   End;
 
   TProjectGroupStub = Class(TInterfacedObject, IOTAModule, IOTAProjectGroup)
-    Function GetFileName : String;
+  Public
+    Function  GetFileName : String;
   End;
 
   TINIHelper = Class Helper For TCustomINIFile
   Strict Private
-    Function GetText : String;
+    Function  GetText : String;
   Public
     Property Text : String Read GetText;
   End;
@@ -87,6 +115,12 @@ Type
   IBorlandIDEServices = Interface
   End;
 
+  TOTACompileMode = (cmOTAMake, cmOTABuild, cmOTACheck, cmOTAMakeUnit);
+  TOTACompileResult = (crOTAFailed, crOTASucceeded, crOTABackground);
+
+  TOTAProjectCompileInfo = Record
+  End;
+  
 Var
   BorlandIDEServices : IBorlandIDEServices;
 
@@ -155,6 +189,12 @@ Begin
   Result := Nil;
 End;
 
+Function TProjectStub.GetProjectOptions: IOTAProjectOptions;
+
+Begin
+  Result := TProjectOptionsMock.Create;
+End;
+
 { TProjectGroupStub }
 
 function TProjectGroupStub.GetFileName: String;
@@ -196,6 +236,14 @@ Begin
   Result := Nil;
   If iIndex = 0 Then
     Result := TProjectGroupStub.Create;
+End;
+
+{ TProjectOptionsMock }
+
+Function TProjectOptionsMock.GetActiveConfigurationName: String;
+
+Begin
+  Result := 'DEBUG';
 End;
 
 initialization

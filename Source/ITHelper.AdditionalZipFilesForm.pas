@@ -3,8 +3,8 @@
   This module defines a class which represents a form for entering a path and
   wildcards for additional files to be included in the zipping process.
 
-  @Version 1.0
-  @Date    21 Sep 2019
+  @Version 1.019
+  @Date    12 Jun 2020
   @Author  David Hoyle
 
   @license
@@ -12,7 +12,7 @@
     Integrated Testing helper is a RAD Studio plug-in for running pre and post
     build processes.
     
-    Copyright (C) 2019  David Hoyle (https://github.com/DGH2112/Integrated-Testing-Helper)
+    Copyright (C) 2020  David Hoyle (https://github.com/DGH2112/Integrated-Testing-Helper)
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -52,8 +52,9 @@ Type
     lblWildcard: TLabel;
     edtWildcard: TEdit;
     btnBrowse: TButton;
-    btnOK: TBitBtn;
-    btnCancel: TBitBtn;
+    btnOK: TButton;
+    btnCancel: TButton;
+    ilButtons: TImageList;
     Procedure btnBrowseClick(Sender: TObject);
     Procedure btnOKClick(Sender: TObject);
   Private
@@ -148,6 +149,7 @@ Begin
   Result := False;
   frm := TfrmITHAdditionalZipFiles.Create(Nil);
   Try
+    TITHToolsAPIFunctions.RegisterFormClassForTheming(TfrmITHAdditionalZipFiles, frm);
     frm.FProject := Project;
     frm.edtWildcard.Text := strWildcard;
     If frm.ShowModal = mrOK Then

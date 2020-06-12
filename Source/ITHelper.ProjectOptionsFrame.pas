@@ -4,15 +4,15 @@
   in the project options dialgoue.
 
   @Author  David Hoyle
-  @Version 1.0
-  @Date    21 Sep 2019
+  @Version 1.411
+  @Date    12 Jun 2020
   
   @license
 
     Integrated Testing helper is a RAD Studio plug-in for running pre and post
     build processes.
     
-    Copyright (C) 2019  David Hoyle (https://github.com/DGH2112/Integrated-Testing-Helper)
+    Copyright (C) 2020  David Hoyle (https://github.com/DGH2112/Integrated-Testing-Helper)
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -49,7 +49,9 @@ Uses
   Grids,
   ValEdit,
   StdCtrls,
+  ExtCtrls,
   ToolsAPI,
+  Generics.Collections,
   ITHelper.Types,
   ITHelper.Interfaces;
 
@@ -59,7 +61,6 @@ Type
     lblResExts: TLabel;
     lblVersionInfo: TLabel;
     btnOpenEXE: TButton;
-    chkIncrementBuildOnCompile: TCheckBox;
     edtResExts: TEdit;
     edtVersionInfo: TEdit;
     gbxVersionInfo: TGroupBox;
@@ -77,24 +78,49 @@ Type
     upRelease: TUpDown;
     edtBuild: TEdit;
     upBuild: TUpDown;
-    btnGetVersionInfo: TBitBtn;
     chkIncludeInProject: TCheckBox;
     chkCompileWithBRCC32: TCheckBox;
     edtResourceName: TEdit;
     chkEnabled: TCheckBox;
     dlgOpenEXE: TOpenDialog;
+    gpnlVerInfo: TGridPanel;
+    gpnlResource: TGridPanel;
+    gpnlCopyVerInfo: TGridPanel;
+    lvIncrementOnCompileMode: TListView;
+    lblIncrementOnCompileMode: TLabel;
+    btnGetVersionInfo: TButton;
     Procedure btnOpenEXEClick(Sender: TObject);
     Procedure chkEnabledClick(Sender: TObject);
     Procedure BuildChange(Sender: TObject; Button: TUDBtnType);
     Procedure btnGetVersionInfoClick(Sender: TObject);
+    procedure lvIncrementOnCompileModeCustomDrawSubItem(Sender: TCustomListView;
+        Item: TListItem; SubItem: Integer; State: TCustomDrawState; var
+        DefaultDraw: Boolean);
+    procedure lvIncrementOnCompileModeMouseUp(Sender: TObject; Button:
+        TMouseButton; Shift: TShiftState; X, Y: Integer);
+    procedure lvIncrementOnCompileModeResize(Sender: TObject);
+  Strict Private
+    Type
+      (** A record to describe the information store for the list of compile mode configuations. **)
+      TITHConfigCompileModes = Record
+        FConfigName  : String;
+        FCompileMode : Array[TOTACompileMode] Of TITHIncrementBuildType;
+      End;
+    (** An enumerate to define the columns of the increment on compile mode list view. **)
+    TITHCompileModeField = (cmfConfigName, cmfMake, cmfBuild, cmfCheck, cmfMakeUnit);
   Strict Private
     FProject : IOTAProject;
-  {$IFDEF D2010} Strict {$ENDIF} Protected
+    FCompileModes : TList<TITHConfigCompileModes>;
+  {$IFDEF D2010} Strict {$ENDIF D2010} Protected
     Procedure InitialiseOptions(Const GlobalOps: IITHGlobalOptions; Const Project: IOTAProject = Nil;
       Const DlgType : TITHDlgType = dtNA);
     Procedure SaveOptions(Const GlobalOps: IITHGlobalOptions; Const Project: IOTAProject = Nil;
       Const DlgType : TITHDlgType = dtNA);
     Function  IsValidated : Boolean;
+    Procedure InitialiseCompileModes(Const ProjectOps : IITHProjectOptions);
+    Procedure FinaliseCompileModes(Const ProjectOps : IITHProjectOptions);
+    Procedure PopulateIncOnCompileModes;
+    Function  FindConfig(Const strConfigName : String) : Integer;
   Public
     Constructor Create(AOwner : TComponent); Override;
     Destructor Destroy; Override;
@@ -282,6 +308,7 @@ Constructor TframeProjectOptions.Create(AOwner : TComponent);
 
 Begin
   Inherited Create(AOwner);
+  FCompileModes := TList<TITHConfigCompileModes>.Create;
   {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Create', tmoTiming);{$ENDIF}
 End;
 
@@ -297,7 +324,92 @@ Destructor TframeProjectOptions.Destroy;
 
 Begin
   {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Destroy', tmoTiming);{$ENDIF}
+  FCompileModes.Free;
   Inherited;
+End;
+
+(**
+
+  This method saves the increment on compile mode settings to the ITHelper INI file.
+
+  @precon  ProjectOps must be a valid instance.
+  @postcon The increment on compile mode settings are saved.
+
+  @param   ProjectOps as an IITHProjectOptions as a constant
+
+**)
+Procedure TframeProjectOptions.FinaliseCompileModes(Const ProjectOps: IITHProjectOptions);
+
+Var
+  iConfig: Integer;
+  R : TITHConfigCompileModes;
+  
+Begin
+  For iConfig := 0 To FCompileModes.Count - 1 Do
+    Begin
+      R := FCompileModes[iConfig];
+      ProjectOps.IncOnCompile[cmOTAMake, R.FConfigName] := R.FCompileMode[cmOTAMake];
+      ProjectOps.IncOnCompile[cmOTABuild, R.FConfigName] := R.FCompileMode[cmOTABuild];
+      ProjectOps.IncOnCompile[cmOTACheck, R.FConfigName] := R.FCompileMode[cmOTACheck];
+      ProjectOps.IncOnCompile[cmOTAMakeUnit, R.FConfigName] := R.FCompileMode[cmOTAMakeUnit];
+    End;
+End;
+
+(**
+
+  This method returns the index of the named configuration in the compile mode list.
+
+  @precon  None.
+  @postcon Returns the index of the named configuration else returns -1 if not found.
+
+  @param   strConfigName as a String as a constant
+  @return  an Integer
+
+**)
+Function TframeProjectOptions.FindConfig(Const strConfigName : String) : Integer;
+
+Var
+  iConfig : Integer;
+
+Begin
+  Result := -1;
+  For iConfig := 0 To FCompileModes.Count - 1 Do
+    If CompareText(FCompileModes[iConfig].FConfigName, strConfigName) = 0 Then
+      Begin
+        Result := iConfig;
+        Break;
+      End;
+End;
+
+(**
+
+  This method creates the list of increment on compile mode settings for each configuration.
+
+  @precon  ProjectOps must be a valid instances.
+  @postcon The list of compile modes for each configuration is created.
+
+  @param   ProjectOps as an IITHProjectOptions as a constant
+
+**)
+Procedure TframeProjectOptions.InitialiseCompileModes(Const ProjectOps: IITHProjectOptions);
+
+Var
+  POC : IOTAProjectOptionsConfigurations;
+  iConfig: Integer;
+  R : TITHConfigCompileModes;
+  
+Begin
+  If Supports(FProject.ProjectOptions, IOTAProjectOptionsConfigurations, POC) Then
+    For iConfig := 0 To POC.ConfigurationCount - 1 Do
+      Begin
+        R.FConfigName := POC.Configurations[iConfig].Name;
+        R.FCompileMode[cmOTAMake] := ProjectOps.IncOnCompile[cmOTAMake, R.FConfigName];
+        R.FCompileMode[cmOTABuild] := ProjectOps.IncOnCompile[cmOTABuild, R.FConfigName];
+        R.FCompileMode[cmOTACheck] := ProjectOps.IncOnCompile[cmOTACheck, R.FConfigName];
+        R.FCompileMode[cmOTAMakeUnit] := ProjectOps.IncOnCompile[cmOTAMakeUnit, R.FConfigName];
+        FCompileModes.Add(R);
+      End;
+  PopulateIncOnCompileModes;
 End;
 
 (**
@@ -321,27 +433,42 @@ Procedure TframeProjectOptions.InitialiseOptions(Const GlobalOps: IITHGlobalOpti
 
 Var
   ProjectOps: IITHProjectOptions;
+  {$IFDEF DXE102}
+  ITS : IOTAIDEThemingServices;
+  {$ENDIF DXE102}
 
 Begin
   FProject := Project;
   ProjectOps := GlobalOps.ProjectOptions(Project);
   Try
-    chkIncrementBuildOnCompile.Checked := ProjectOps.IncOnCompile;
-    edtVersionInfo.Text          := ProjectOps.CopyVerInfo;
-    edtResExts.Text              := ProjectOps.ResExtExc;
-    chkEnabled.Checked           := ProjectOps.IncITHVerInfo;
-    chkIncludeInProject.Checked  := ProjectOps.IncResInProj;
-    chkCompileWithBRCC32.Checked := ProjectOps.CompileRes;
-    upMajor.Position             := ProjectOps.Major;
-    upMinor.Position             := ProjectOps.Minor;
-    upRelease.Position           := ProjectOps.Release;
-    upBuild.Position             := ProjectOps.Build;
-    edtResourceName.Text         := ProjectOps.ResourceName;
+    InitialiseCompileModes(ProjectOps);
+    edtVersionInfo.Text                := ProjectOps.CopyVerInfo;
+    edtResExts.Text                    := ProjectOps.ResExtExc;
+    chkEnabled.Checked                 := ProjectOps.EnableVersionInfo;
+    chkIncludeInProject.Checked        := ProjectOps.IncResInProj;
+    chkCompileWithBRCC32.Checked       := ProjectOps.CompileRes;
+    upMajor.Position                   := ProjectOps.Major;
+    upMinor.Position                   := ProjectOps.Minor;
+    upRelease.Position                 := ProjectOps.Release;
+    upBuild.Position                   := ProjectOps.Build;
+    edtResourceName.Text               := ProjectOps.ResourceName;
     vleVersionInfo.Strings.Assign(ProjectOps.VerInfo);
   Finally
     ProjectOps := Nil;
   End;
   chkEnabledClick(Nil);
+  {$IFDEF DXE102}
+  If Supports(BorlandIDEServices, IOTAIDEThemingServices, ITS) And ITS.IDEThemingEnabled Then
+    Begin 
+      vleVersionInfo.Ctl3D := False;
+      vleVersionInfo.DrawingStyle := gdsGradient;
+      vleVersionInfo.FixedColor := ITS.StyleServices.GetSystemColor(clBtnFace);
+      vleVersionInfo.Color := ITS.StyleServices.GetSystemColor(clWindow);
+      vleVersionInfo.GradientStartColor := ITS.StyleServices.GetSystemColor(clBtnFace);
+      vleVersionInfo.GradientEndColor := ITS.StyleServices.GetSystemColor(clBtnFace);
+      vleVersionInfo.Font.Color := ITS.StyleServices.GetSystemColor(clWindowText);
+    End;
+  {$ENDIF DXE102}
 End;
 
 (**
@@ -358,6 +485,220 @@ Function TframeProjectOptions.IsValidated: Boolean;
 
 Begin
   Result := True;
+End;
+
+(**
+
+  This is an on custom draw sub item event handler for the conpile mode list view.
+
+  @precon  None.
+  @postcon Colours No red and Yes green.
+
+  @param   Sender      as a TCustomListView
+  @param   Item        as a TListItem
+  @param   SubItem     as an Integer
+  @param   State       as a TCustomDrawState
+  @param   DefaultDraw as a Boolean as a reference
+
+**)
+Procedure TframeProjectOptions.lvIncrementOnCompileModeCustomDrawSubItem(Sender: TCustomListView;
+  Item: TListItem; SubItem: Integer; State: TCustomDrawState; Var DefaultDraw: Boolean);
+
+Const
+  iLightRed = $8080FF;
+  iLightGreen = $80FF80;
+  iLightBlue = $FFC080;
+
+Var
+  iConfig: Integer;
+  {$IFDEF DXE102}
+  ITS : IOTAIDEThemingServices;
+  {$ENDIF DXE102}
+
+Begin
+  Sender.Canvas.Font.Color := clWindowText;
+  {$IFDEF DXE102}
+  If Supports(BorlandIDEServices, IOTAIDEThemingServices, ITS) And ITS.IDEThemingEnabled Then
+    If cdsSelected In State Then
+      Sender.Canvas.Font.Color := ITS.StyleServices.GetSystemColor(clHighlightText)
+    Else
+      Sender.Canvas.Font.Color := ITS.StyleServices.GetSystemColor(clWindowText);
+  If Not Item.Selected Then
+    Sender.Canvas.Font.Color := clBlack;
+  {$ENDIF DXE102}
+  Sender.Canvas.Brush.Color := iLightRed;
+  iConfig := FindConfig(Item.Caption);
+  If iConfig > -1 Then
+    Case FCompileModes[iConfig].FCompileMode[TOTACompileMode(Byte(Pred(SubItem)))] Of
+      ibtBefore: Sender.Canvas.Brush.Color := iLightGreen;
+      ibtAfter:  Sender.Canvas.Brush.Color := iLightBlue;
+    End;
+End;
+
+(**
+
+  This is an on mouse up event handler for the increment on compile mode list view.
+
+  @precon  None.
+  @postcon Toggles the enabled / disabled setting of a compile mode on a configuration.
+
+  @param   Sender as a TObject
+  @param   Button as a TMouseButton
+  @param   Shift  as a TShiftState
+  @param   X      as an Integer
+  @param   Y      as an Integer
+
+**)
+Procedure TframeProjectOptions.lvIncrementOnCompileModeMouseUp(Sender: TObject;
+  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+
+  (**
+
+    This method returns the field that was clicked over.
+
+    @precon  None.
+    @postcon Returns the field that was clicked over.
+
+    @param   X as an Integer as a constant
+    @return  a TITHCompileModeField
+
+  **)
+  Function ColumnClicked(Const X : Integer) : TITHCompileModeField;
+
+  Var
+    iPosition: TWidth;
+    eCompileMode: TITHCompileModeField;
+
+  Begin
+    Result := cmfConfigName;
+    iPosition := 0;
+    If X > iPosition Then
+      For eCompileMode := Low(TITHCompileModeField) To High(TITHCompileModeField) Do
+        Begin
+          Inc(iPosition, lvIncrementOnCompileMode.Columns[Integer(eCompileMode)].Width);
+          If X < iPosition Then
+            Begin
+              Result := eCompileMode;
+              Break;
+            End;
+        End;
+  End;
+
+  (**
+
+    This method increments the given build type to the next build type or if at the end back to the
+    beginning.
+
+    @precon  one.
+    @postcon Increments the given build type to the next build type or if at the end back to the
+             beginning.
+
+    @param   BuildType as a TITHIncrementBuildType as a reference
+
+  **)
+  Procedure IncrementBuildType(Var BuildType : TITHIncrementBuildType);
+
+  Begin
+    Case BuildType Of
+      ibtNone:   BuildType := ibtBefore;
+      ibtBefore: BuildType := ibtAfter;
+      ibtAfter:  BuildType := ibtNone;
+    End;
+  End;
+
+Var
+  Item : TListItem;
+  iConfig : Integer;
+  R: TITHConfigCompileModes;
+  eCompileMode: TITHCompileModeField;
+
+Begin
+  Item := lvIncrementOnCompileMode.GetItemAt(X, Y);
+  If Assigned(Item) Then
+    Begin
+      eCompileMode := ColumnClicked(X);
+      If eCompileMode In [cmfMake..cmfMakeUnit] Then
+        Begin
+          iConfig := FindConfig(Item.Caption);
+          If iConfig > -1 Then
+            Begin
+              R := FCompileModes[iConfig];
+              Case eCompileMode Of //FI:W535
+                cmfMake:     IncrementBuildType(R.FCompileMode[cmOTAMake]);
+                cmfBuild:    IncrementBuildType(R.FCompileMode[cmOTABuild]);
+                cmfCheck:    IncrementBuildType(R.FCompileMode[cmOTACheck]);
+                cmfMakeUnit: IncrementBuildType(R.FCompileMode[cmOTAMakeUnit]);
+              End;
+              FCompileModes[iConfig] := R;
+            End;
+        End;
+      PopulateIncOnCompileModes;
+    End;  
+End;
+
+(**
+
+  This is an on resise event handler for the Increment on Compile Mode listview.
+
+  @precon  None.
+  @postcon The caption columns is resized to fit all columns on the screen.
+
+  @param   Sender as a TObject
+
+**)
+Procedure TframeProjectOptions.lvIncrementOnCompileModeResize(Sender: TObject);
+
+Const
+  iColumnWidth = 100;
+  iScrollbarWidth = 22;
+  iMultiplier = 4;
+
+Begin
+  lvIncrementOnCompileMode.Columns[Integer(cmfMake)].Width := iColumnWidth;
+  lvIncrementOnCompileMode.Columns[Integer(cmfBuild)].Width := iColumnWidth;
+  lvIncrementOnCompileMode.Columns[Integer(cmfCheck)].Width := iColumnWidth;
+  lvIncrementOnCompileMode.Columns[Integer(cmfMakeUnit)].Width := iColumnWidth;
+  lvIncrementOnCompileMode.Columns[Integer(cmfConfigName)].Width :=
+    lvIncrementOnCompileMode.Width - iColumnWidth * iMultiplier - iScrollbarWidth;
+End;
+
+(**
+
+  This method renders the list of increment of compile modes.
+
+  @precon  None.
+  @postcon The increment on compile mode list view is populated with configurations and settings.
+
+**)
+Procedure TframeProjectOptions.PopulateIncOnCompileModes;
+
+Const
+  astrBuildType : Array[TITHIncrementBuildType] Of String = ('None', 'Before', 'After');
+
+Var
+  Item: TListItem;
+  Config : TITHConfigCompileModes;
+  eCompileMode: TOTACompileMode;
+  strSelected : String;
+
+Begin
+  lvIncrementOnCompileMode.Items.BeginUpdate;
+  Try
+    If Assigned(lvIncrementOnCompileMode.Selected) Then
+      strSelected := lvIncrementOnCompileMode.Selected.Caption;
+    lvIncrementOnCompileMode.Clear;
+    For Config In FCompileModes Do
+      Begin
+        Item := lvIncrementOnCompileMode.Items.Add;
+        Item.Caption := Config.FConfigName;
+        For eCompileMode := Low(TOTACompileMode) To High(TOTACompileMode) Do
+          Item.SubItems.Add(astrBuildType[Config.FCompileMode[eCompileMode]]);
+        If Item.Caption = strSelected Then
+          item.Selected := True;
+      End;
+  Finally
+    lvIncrementOnCompileMode.Items.EndUpdate;
+  End;
 End;
 
 (**
@@ -383,10 +724,10 @@ Var
 Begin
   ProjectOps := GlobalOps.ProjectOptions(Project);
   Try
-    ProjectOps.IncOnCompile := chkIncrementBuildOnCompile.Checked;
+    FinaliseCompileModes(ProjectOps);
     ProjectOps.CopyVerInfo := edtVersionInfo.Text;
     ProjectOps.ResExtExc := edtResExts.Text;
-    ProjectOps.IncITHVerInfo := chkEnabled.Checked;
+    ProjectOps.EnableVersionInfo := chkEnabled.Checked;
     ProjectOps.IncResInProj := chkIncludeInProject.Checked;
     ProjectOps.CompileRes := chkCompileWithBRCC32.Checked;
     ProjectOps.Major := upMajor.Position;
@@ -401,4 +742,3 @@ Begin
 End;
 
 End.
-

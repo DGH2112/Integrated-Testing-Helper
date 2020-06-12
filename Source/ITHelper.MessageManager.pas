@@ -3,15 +3,15 @@
   This module contains a class / interface for managaing message in the application.
 
   @Author  David Hoyle
-  @Version 1.0
-  @Date    21 Sep 2019
+  @Version 1.001
+  @Date    05 Jun 2020
   
   @license
 
     Integrated Testing helper is a RAD Studio plug-in for running pre and post
     build processes.
     
-    Copyright (C) 2019  David Hoyle (https://github.com/DGH2112/Integrated-Testing-Helper)
+    Copyright (C) 2020  David Hoyle (https://github.com/DGH2112/Integrated-Testing-Helper)
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -46,6 +46,7 @@ Type
     FMsgs        : TInterfaceList;
     FParentMsg   : IITHCustomMessage;
     FLastMessage : Int64;
+    FMessaging   : Boolean;
   {$IFDEF D2010} Strict {$ENDIF} Protected
     // IITHMessageManager
     Function  GetCount : Integer;
@@ -56,6 +57,7 @@ Type
     Procedure Clear;
     Function  AddMsg(Const strText: String; Const eFontName : TITHFontNames;
       Const eFont : TITHFonts; Const ptrParentMsg : Pointer = Nil): IITHCustomMessage;
+    Procedure DisableMessaging;
   Public
     Constructor Create(Const GlobalOps : IITHGlobalOptions);
     Destructor Destroy; Override;
@@ -64,7 +66,7 @@ Type
 Implementation
 
 Uses
-  {$IFDEF CODESITE}
+  {$IFDEF DEBUG}
   CodeSiteLogging,
   {$ENDIF}
   SysUtils,
@@ -96,7 +98,7 @@ Var
 
 Begin
   Result := Nil;
-  If Supports(BorlandIDEServices, IOTAMessageServices, MS) Then
+  If FMessaging And Supports(BorlandIDEServices, IOTAMessageServices, MS) Then
     Begin
       Result := TITHCustomMessage.Create(strText, FGlobalOps.FontName[eFontName],
         FGlobalOps.FontColour[eFont], FGlobalOps.FontStyles[eFont]);
@@ -147,6 +149,7 @@ Constructor TITHMessageManager.Create(Const GlobalOps: IITHGlobalOptions);
 
 Begin
   {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Create', tmoTiming);{$ENDIF}
+  FMessaging := True;
   FGlobalOps := GlobalOps;
   FMsgs := TInterfaceList.Create;
 End;
@@ -165,6 +168,20 @@ Begin
   {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Destroy', tmoTiming);{$ENDIF}
   FMsgs.Free;
   Inherited Destroy;
+End;
+
+(**
+
+  This method disables messages from being created and sent to the messages view.
+
+  @precon  None.
+  @postcon No messages will be sent to the message view.
+
+**)
+Procedure TITHMessageManager.DisableMessaging;
+
+Begin
+  FMessaging := False;
 End;
 
 (**
@@ -250,6 +267,5 @@ Begin
 End;
 
 End.
-
 
 

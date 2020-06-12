@@ -74,16 +74,16 @@ object frameFonts: TframeFonts
         BevelOuter = bvNone
         ColumnCollection = <
           item
-            Value = 25.000000000209280000
+            Value = 24.571359134967740000
           end
           item
-            Value = 25.000000000062780000
+            Value = 24.571359134823750000
           end
           item
-            Value = 24.999999999816510000
+            Value = 24.571359134581700000
           end
           item
-            Value = 24.999999999911420000
+            Value = 26.326129666011790000
           end>
         ControlCollection = <
           item
@@ -115,7 +115,7 @@ object frameFonts: TframeFonts
           509
           36)
         object chkFontStyleBold: TCheckBox
-          Left = 13
+          Left = 12
           Top = 6
           Width = 100
           Height = 23
@@ -123,9 +123,10 @@ object frameFonts: TframeFonts
           Caption = '&Bold'
           TabOrder = 0
           OnClick = FontStyleClick
+          ExplicitLeft = 13
         end
         object chkFontStyleItalic: TCheckBox
-          Left = 140
+          Left = 137
           Top = 6
           Width = 100
           Height = 23
@@ -133,9 +134,10 @@ object frameFonts: TframeFonts
           Caption = '&Italic'
           TabOrder = 1
           OnClick = FontStyleClick
+          ExplicitLeft = 139
         end
         object chkFontStyleStrikeout: TCheckBox
-          Left = 267
+          Left = 262
           Top = 6
           Width = 100
           Height = 23
@@ -143,9 +145,10 @@ object frameFonts: TframeFonts
           Caption = '&Strikeout'
           TabOrder = 2
           OnClick = FontStyleClick
+          ExplicitLeft = 265
         end
         object chkFontStyleUnderline: TCheckBox
-          Left = 395
+          Left = 392
           Top = 6
           Width = 100
           Height = 23
@@ -153,6 +156,7 @@ object frameFonts: TframeFonts
           Caption = '&Underline'
           TabOrder = 3
           OnClick = FontStyleClick
+          ExplicitLeft = 393
         end
       end
     end

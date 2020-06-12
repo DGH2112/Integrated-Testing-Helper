@@ -3,8 +3,8 @@
   This module contains a Delphi IDE Wizard which implements support for running
   external tools before and after the compilation of the current project.
 
-  @Version 1.0
-  @Date    21 Sep 2019
+  @Version 1.001
+  @Date    05 Jun 2020
   @Author  David Hoyle
 
   @license
@@ -12,7 +12,7 @@
     Integrated Testing helper is a RAD Studio plug-in for running pre and post
     build processes.
     
-    Copyright (C) 2019  David Hoyle (https://github.com/DGH2112/Integrated-Testing-Helper)
+    Copyright (C) 2020  David Hoyle (https://github.com/DGH2112/Integrated-Testing-Helper)
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -60,6 +60,7 @@ Type
     {$ENDIF}
     {$ENDIF}
     FIDENotifierIndex       : Integer;
+    FMessageMgr             : IITHMessageManager;
     {$IFDEF DXE00}
     FAboutAddin             : INTAAddInOptions;
     FGlobalOptionsAddin     : INTAAddInOptions;
@@ -129,7 +130,9 @@ Uses
   ITHelper.AddInOptions,
   ITHelper.GlobalOptionsFrame,
   ITHelper.AboutFrame,
-  ITHelper.GlobalOptionsDlg;
+  ITHelper.GlobalOptionsDlg,
+  ITHelper.CompileNotifier,
+  ITHelper.MessageManager;
 
 {$IFDEF DXE00}
 ResourceString
@@ -367,10 +370,7 @@ Begin
   FIDENotifierIndex := iWizardFailState;
   InstallSplashScreen;
   FAboutBoxIndex := AddAboutBoxEntry;
-  { $IFDEF D2010}
   FProjectMgrMenuNotifier := TITHProjectManagerMenu.Create(Self);
-  { $ELSE}
-  { $ENDIF}
   If Supports(BorlandIDEServices, IOTAProjectManager, PM) Then
     {$IFDEF D2010}
     FProjectMgrMenuIndex := PM.AddMenuItemCreatorNotifier(FProjectMgrMenuNotifier);
@@ -379,6 +379,7 @@ Begin
     {$ENDIF}
   CreateMenus;
   FGlobalOps := TITHGlobalOptions.Create;
+  FMessageMgr := TITHMessageManager.Create(FGlobalOps);
   {$IFDEF DXE00}
   If Supports(BorlandIDEServices, INTAEnvironmentOptionsServices, EO) Then
     Begin
@@ -392,7 +393,7 @@ Begin
     End;
   {$ENDIF}
   If Supports(BorlandIDEServices, IOTAServices, S) Then
-    FIDENotifierIndex := S.AddNotifier(TITHelperIDENotifier.Create(FGlobalOps));
+    FIDENotifierIndex := S.AddNotifier(TITHelperIDENotifier.Create(FMessageMgr, FGlobalOps));
   //: @debug FHTMLHelpCookie := HTMLHelp(Application.Handle, Nil, HH_INITIALIZE, 0);
 End;
 
@@ -510,6 +511,7 @@ Var
   
 Begin
   {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Destroy', tmoTiming);{$ENDIF}
+  FMessageMgr.DisableMessaging;
   HTMLHelp(0, Nil, HH_CLOSE_ALL, 0);
   //HTMLHelp(Application.Handle, Nil, HH_UNINITIALIZE, FHTMLHelpCookie);
   If FIDENotifierIndex > iWizardFailState Then
@@ -905,4 +907,6 @@ Begin
 End;
 
 End.
+
+
 

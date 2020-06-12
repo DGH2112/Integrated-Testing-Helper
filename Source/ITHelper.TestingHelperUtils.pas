@@ -2,16 +2,16 @@
 
   This module contains often used code for use through out this application.
 
-  @Version 1.0
+  @Version 1.063
   @Author  David Hoyle
-  @Date    21 Sep 2019
+  @Date    12 Jun 2020
 
   @license
 
     Integrated Testing helper is a RAD Studio plug-in for running pre and post
     build processes.
     
-    Copyright (C) 2019  David Hoyle (https://github.com/DGH2112/Integrated-Testing-Helper)
+    Copyright (C) 2020  David Hoyle (https://github.com/DGH2112/Integrated-Testing-Helper)
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -82,7 +82,8 @@ Type
       Const strShortCut : String; Const iMaskColour : TColor = clLime) : TMenuItem; Static;
     Class Procedure ClearMessages(Const Msg : TClearMessages); Static;
     Class Procedure ShowHelperMessages(Const boolITHGroup : Boolean); Static;
-    Class Procedure RegisterFormClassForTheming(Const AFormClass : TCustomFormClass); Static;
+    Class Procedure RegisterFormClassForTheming(Const AFormClass : TCustomFormClass;
+      Const Component : TComponent = Nil); Static;
     Class Procedure ApplyTheming(Const Component : TComponent); Static;
     {$ENDIF}
     Class Function  ProjectGroup: IOTAProjectGroup; Static;
@@ -450,6 +451,7 @@ End;
 
   @note    You should always keep a reference to the Main menu item you create so you can remove you 
            menus from the IDE.
+  @nometric LongParameterList Toxicity
 
   @param   strName       as a String as a constant
   @param   strCaption    as a String as a constant
@@ -463,9 +465,13 @@ End;
   @return  a TMenuItem
 
 **)
-Class Function TITHToolsAPIFunctions.CreateMenuItem(Const strName, strCaption, strParentMenu : String;
-  Const ClickProc, UpdateProc : TNotifyEvent; Const boolBefore, boolChildMenu : Boolean;
-  Const strShortCut : String; Const iMaskColour : TColor = clLime) : TMenuItem;
+Class Function TITHToolsAPIFunctions.CreateMenuItem( //FI:C102
+                 Const strName, strCaption, strParentMenu : String;
+                 Const ClickProc, UpdateProc : TNotifyEvent;
+                 Const boolBefore, boolChildMenu : Boolean;
+                 Const strShortCut : String;
+                 Const iMaskColour : TColor = clLime
+               ) : TMenuItem;
 
 Const
   strActionNameSuffix = 'Action';
@@ -480,7 +486,7 @@ Var
   //{$ENDIF}
   iImageIndex : Integer;
 
-begin
+begin //FI:C101
   Result := Nil;
   If Supports(BorlandIDEServices, INTAServices, NS) Then
     Begin
@@ -669,20 +675,34 @@ end;
   @postcon The form class passed is registered for theming.
 
   @param   AFormClass as a TCustomFormClass as a constant
+  @param   Component  as a TComponent as a constant
 
 **)
-Class Procedure TITHToolsAPIFunctions.RegisterFormClassForTheming(Const AFormClass : TCustomFormClass);
+Class Procedure TITHToolsAPIFunctions.RegisterFormClassForTheming(Const AFormClass : TCustomFormClass;
+  Const Component : TComponent = Nil);
 
 {$IFDEF DXE102}
 Var
+  {$IFDEF DXE104}
+  ITS : IOTAIDEThemingServices;
+  {$ELSE}
   ITS : IOTAIDEThemingServices250;
+  {$ENDIF DXE104}
 {$ENDIF}
 
 Begin
   {$IFDEF DXE102}
+  {$IFDEF DXE104}
   If Supports(BorlandIDEServices, IOTAIDEThemingServices, ITS) Then
+  {$ELSE}
+  If Supports(BorlandIDEServices, IOTAIDEThemingServices250, ITS) Then
+  {$ENDIF DXE104}
     If ITS.IDEThemingEnabled Then
-      ITS.RegisterFormClass(AFormClass);
+      Begin
+        ITS.RegisterFormClass(AFormClass);
+        If Assigned(Component) Then
+          ITS.ApplyTheme(Component);
+      End;
   {$ENDIF}
 End;
 {$ENDIF}

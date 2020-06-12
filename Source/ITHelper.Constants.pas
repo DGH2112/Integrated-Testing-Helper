@@ -2,16 +2,16 @@
   
   This module contains constants for use through the application.
 
-  @Version 1.0
+  @Version 1.001
   @Author  David Hoyle
-  @Date    21 Sep 2019
+  @Date    05 Jun 2020
   
   @license
 
     Integrated Testing helper is a RAD Studio plug-in for running pre and post
     build processes.
     
-    Copyright (C) 2019  David Hoyle (https://github.com/DGH2112/Integrated-Testing-Helper)
+    Copyright (C) 2020  David Hoyle (https://github.com/DGH2112/Integrated-Testing-Helper)
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -31,9 +31,20 @@ Unit ITHelper.Constants;
 
 Interface
 
+Uses
+  ToolsAPI;
+
+{$INCLUDE CompilerDefinitions.inc}
+
 Const
   (** A constant to represent the bug fix revisions for the version number. **)
   strRevisions = ' abcdefghijklmnopqrstuvwxyz';
+  (** A constant array of strings for label the compile modes. **)
+  astrCompileMode : Array[TOTACompileMode] Of String = ('Make', 'Build', 'Check', 'MakeUnit');
+  {$IFDEF D2010}
+  (** A constant array of strings for label the compile results. **)
+  astrCompileResult : Array[TOTACompileResult] Of String = ('Failed', 'Succeeded', 'Background');
+  {$ENDIF D2010}
 
 Implementation
 

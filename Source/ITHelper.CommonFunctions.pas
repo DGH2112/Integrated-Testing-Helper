@@ -3,15 +3,15 @@
   This module contains common functions (non-OTA) for use throughout the application.
 
   @Author  David Hoyle
-  @Version 1.0
-  @Date    21 Sep 2019
+  @Version 1.002
+  @Date    12 Jun 2020
   
   @license
 
     Integrated Testing helper is a RAD Studio plug-in for running pre and post
     build processes.
     
-    Copyright (C) 2019  David Hoyle (https://github.com/DGH2112/Integrated-Testing-Helper)
+    Copyright (C) 2020  David Hoyle (https://github.com/DGH2112/Integrated-Testing-Helper)
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -198,7 +198,7 @@ End;
   @return  an Integer
 
 **)
-Function  DGHCreateProcess(Const Process : TITHProcessInfo;
+Function  DGHCreateProcess(Const Process : TITHProcessInfo;  //FI:C103
   Const ProcessMsgHandler : TITHProcessMsgHandler; Const IdleHandler : TITHIdleHandler) : Integer;
 
 Type
@@ -285,7 +285,7 @@ Var
   ProcessInfo : TProcessInformation;
   iExitCode : Cardinal;
 
-Begin
+Begin //FI:C101
   Result := 0;
   boolAbort := False;
   FillChar(SecurityAttrib, SizeOf(SecurityAttrib), 0);

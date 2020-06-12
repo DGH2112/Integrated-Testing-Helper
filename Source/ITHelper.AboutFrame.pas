@@ -3,15 +3,15 @@
   This modulel contains a frame for the root node of the BADI Options frame in the IDE.
 
   @Author  David Hoyle
-  @Version 1.0
-  @Date    21 Sep 2019
+  @Version 1.001
+  @Date    05 Jun 2020
 
   @license
 
     Integrated Testing helper is a RAD Studio plug-in for running pre and post
     build processes.
     
-    Copyright (C) 2019  David Hoyle (https://github.com/DGH2112/Integrated-Testing-Helper)
+    Copyright (C) 2020  David Hoyle (https://github.com/DGH2112/Integrated-Testing-Helper)
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -42,10 +42,10 @@ Uses
   Forms,
   Dialogs,
   StdCtrls,
+  ExtCtrls,
   ToolsAPI,
   ITHelper.Types,
-  ITHelper.Interfaces,
-  Vcl.ExtCtrls;
+  ITHelper.Interfaces;
 
 Type
   (** A class to represent the options frame. **)

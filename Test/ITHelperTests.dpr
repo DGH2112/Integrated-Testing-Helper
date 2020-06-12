@@ -33,7 +33,8 @@ uses
   ITHelper.Interfaces in '..\Source\ITHelper.Interfaces.pas',
   ITHelper.Types in '..\Source\ITHelper.Types.pas',
   ITHelper.ProjectOptions in '..\Source\ITHelper.ProjectOptions.pas',
-  ITHelper.ResourceStrings in '..\Source\ITHelper.ResourceStrings.pas';
+  ITHelper.ResourceStrings in '..\Source\ITHelper.ResourceStrings.pas',
+  ITHelper.Constants in '..\Source\ITHelper.Constants.pas';
 
 {$R *.RES}
 

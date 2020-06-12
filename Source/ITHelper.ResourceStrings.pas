@@ -3,15 +3,15 @@
   This module contaisn resource string for use throughout the application.
 
   @Author  David Hoyle
-  @Version 1.0
-  @Date    21 Sep 2019
+  @Version 1.002
+  @Date    05 Jun 2020
   
   @license
 
     Integrated Testing helper is a RAD Studio plug-in for running pre and post
     build processes.
     
-    Copyright (C) 2019  David Hoyle (https://github.com/DGH2112/Integrated-Testing-Helper)
+    Copyright (C) 2020  David Hoyle (https://github.com/DGH2112/Integrated-Testing-Helper)
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -36,10 +36,10 @@ ResourceString
   strSplashScreenName = 'Integrated Testing Helper %d.%d%s for %s';
   {$IFDEF DEBUG}
   (** This is another message string to appear in the splash screen **)
-  strSplashScreenBuild = 'David Hoyle (c) 2019 License GNU GPL 3 (DEBUG Build %d.%d.%d.%d)';
+  strSplashScreenBuild = 'David Hoyle (c) 2020 License GNU GPL 3 (DEBUG Build %d.%d.%d.%d)';
   {$ELSE}
   (** This is another message string to appear in the splash screen **)
-  strSplashScreenBuild = 'David Hoyle (c) 2019 License GNU GPL 3 (Build %d.%d.%d.%d)';
+  strSplashScreenBuild = 'David Hoyle (c) 2020 License GNU GPL 3 (Build %d.%d.%d.%d)';
   {$ENDIF}
   (** This is a resourcestring for the message tab name. **)
   strITHelperGroup = 'ITHelper Messages';

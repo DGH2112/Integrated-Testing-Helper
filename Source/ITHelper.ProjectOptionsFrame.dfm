@@ -1,8 +1,8 @@
 object frameProjectOptions: TframeProjectOptions
   Left = 0
   Top = 0
-  Width = 603
-  Height = 467
+  Width = 777
+  Height = 720
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -13
@@ -10,250 +10,555 @@ object frameProjectOptions: TframeProjectOptions
   Font.Style = []
   ParentFont = False
   TabOrder = 0
-  DesignSize = (
-    603
-    467)
   object lblResExts: TLabel
-    Left = 8
-    Top = 8
-    Width = 225
+    AlignWithMargins = True
+    Left = 3
+    Top = 3
+    Width = 771
     Height = 16
-    Anchors = [akLeft, akTop, akRight]
+    Align = alTop
     Caption = '&Resource Extension Warning Exclusions'
     FocusControl = edtResExts
+    ExplicitWidth = 225
   end
-  object lblVersionInfo: TLabel
-    Left = 8
-    Top = 80
-    Width = 176
+  object lblIncrementOnCompileMode: TLabel
+    AlignWithMargins = True
+    Left = 3
+    Top = 55
+    Width = 771
     Height = 16
-    Caption = '&Copy Version Information from'
-    FocusControl = edtVersionInfo
-  end
-  object btnOpenEXE: TButton
-    Left = 566
-    Top = 75
-    Width = 34
-    Height = 25
-    Anchors = [akTop, akRight]
-    Caption = '...'
-    TabOrder = 3
-    OnClick = btnOpenEXEClick
-  end
-  object chkIncrementBuildOnCompile: TCheckBox
-    Left = 8
-    Top = 54
-    Width = 592
-    Height = 17
-    Caption = '&Increment Build On Compile.'
-    TabOrder = 1
+    Align = alTop
+    Caption = '&Increment on Compile Mode'
+    ExplicitWidth = 161
   end
   object edtResExts: TEdit
-    Left = 8
-    Top = 27
-    Width = 592
+    AlignWithMargins = True
+    Left = 3
+    Top = 25
+    Width = 771
     Height = 24
-    Anchors = [akLeft, akTop, akRight]
+    Align = alTop
     TabOrder = 0
     Text = 'edtResExts'
   end
-  object edtVersionInfo: TEdit
-    Left = 204
-    Top = 77
-    Width = 356
-    Height = 24
-    Anchors = [akLeft, akTop, akRight]
-    TabOrder = 2
-  end
   object gbxVersionInfo: TGroupBox
-    Left = 8
-    Top = 129
-    Width = 592
-    Height = 335
-    Anchors = [akLeft, akTop, akRight, akBottom]
+    AlignWithMargins = True
+    Left = 3
+    Top = 263
+    Width = 771
+    Height = 454
+    Align = alClient
     Caption = 'Version Info'
-    TabOrder = 5
-    DesignSize = (
-      592
-      335)
-    object lblMajor: TLabel
-      Left = 8
-      Top = 37
-      Width = 33
-      Height = 16
-      Caption = '&Major'
-    end
-    object lblMinor: TLabel
-      Left = 150
-      Top = 37
-      Width = 32
-      Height = 16
-      Caption = 'Mi&nor'
-    end
-    object lblRelease: TLabel
-      Left = 285
-      Top = 37
-      Width = 45
-      Height = 16
-      Caption = '&Release'
-    end
-    object lblBuild: TLabel
-      Left = 429
-      Top = 37
-      Width = 27
-      Height = 16
-      Caption = '&Build'
-    end
-    object lblResourceName: TLabel
-      Left = 8
-      Top = 307
-      Width = 177
-      Height = 16
-      Anchors = [akLeft, akBottom]
-      Caption = 'Resource Path & &Name (exc Ext)'
-    end
+    TabOrder = 4
     object vleVersionInfo: TValueListEditor
-      Left = 8
-      Top = 61
-      Width = 576
-      Height = 191
-      Anchors = [akLeft, akTop, akRight, akBottom]
+      AlignWithMargins = True
+      Left = 5
+      Top = 60
+      Width = 761
+      Height = 310
+      Align = alClient
       DefaultRowHeight = 19
       KeyOptions = [keyEdit, keyAdd, keyDelete, keyUnique]
       Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goDrawFocusSelected, goEditing, goAlwaysShowEditor, goThumbTracking]
       Strings.Strings = (
         '')
-      TabOrder = 8
+      TabOrder = 0
       ColWidths = (
         150
-        420)
+        605)
       RowHeights = (
         19
         19)
     end
-    object edtMajor: TEdit
-      Left = 56
-      Top = 34
-      Width = 58
-      Height = 24
-      ReadOnly = True
-      TabOrder = 0
-      Text = '0'
-    end
-    object upMajor: TUpDown
-      Left = 114
-      Top = 34
-      Width = 16
-      Height = 24
-      Associate = edtMajor
-      Max = 10000
-      TabOrder = 1
-      OnClick = BuildChange
-    end
-    object edtMinor: TEdit
-      Left = 196
-      Top = 34
-      Width = 58
-      Height = 24
-      ReadOnly = True
-      TabOrder = 2
-      Text = '0'
-    end
-    object upMinor: TUpDown
-      Left = 254
-      Top = 34
-      Width = 16
-      Height = 24
-      Associate = edtMinor
-      Max = 10000
-      TabOrder = 3
-      OnClick = BuildChange
-    end
-    object edtRelease: TEdit
-      Left = 331
-      Top = 34
-      Width = 58
-      Height = 24
-      ReadOnly = True
-      TabOrder = 4
-      Text = '0'
-    end
-    object upRelease: TUpDown
-      Left = 389
-      Top = 34
-      Width = 16
-      Height = 24
-      Associate = edtRelease
-      Max = 26
-      TabOrder = 5
-      OnClick = BuildChange
-    end
-    object edtBuild: TEdit
-      Left = 475
-      Top = 34
-      Width = 58
-      Height = 24
-      ReadOnly = True
-      TabOrder = 6
-      Text = '0'
-    end
-    object upBuild: TUpDown
-      Left = 533
-      Top = 34
-      Width = 16
-      Height = 24
-      Associate = edtBuild
-      Max = 1000000
-      TabOrder = 7
-      OnClick = BuildChange
-    end
-    object btnGetVersionInfo: TBitBtn
-      Left = 450
-      Top = 302
-      Width = 134
-      Height = 25
-      Anchors = [akRight, akBottom]
-      Caption = '&Get IDE Version Info'
-      TabOrder = 12
-      OnClick = btnGetVersionInfoClick
-    end
     object chkIncludeInProject: TCheckBox
-      Left = 8
-      Top = 258
-      Width = 576
+      AlignWithMargins = True
+      Left = 5
+      Top = 376
+      Width = 761
       Height = 17
-      Anchors = [akLeft, akRight, akBottom]
+      Align = alBottom
       Caption = '&Include Resource in Project'
-      TabOrder = 9
+      TabOrder = 1
     end
     object chkCompileWithBRCC32: TCheckBox
-      Left = 8
-      Top = 281
-      Width = 576
+      AlignWithMargins = True
+      Left = 5
+      Top = 399
+      Width = 761
       Height = 17
-      Anchors = [akLeft, akRight, akBottom]
+      Align = alBottom
       Caption = 'Compile Resource with BRCC32'
-      TabOrder = 10
+      TabOrder = 2
     end
-    object edtResourceName: TEdit
-      Left = 196
-      Top = 304
-      Width = 248
-      Height = 24
-      Anchors = [akLeft, akRight, akBottom]
-      TabOrder = 11
-      Text = 'edtResourceName'
+    object gpnlVerInfo: TGridPanel
+      AlignWithMargins = True
+      Left = 5
+      Top = 21
+      Width = 761
+      Height = 33
+      Align = alTop
+      BevelOuter = bvNone
+      ColumnCollection = <
+        item
+          Value = 12.499997708437440000
+        end
+        item
+          Value = 12.500029613517490000
+        end
+        item
+          SizeStyle = ssAuto
+          Value = 7.501227548529042000
+        end
+        item
+          Value = 12.500021384995450000
+        end
+        item
+          Value = 12.500001683628530000
+        end
+        item
+          SizeStyle = ssAuto
+          Value = 8.807331748579426000
+        end
+        item
+          Value = 12.499986640766420000
+        end
+        item
+          Value = 12.499982087832750000
+        end
+        item
+          SizeStyle = ssAuto
+          Value = 10.558335945974690000
+        end
+        item
+          Value = 12.499986489798520000
+        end
+        item
+          Value = 12.499994391023410000
+        end
+        item
+          SizeStyle = ssAuto
+          Value = 12.884905129971940000
+        end>
+      ControlCollection = <
+        item
+          Column = 0
+          Control = lblMajor
+          Row = 0
+        end
+        item
+          Column = 1
+          Control = edtMajor
+          Row = 0
+        end
+        item
+          Column = 3
+          Control = lblMinor
+          Row = 0
+        end
+        item
+          Column = 4
+          Control = edtMinor
+          Row = 0
+        end
+        item
+          Column = 7
+          Control = edtRelease
+          Row = 0
+        end
+        item
+          Column = 6
+          Control = lblRelease
+          Row = 0
+        end
+        item
+          Column = 9
+          Control = lblBuild
+          Row = 0
+        end
+        item
+          Column = 10
+          Control = edtBuild
+          Row = 0
+        end
+        item
+          Column = 2
+          Control = upMajor
+          Row = 0
+        end
+        item
+          Column = 5
+          Control = upMinor
+          Row = 0
+        end
+        item
+          Column = 8
+          Control = upRelease
+          Row = 0
+        end
+        item
+          Column = 11
+          Control = upBuild
+          Row = 0
+        end>
+      RowCollection = <
+        item
+          Value = 100.000000000000000000
+        end>
+      TabOrder = 3
+      DesignSize = (
+        761
+        33)
+      object lblMajor: TLabel
+        AlignWithMargins = True
+        Left = 3
+        Top = 3
+        Width = 81
+        Height = 27
+        Align = alClient
+        Caption = '&Major'
+        Layout = tlCenter
+        ExplicitWidth = 33
+        ExplicitHeight = 16
+      end
+      object edtMajor: TEdit
+        AlignWithMargins = True
+        Left = 90
+        Top = 3
+        Width = 81
+        Height = 27
+        Align = alClient
+        ReadOnly = True
+        TabOrder = 0
+        Text = '0'
+        ExplicitWidth = 65
+      end
+      object lblMinor: TLabel
+        AlignWithMargins = True
+        Left = 193
+        Top = 3
+        Width = 81
+        Height = 27
+        Align = alClient
+        Caption = 'Mi&nor'
+        Layout = tlCenter
+        ExplicitWidth = 32
+        ExplicitHeight = 16
+      end
+      object edtMinor: TEdit
+        AlignWithMargins = True
+        Left = 280
+        Top = 3
+        Width = 81
+        Height = 27
+        Align = alClient
+        ReadOnly = True
+        TabOrder = 1
+        Text = '0'
+        ExplicitWidth = 65
+      end
+      object edtRelease: TEdit
+        AlignWithMargins = True
+        Left = 470
+        Top = 3
+        Width = 81
+        Height = 27
+        Align = alClient
+        ReadOnly = True
+        TabOrder = 2
+        Text = '0'
+        ExplicitWidth = 65
+      end
+      object lblRelease: TLabel
+        AlignWithMargins = True
+        Left = 383
+        Top = 3
+        Width = 81
+        Height = 27
+        Align = alClient
+        Caption = '&Release'
+        Layout = tlCenter
+        ExplicitWidth = 45
+        ExplicitHeight = 16
+      end
+      object lblBuild: TLabel
+        AlignWithMargins = True
+        Left = 573
+        Top = 3
+        Width = 81
+        Height = 27
+        Align = alClient
+        Caption = '&Build'
+        Layout = tlCenter
+        ExplicitWidth = 27
+        ExplicitHeight = 16
+      end
+      object edtBuild: TEdit
+        AlignWithMargins = True
+        Left = 660
+        Top = 3
+        Width = 65
+        Height = 27
+        Align = alClient
+        ReadOnly = True
+        TabOrder = 3
+        Text = '0'
+      end
+      object upMajor: TUpDown
+        Left = 174
+        Top = 3
+        Width = 16
+        Height = 27
+        Anchors = []
+        Associate = edtMajor
+        Max = 10000
+        TabOrder = 4
+        OnClick = BuildChange
+        ExplicitLeft = 155
+      end
+      object upMinor: TUpDown
+        Left = 364
+        Top = 3
+        Width = 16
+        Height = 27
+        Anchors = []
+        Associate = edtMinor
+        Max = 10000
+        TabOrder = 5
+        OnClick = BuildChange
+        ExplicitLeft = 345
+      end
+      object upRelease: TUpDown
+        Left = 554
+        Top = 3
+        Width = 16
+        Height = 27
+        Anchors = []
+        Associate = edtRelease
+        Max = 26
+        TabOrder = 6
+        OnClick = BuildChange
+        ExplicitLeft = 535
+      end
+      object upBuild: TUpDown
+        Left = 725
+        Top = 3
+        Width = 16
+        Height = 27
+        Anchors = []
+        Associate = edtBuild
+        Max = 1000000
+        TabOrder = 7
+        OnClick = BuildChange
+      end
+    end
+    object gpnlResource: TGridPanel
+      Left = 2
+      Top = 419
+      Width = 767
+      Height = 33
+      Align = alBottom
+      BevelOuter = bvNone
+      ColumnCollection = <
+        item
+          Value = 49.999992053046100000
+        end
+        item
+          Value = 50.000007946953910000
+        end
+        item
+          SizeStyle = ssAbsolute
+          Value = 175.000000000000000000
+        end>
+      ControlCollection = <
+        item
+          Column = 0
+          Control = lblResourceName
+          Row = 0
+        end
+        item
+          Column = 1
+          Control = edtResourceName
+          Row = 0
+        end
+        item
+          Column = 2
+          Control = btnGetVersionInfo
+          Row = 0
+        end>
+      RowCollection = <
+        item
+          Value = 100.000000000000000000
+        end
+        item
+          SizeStyle = ssAuto
+        end>
+      TabOrder = 4
+      DesignSize = (
+        767
+        33)
+      object lblResourceName: TLabel
+        AlignWithMargins = True
+        Left = 3
+        Top = 3
+        Width = 289
+        Height = 27
+        Align = alClient
+        Caption = 'Resource Path & &Name (exc Ext)'
+        Layout = tlCenter
+        ExplicitWidth = 177
+        ExplicitHeight = 16
+      end
+      object edtResourceName: TEdit
+        Left = 295
+        Top = 4
+        Width = 296
+        Height = 24
+        Anchors = []
+        TabOrder = 0
+        Text = 'edtResourceName'
+      end
+      object btnGetVersionInfo: TButton
+        AlignWithMargins = True
+        Left = 594
+        Top = 3
+        Width = 169
+        Height = 27
+        Align = alClient
+        Caption = '&Get IDE Version Info'
+        DoubleBuffered = True
+        ParentDoubleBuffered = False
+        TabOrder = 1
+        OnClick = btnGetVersionInfoClick
+      end
     end
   end
   object chkEnabled: TCheckBox
-    Left = 8
-    Top = 106
-    Width = 592
+    AlignWithMargins = True
+    Left = 3
+    Top = 240
+    Width = 771
     Height = 17
-    Anchors = [akLeft, akTop, akRight]
+    Align = alTop
     Caption = '&Enabled ITHelper Version Control'
-    TabOrder = 4
+    TabOrder = 3
     OnClick = chkEnabledClick
+  end
+  object gpnlCopyVerInfo: TGridPanel
+    Left = 0
+    Top = 204
+    Width = 777
+    Height = 33
+    Align = alTop
+    BevelOuter = bvNone
+    ColumnCollection = <
+      item
+        Value = 50.000000000000000000
+      end
+      item
+        Value = 50.000000000000000000
+      end
+      item
+        SizeStyle = ssAbsolute
+        Value = 50.000000000000000000
+      end>
+    ControlCollection = <
+      item
+        Column = 0
+        Control = lblVersionInfo
+        Row = 0
+      end
+      item
+        Column = 1
+        Control = edtVersionInfo
+        Row = 0
+      end
+      item
+        Column = 2
+        Control = btnOpenEXE
+        Row = 0
+      end>
+    RowCollection = <
+      item
+        Value = 100.000000000000000000
+      end>
+    TabOrder = 2
+    object lblVersionInfo: TLabel
+      AlignWithMargins = True
+      Left = 3
+      Top = 3
+      Width = 357
+      Height = 27
+      Align = alClient
+      Caption = '&Copy Version Information from'
+      FocusControl = edtVersionInfo
+      Layout = tlCenter
+      ExplicitWidth = 176
+      ExplicitHeight = 16
+    end
+    object edtVersionInfo: TEdit
+      AlignWithMargins = True
+      Left = 366
+      Top = 3
+      Width = 357
+      Height = 27
+      Align = alClient
+      TabOrder = 0
+      ExplicitHeight = 24
+    end
+    object btnOpenEXE: TButton
+      AlignWithMargins = True
+      Left = 729
+      Top = 3
+      Width = 44
+      Height = 27
+      Align = alClient
+      Caption = '...'
+      TabOrder = 1
+      OnClick = btnOpenEXEClick
+    end
+  end
+  object lvIncrementOnCompileMode: TListView
+    AlignWithMargins = True
+    Left = 3
+    Top = 77
+    Width = 771
+    Height = 124
+    Align = alTop
+    Columns = <
+      item
+        Caption = 'Configuration'
+      end
+      item
+        Alignment = taCenter
+        Caption = 'Make'
+        Width = 100
+      end
+      item
+        Alignment = taCenter
+        Caption = 'Build'
+        Width = 100
+      end
+      item
+        Alignment = taCenter
+        Caption = 'Check'
+        Width = 100
+      end
+      item
+        Alignment = taCenter
+        Caption = 'Make Unit'
+        Width = 100
+      end>
+    ColumnClick = False
+    FlatScrollBars = True
+    GridLines = True
+    HideSelection = False
+    ReadOnly = True
+    RowSelect = True
+    TabOrder = 1
+    ViewStyle = vsReport
+    OnCustomDrawSubItem = lvIncrementOnCompileModeCustomDrawSubItem
+    OnMouseUp = lvIncrementOnCompileModeMouseUp
+    OnResize = lvIncrementOnCompileModeResize
   end
   object dlgOpenEXE: TOpenDialog
     Filter = 'Executables|*.exe;*.dll;*.bpl'

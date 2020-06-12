@@ -4,8 +4,8 @@
   implement an IDE wizard.
 
   @Author  David Hoyle
-  @Date    21 Sep 2019
-  @Version 2.0
+  @Date    06 Jun 2020
+  @Version 2.049
 
   @nocheck EmptyBEGINEND
 
@@ -13,8 +13,8 @@
 
     Integrated Testing helper is a RAD Studio plug-in for running pre and post
     build processes.
-    
-    Copyright (C) 2019  David Hoyle (https://github.com/DGH2112/Integrated-Testing-Helper)
+
+    Copyright (C) 2020  David Hoyle (https://github.com/DGH2112/Integrated-Testing-Helper)
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -44,12 +44,12 @@ uses
   {$IFDEF EurekaLog}
   EMemLeaks,
   EResLeaks,
-  ESendMailMAPI,
-  ESendMailSMAPI,
+  EDebugExports,
   EDialogWinAPIMSClassic,
   EDialogWinAPIEurekaLogDetailed,
   EDialogWinAPIStepsToReproduce,
-  EDebugExports,
+  ESendMailMAPI,
+  ESendMailSMAPI,
   ExceptionLog7,
   {$ENDIF EurekaLog}
   SysUtils,
@@ -87,11 +87,16 @@ uses
   ITHelper.AboutFrame in 'Source\ITHelper.AboutFrame.pas' {frameAboutITHelper: TFrame},
   ITHelper.FontFrame in 'Source\ITHelper.FontFrame.pas' {frameFonts: TFrame},
   ITHelper.GlobalOptionsDlg in 'Source\ITHelper.GlobalOptionsDlg.pas' {frmITHGlobalOptionsDlg},
-  ITHelper.ProjectOpsDlg in 'Source\ITHelper.ProjectOpsDlg.pas' {frmITHProjectOpsDlg};
+  ITHelper.ProjectOpsDlg in 'Source\ITHelper.ProjectOpsDlg.pas' {frmITHProjectOpsDlg},
+  ITHelper.CompileNotifier in 'Source\ITHelper.CompileNotifier.pas',
+  ITHelper.ProjectCompileNotifier in 'Source\ITHelper.ProjectCompileNotifier.pas',
+  ITHelper.ProjectNotifier in 'Source\ITHelper.ProjectNotifier.pas',
+  ITHelper.ModuleNotifierList in 'Source\ITHelper.ModuleNotifierList.pas';
 
 {$R *.res}
 
 Begin
 End.
+
 
 

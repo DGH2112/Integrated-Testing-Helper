@@ -3,16 +3,16 @@
   This modules contains a form for specifying the EXE, Params and Working
   Directory for external tools.
 
-  @Version 1.0
+  @Version 1.026
   @Author  David Hoyle
-  @Date    21 Sep 2019
+  @Date    12 Jun 2020
 
   @license
 
     Integrated Testing helper is a RAD Studio plug-in for running pre and post
     build processes.
     
-    Copyright (C) 2019  David Hoyle (https://github.com/DGH2112/Integrated-Testing-Helper)
+    Copyright (C) 2020  David Hoyle (https://github.com/DGH2112/Integrated-Testing-Helper)
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -57,11 +57,12 @@ Type
     edtWorkingDirectory: TEdit;
     btnEXE: TButton;
     btnDirectory: TButton;
-    btnOK: TBitBtn;
-    btnCancel: TBitBtn;
     dlgOpen: TOpenDialog;
     edtTitle: TEdit;
     lblTitle: TLabel;
+    btnOK: TButton;
+    btnCancel: TButton;
+    ilButtons: TImageList;
     Procedure btnEXEClick(Sender: TObject);
     Procedure btnDirectoryClick(Sender: TObject);
   Strict Private
@@ -80,7 +81,8 @@ Implementation
 
 Uses
   FileCtrl,
-  INIFiles;
+  INIFiles,
+  ITHelper.TestingHelperUtils;
 
 Const
   (** An INI section name for the dialogue settings. **)
@@ -165,9 +167,10 @@ Var
   frm: TfrmITHProgrammeInfo;
 
 Begin
+  Result := False;
   frm := TfrmITHProgrammeInfo.Create(Nil);
   Try
-    Result := False;
+    TITHToolsAPIFunctions.RegisterFormClassForTheming(TfrmITHProgrammeInfo, frm);
     frm.edtTitle.Text := strTitle;
     frm.edtProgramme.Text := strEXE;
     frm.edtParameters.Text := strParam;
