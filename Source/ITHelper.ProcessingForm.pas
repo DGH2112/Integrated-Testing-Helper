@@ -4,8 +4,8 @@
   before or after compile information.
 
   @Author  David Hoyle
-  @Version 1.052
-  @Date    05 Jun 2020
+  @Version 1.054
+  @Date    21 Nov 2021
 
   @license
 
@@ -90,7 +90,7 @@ Uses
 
 
 Var
-  (** A private varaiable to hold the Singleton reference to the form. **)
+  (** A private variable to hold the Singleton reference to the form. **)
   FormInstance: TfrmITHProcessing;
 
 (**
@@ -136,7 +136,7 @@ End;
 
 (**
 
-  TYhis method creates all the controls on the form. For Delphi 7 backward
+  This method creates all the controls on the form. For Delphi 7 backward
   compatibility.
 
   @precon  None.
@@ -260,19 +260,19 @@ Class Procedure TfrmITHProcessing.ShowProcessing(Const strMsg: String;
   Const iColour: TColor = clWindowText; Const boolWait: Boolean = False);
 
 Var
-  {$IFDEF DXE102}
+  {$IFDEF RS102}
   ITS : IOTAIDEThemingServices;
-  {$ENDIF DXE102}
+  {$ENDIF RS102}
   iClr: TColor;
   
 Begin
   FormInstance.CanHide := False;
   FormInstance.FInfo.Caption := strMsg;
   iClr := iColour;
-  {$IFDEF DXE102}
+  {$IFDEF RS102}
   If Supports(BorlandIDEServices, IOTAIDEThemingServices, ITS) And ITS.IDEThemingEnabled Then
     iClr := ITS.StyleServices.GetSystemColor(iColour);
-  {$ENDIF DXE102}
+  {$ENDIF RS102}
   FormInstance.FInfo.Font.Color := iClr;
   FormInstance.FMessage := strMsg;
   CheckWidth;

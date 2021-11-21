@@ -1,11 +1,11 @@
 (**
 
-  This module contains the interfaces for creating meuns in the IDEs project manager.
+  This module contains the interfaces for creating menus in the IDEs project manager.
   There are two interfaces, one for D2005 to 2009 and another for D2010 onwards.
 
   @Author  David Hoyle
-  @Version 1.001
-  @Date    05 Jun 2020
+  @Version 1.003
+  @Date    21 Nov 2021
 
   @license
 
@@ -295,11 +295,11 @@ End;
 (**
 
   This method is called for the selected node in the project manager asking if
-  a menu should be created for the given ID. We return true for the ident
+  a menu should be created for the given ID. We return true for the identifier
   "ProjectContainer".
 
   @precon  None.
-  @postcon Returns true for the ident "ProjectContainer".
+  @postcon Returns true for the identifier "ProjectContainer".
 
   @param   Ident as a string as a constant
   @return  a Boolean
@@ -314,7 +314,7 @@ End;
 
 (**
 
-  This is a constructor for the TProjectManagerMenu class.
+  This is a constructor for the TITHProjectManagerMenu class.
 
   @precon  None.
   @postcon Holds a reference to the main wizard for configuring options.
@@ -331,7 +331,7 @@ End;
 
 (**
 
-  A destructor for the TITHelperProjectManagerMenu class.
+  A destructor for the TITHProjectManagerMenu class.
 
   @precon  None.
   @postcon Does nothing but is used for code site tracing.
@@ -462,7 +462,7 @@ End;
   This is an execute method implementation for the IOTAProjectManageMenu interface.
 
   @precon  None.
-  @postcon Displays the Configuation Options dialogue for the current project.
+  @postcon Displays the Configuration Options dialogue for the current project.
 
   @nohints
 
@@ -512,7 +512,7 @@ End;
   This is an GetEnabled method implementation for the IOTAProjectManageMenu interface.
 
   @precon  None.
-  @postcon Returns true for the menu item to tbe enabled.
+  @postcon Returns true for the menu item to be enabled.
 
   @return  a Boolean
 

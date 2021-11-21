@@ -10,6 +10,7 @@ object frameAboutITHelper: TframeAboutITHelper
   Font.Style = []
   ParentFont = False
   TabOrder = 0
+  PixelsPerInch = 96
   object pnlFudgePanel: TPanel
     Left = 0
     Top = 0
@@ -22,7 +23,7 @@ object frameAboutITHelper: TframeAboutITHelper
       AlignWithMargins = True
       Left = 3
       Top = 3
-      Width = 503
+      Width = 309
       Height = 29
       Align = alTop
       Caption = 'Integrated Testing Helper'
@@ -33,13 +34,12 @@ object frameAboutITHelper: TframeAboutITHelper
       Font.Style = [fsBold]
       ParentFont = False
       Transparent = True
-      ExplicitWidth = 309
     end
     object lblBuild: TLabel
       AlignWithMargins = True
       Left = 3
       Top = 38
-      Width = 503
+      Width = 40
       Height = 16
       Align = alTop
       Caption = 'lblBuild'
@@ -49,13 +49,12 @@ object frameAboutITHelper: TframeAboutITHelper
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
-      ExplicitWidth = 40
     end
     object lblAuthor: TLabel
       AlignWithMargins = True
       Left = 3
       Top = 82
-      Width = 503
+      Width = 229
       Height = 16
       Align = alTop
       Caption = 'Author: David Hoyle (c) 2019 GNU GPL 3'
@@ -65,23 +64,21 @@ object frameAboutITHelper: TframeAboutITHelper
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
-      ExplicitWidth = 229
     end
     object lblBuildDate: TLabel
       AlignWithMargins = True
       Left = 3
       Top = 60
-      Width = 503
+      Width = 66
       Height = 16
       Align = alTop
       Caption = 'lblBuildDate'
-      ExplicitWidth = 66
     end
     object lblPleaseSelect: TLabel
       AlignWithMargins = True
       Left = 3
       Top = 402
-      Width = 503
+      Width = 220
       Height = 16
       Align = alBottom
       Caption = 'Please select a sub-options category...'
@@ -92,7 +89,6 @@ object frameAboutITHelper: TframeAboutITHelper
       Font.Style = []
       ParentFont = False
       Layout = tlCenter
-      ExplicitWidth = 220
     end
     object lblEurekaLog: TLabel
       AlignWithMargins = True

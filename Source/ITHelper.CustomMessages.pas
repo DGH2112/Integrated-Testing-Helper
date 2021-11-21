@@ -1,11 +1,11 @@
 (**
   
-  This module contains a class for implementing IOTACustomMessages in the IDE for displaying messages
+  This module contains a class for implementing IOTACustomMessage in the IDE for displaying messages
   for this plug-in (custom colours and fonts).
 
   @Author  David Hoyle
-  @Version 1.001
-  @Date    05 Jun 2020
+  @Version 1.007
+  @Date    21 Nov 2021
   
   @license
 
@@ -52,9 +52,9 @@ Type
     FStyle       : TFontStyles;
     FBackColour  : TColor;
     FMessagePntr : Pointer;
-    {$IFDEF DXE102}
+    {$IFDEF RS102}
     FStyleServices : TCustomStyleServices;
-    {$ENDIF}
+    {$ENDIF RS102}
   {$IFDEF D2010} Strict {$ENDIF D2010} Protected
     // IOTACustomMessage
     Function GetColumnNumber: Integer;
@@ -89,8 +89,8 @@ Uses
 
   Calculates the bounding rectangle. CalcRect computes the bounding box required by the entire message. 
   The message view itself always displays messages in a single line of a fixed size. If the user hovers 
-  the cursor over a long message, a tooltip displays the entire message. CalcRect returns the size of the
-  tooltip window. The Canvas parameter is the canvas for drawing the message. The MaxWidth parameter is 
+  the cursor over a long message, a tool tip displays the entire message. CalcRect returns the size of the
+  tool tip window. The Canvas parameter is the canvas for drawing the message. The MaxWidth parameter is 
   the maximum allowed width of the bounding box (e.g., the screen width). The Wrap Parameter is true to 
   word-wrap the message onto multiple lines. It is false if the message must be kept to one line. The 
   Return value is the bounding rectangle required by the message.
@@ -122,7 +122,7 @@ End;
 
 (**
 
-  This is the constructor for the TCustomMessage class.
+  This is the constructor for the TITHCustomMessage class.
 
   @precon  None.
   @postcon Creates a custom message with fore and background colours and font styles.
@@ -147,9 +147,9 @@ Const
 Var
   i: Integer;
   iLength: Integer;
-  {$IFDEF DXE102}
+  {$IFDEF RS102}
   ITS : IOTAIDEThemingServices;
-  {$ENDIF}
+  {$ENDIF RS102}
 
 Begin
   {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Create', tmoTiming);{$ENDIF}
@@ -172,12 +172,12 @@ Begin
   FStyle := Style;
   FBackColour := BackColour;
   FMessagePntr := Nil;
-  {$IFDEF DXE102}
+  {$IFDEF RS102}
   FStyleServices := Nil;
   If Supports(BorlandIDEServices, IOTAIDEThemingServices, ITS) Then
     If ITS.IDEThemingEnabled Then
       FStyleServices := ITS.StyleServices;
-  {$ENDIF}
+  {$ENDIF RS102}
 End;
 
 (**
@@ -197,15 +197,15 @@ End;
 
 (**
 
-  Draws the message. Draw draws the message in the message view window or in a tooltip window. The Canvas
+  Draws the message. Draw draws the message in the message view window or in a tool tip window. The Canvas
   parameter is the canvas on which to draw the message. The Rect parameter is the bounding box for the 
   message. If you draw outside this rectangle, you might obscure other messages. The Wrap Parameter is 
   true to word-wrap the message on multiple lines or false to keep the message on a single line. The 
-  message view window always uses a single line for each message, but the tooltip (which the user sees by
+  message view window always uses a single line for each message, but the tool tip (which the user sees by
   hovering the cursor over the message) can be multiple lines. The drawing objects (brush, pen, and font
   ) are set up appropriately for drawing messages that look like all the other messages in the message 
-  view. In particular, the brush and font colors are set differently depending on whether the message is 
-  selected. A custom-drawn message should not alter the colors or other graphic parameters without good 
+  view. In particular, the brush and font colours are set differently depending on whether the message is 
+  selected. A custom-drawn message should not alter the colours or other graphic parameters without good 
   reason.
 
   @precon  None.
@@ -230,10 +230,10 @@ Var
 Begin
   // Determine if the message is selected
   iHighlightColour := clHighlight;
-  {$IFDEF DXE102}
+  {$IFDEF RS102}
   If Assigned(FStyleServices) Then
     iHighlightColour := FStyleServices.GetSystemColor(clHighlight);
-  {$ENDIF}
+  {$ENDIF RS102}
   boolIsSelected := Canvas.Brush.Color = iHighlightColour;
   // Draw background
   If Not boolIsSelected Then
@@ -241,10 +241,10 @@ Begin
       Canvas.Brush.Color := FBackColour;
       If Canvas.Brush.Color = clNone Then
         Canvas.Brush.Color := clWindow;
-      {$IFDEF DXE102}
+      {$IFDEF RS102}
       If Assigned(FStyleServices) Then
         Canvas.Brush.Color := FStyleServices.GetSystemColor(Canvas.Brush.Color);
-      {$ENDIF}
+      {$ENDIF RS102}
     End;
   Canvas.FillRect(Rect);
   // Draw text
@@ -253,10 +253,10 @@ Begin
       Canvas.Font.Color := FForeColour;
       If Canvas.Font.Color = clNone Then
         Canvas.Font.Color := clWindowText;
-      {$IFDEF DXE102}
+      {$IFDEF RS102}
       If Assigned(FStyleServices) Then
         Canvas.Font.Color := FStyleServices.GetSystemColor(Canvas.Font.Color);
-      {$ENDIF}
+      {$ENDIF RS102}
     End;
   R := Rect;
   strMsg := FMsg;
@@ -299,7 +299,7 @@ End;
   Return an empty string if the message is not associated with a source file.
 
   @precon  None.
-  @postcon We return an empty string for this implementation othereise you would
+  @postcon We return an empty string for this implementation otherwise you would
            return the full name and path of the file associated with the
            message.
 
@@ -354,7 +354,7 @@ End;
 
 (**
 
-  This is a getter method for the MessagePtr property.
+  This is a getter method for the Message Pointer property.
 
   @precon  None.
   @postcon Returns the message pointer (used in parenting messages).
@@ -387,7 +387,7 @@ End;
 
 (**
 
-  This is a setter method for the MessagePtr property.
+  This is a setter method for the Message Pointer property.
 
   @precon  None.
   @postcon Sets the message pointer (used in parenting messages).

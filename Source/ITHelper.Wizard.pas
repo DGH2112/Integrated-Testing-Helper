@@ -3,8 +3,8 @@
   This module contains a Delphi IDE Wizard which implements support for running
   external tools before and after the compilation of the current project.
 
-  @Version 1.001
-  @Date    05 Jun 2020
+  @Version 1.004
+  @Date    21 Nov 2021
   @Author  David Hoyle
 
   @license
@@ -349,7 +349,7 @@ End;
 
 (**
 
-  This is the constructor method for the TTestingHelperWizard class.
+  This is the constructor method for the TITHWizard class.
 
   @precon  None.
   @postcon Initialises the wizard and creates a menu item.
@@ -494,10 +494,10 @@ End;
 
 (**
 
-  This is the destructor method for the TTestingHelperWizard class.
+  This is the destructor method for the TITHWizard class.
 
   @precon  None.
-  @postcon Removes the meun item from the IDE.
+  @postcon Removes the menu item from the IDE.
 
 **)
 Destructor TITHWizard.Destroy;
@@ -646,7 +646,7 @@ End;
   This is an on click event handler for the Global Options dialogue action.
 
   @precon  None.
-  @postcon Displazs the Global Options dialogue.
+  @postcon Displays the Global Options dialogue.
 
   @param   Sender as a TObject
 
@@ -707,7 +707,7 @@ End;
   This is an on click event handler for the Project Options action.
 
   @precon  None.
-  @postcon Dispays the projects options dialogue.
+  @postcon Displays the projects options dialogue.
 
   @param   Sender as a TObject
 
@@ -724,7 +724,7 @@ End;
   This is an on update event handler for the Project Options action.
 
   @precon  None.
-  @postcon Updates the project options action caption based on the avtive project.
+  @postcon Updates the project options action caption based on the active project.
 
   @param   Sender as a TObject
 
@@ -836,7 +836,7 @@ End;
   This is an on click event handler for the ZIP Dialogue action.
 
   @precon  None.
-  @postcon Displays thezipping options dialogue.
+  @postcon Displays the zipping options dialogue.
 
   @param   Sender as a TObject
 
@@ -853,7 +853,7 @@ End;
   This is an on update event handler for the ZIP Dialogue action.
 
   @precon  None.
-  @postcon Updates the actions cption.
+  @postcon Updates the actions option.
 
   @param   Sender as a TObject
 
