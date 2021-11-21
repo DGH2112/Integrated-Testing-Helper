@@ -3,8 +3,8 @@
   This module contains code for added and removing about box entries in the IDE.
 
   @Author  David Hoyle
-  @Version 1.001
-  @Date    05 Jun 2020
+  @Version 1.143
+  @Date    21 Nov 2021
   
   @license
 
@@ -31,6 +31,8 @@ Unit ITHelper.AboutBox;
 
 Interface
 
+{$INCLUDE CompilerDefinitions.Inc}
+
   Function  AddAboutBoxEntry : Integer;
   Procedure RemoveAboutBoxEntry(Const iAboutBoxIndex : Integer);
 
@@ -39,8 +41,9 @@ Implementation
 Uses
   ToolsAPI,
   SysUtils,
-  Windows,
+  Graphics,
   Forms, 
+  Windows,
   ITHelper.ResourceStrings, 
   ITHelper.Constants, 
   ITHelper.CommonFunctions;
@@ -50,7 +53,7 @@ Uses
   This method installs the about box entry in the IDE.
 
   @precon  None.
-  @postcon The about box entry is installed and the return value is the index with whch to remove it
+  @postcon The about box entry is installed and the return value is the index with which to remove it
            later.
 
   @return  an Integer
@@ -71,7 +74,11 @@ ResourceString
     'processes and automatically ZIP the successfully compiled project for release.';
 
 Var
+  {$IFDEF RS110}
+  BitMap : Graphics.TBitmap;
+  {$ELSE}
   bmSplashScreen : HBITMAP;
+  {$ENDIF RS110}
   recVersionInfo : TITHVersionInfo;
   ABS : IOTAAboutBoxServices;
   strModuleName: String;
@@ -83,28 +90,40 @@ Begin
   iSize := GetModuleFileName(hInstance, PChar(strModuleName), MAX_PATH);
   SetLength(strModuleName, iSize);
   BuildNumber(strModuleName, recVersionInfo);
-  bmSplashScreen := LoadBitmap(hInstance, strITHelperSplashScreen48x48);
   If Supports(BorlandIDEServices, IOTAAboutBoxServices, ABS) Then
     Begin
+      {$IFDEF RS110}
+      BitMap := Graphics.TBitmap.Create();
+      Try
+        BitMap.LoadFromResourceName(hInstance, strITHelperSplashScreen48x48);
       Result := ABS.AddPluginInfo(
-        Format(strSplashScreenName, [
-          recVersionInfo.FMajor,
-          recVersionInfo.FMinor,
-          Copy(strRevisions, recVersionInfo.FBugFix + 1, 1),
-          Application.Title]),
+        Format(strSplashScreenName, [recVersionInfo.FMajor, recVersionInfo.FMinor,
+          Copy(strRevisions, recVersionInfo.FBugFix + 1, 1), Application.Title]),
+        strPluginDescription,
+        [BitMap],
+        {$IFDEF DEBUG} True {$ELSE} False {$ENDIF},
+        Format(strSplashScreenBuild, [recVersionInfo.FMajor, recVersionInfo.FMinor,
+          recVersionInfo.FBugfix, recVersionInfo.FBuild]),
+        Format(strSKUBuild, [recVersionInfo.FMajor, recVersionInfo.FMinor, recVersionInfo.FBugfix,
+          recVersionInfo.FBuild])
+      );
+      Finally
+        BitMap.Free;
+      End;
+      {$ELSE}
+      bmSplashScreen := LoadBitmap(hInstance, strITHelperSplashScreen48x48);
+      Result := ABS.AddPluginInfo(
+        Format(strSplashScreenName, [recVersionInfo.FMajor, recVersionInfo.FMinor,
+          Copy(strRevisions, recVersionInfo.FBugFix + 1, 1), Application.Title]),
         strPluginDescription,
         bmSplashScreen,
         {$IFDEF DEBUG} True {$ELSE} False {$ENDIF},
-        Format(strSplashScreenBuild, [
-          recVersionInfo.FMajor,
-          recVersionInfo.FMinor,
-          recVersionInfo.FBugfix,
-          recVersionInfo.FBuild]),
-        Format(strSKUBuild, [
-          recVersionInfo.FMajor,
-          recVersionInfo.FMinor,
-          recVersionInfo.FBugfix,
-          recVersionInfo.FBuild]));
+        Format(strSplashScreenBuild, [recVersionInfo.FMajor, recVersionInfo.FMinor,
+          recVersionInfo.FBugfix, recVersionInfo.FBuild]),
+        Format(strSKUBuild, [recVersionInfo.FMajor, recVersionInfo.FMinor, recVersionInfo.FBugfix,
+          recVersionInfo.FBuild])
+      );
+      {$ENDIF RS110}
     End;
 End;
 
