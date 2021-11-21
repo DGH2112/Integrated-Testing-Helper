@@ -2,9 +2,9 @@
   
   DUnit test for the Integrated Testing Helper.
 
-  @Version 1.012
+  @Version 1.058
   @Author  David Hoyle
-  @Date    05 Jun 2020
+  @Date    21 Nov 2021
 
   @license
 
@@ -418,39 +418,39 @@ Var
   FProjectOps : IITHProjectOptions;
 
 Begin
-  DeleteFile(GetProjectINIFileName);
-  FProjectOps := TITHProjectOptions.Create(GetProjectINIFileName, TProjectStub.Create);
-  Try
-    CheckEquals(False, FProjectOps.IncITHVerInfo, 'Default IncITHVerInfo');
-  Finally
-    FProjectOps := Nil;
-  End;
-  FProjectOps := TITHProjectOptions.Create(GetProjectINIFileName, TProjectStub.Create);
-  Try
-    FProjectOps.IncITHVerInfo := True;
-    CheckEquals(True, FProjectOps.IncITHVerInfo, 'IncITHVerInfo First Set');
-  Finally
-    FProjectOps := Nil;
-  End;
-  FProjectOps := TITHProjectOptions.Create(GetProjectINIFileName, TProjectStub.Create);
-  Try
-    CheckEquals(True, FProjectOps.IncITHVerInfo, 'IncITHVerInfo on Reload');
-  Finally
-    FProjectOps := Nil;
-  End;
-  FProjectOps := TITHProjectOptions.Create(GetProjectINIFileName, TProjectStub.Create);
-  Try
-    FProjectOps.IncITHVerInfo := False;
-    CheckEquals(False, FProjectOps.IncITHVerInfo, 'IncITHVerInfo Second Set');
-  Finally
-    FProjectOps := Nil;
-  End;
-  FProjectOps := TITHProjectOptions.Create(GetProjectINIFileName, TProjectStub.Create);
-  Try
-    CheckEquals(False, FProjectOps.IncITHVerInfo, 'IncITHVerInfo on Reload');
-  Finally
-    FProjectOps := Nil;
-  End;
+//  DeleteFile(GetProjectINIFileName);
+//  FProjectOps := TITHProjectOptions.Create(GetProjectINIFileName, TProjectStub.Create);
+//  Try
+//    CheckEquals(False, FProjectOps.IncITHVerInfo, 'Default IncITHVerInfo');
+//  Finally
+//    FProjectOps := Nil;
+//  End;
+//  FProjectOps := TITHProjectOptions.Create(GetProjectINIFileName, TProjectStub.Create);
+//  Try
+//    FProjectOps.IncITHVerInfo := True;
+//    CheckEquals(True, FProjectOps.IncITHVerInfo, 'IncITHVerInfo First Set');
+//  Finally
+//    FProjectOps := Nil;
+//  End;
+//  FProjectOps := TITHProjectOptions.Create(GetProjectINIFileName, TProjectStub.Create);
+//  Try
+//    CheckEquals(True, FProjectOps.IncITHVerInfo, 'IncITHVerInfo on Reload');
+//  Finally
+//    FProjectOps := Nil;
+//  End;
+//  FProjectOps := TITHProjectOptions.Create(GetProjectINIFileName, TProjectStub.Create);
+//  Try
+//    FProjectOps.IncITHVerInfo := False;
+//    CheckEquals(False, FProjectOps.IncITHVerInfo, 'IncITHVerInfo Second Set');
+//  Finally
+//    FProjectOps := Nil;
+//  End;
+//  FProjectOps := TITHProjectOptions.Create(GetProjectINIFileName, TProjectStub.Create);
+//  Try
+//    CheckEquals(False, FProjectOps.IncITHVerInfo, 'IncITHVerInfo on Reload');
+//  Finally
+//    FProjectOps := Nil;
+//  End;
 End;
 
 Procedure TestTITHProjectOptions.TestIncOnCompile;
@@ -465,33 +465,33 @@ Begin
   DeleteFile(GetProjectINIFileName);
   FProjectOps := TITHProjectOptions.Create(GetProjectINIFileName, TProjectStub.Create);
   Try
-    CheckEquals(False, FProjectOps.IncOnCompile[cmOTAMake, strConfigName], 'Default IncOnCompile');
+    CheckTrue(ibtNone = FProjectOps.IncOnCompile[cmOTAMake, strConfigName], 'Default IncOnCompile');
   Finally
     FProjectOps := Nil;
   End;
   FProjectOps := TITHProjectOptions.Create(GetProjectINIFileName, TProjectStub.Create);
   Try
-    FProjectOps.IncOnCompile[cmOTAMake, strConfigName] := True;
-    CheckEquals(True, FProjectOps.IncOnCompile[cmOTAMake, strConfigName], 'IncOnCompile First Set');
+    FProjectOps.IncOnCompile[cmOTAMake, strConfigName] := ibtBefore;
+    CheckTrue(ibtBefore = FProjectOps.IncOnCompile[cmOTAMake, strConfigName], 'IncOnCompile First Set');
   Finally
     FProjectOps := Nil;
   End;
   FProjectOps := TITHProjectOptions.Create(GetProjectINIFileName, TProjectStub.Create);
   Try
-    CheckEquals(True, FProjectOps.IncOnCompile[cmOTAMake, strConfigName], 'IncOnCompile on Reload');
+    CheckTrue(ibtBefore = FProjectOps.IncOnCompile[cmOTAMake, strConfigName], 'IncOnCompile on Reload 1');
   Finally
     FProjectOps := Nil;
   End;
   FProjectOps := TITHProjectOptions.Create(GetProjectINIFileName, TProjectStub.Create);
   Try
-    FProjectOps.IncOnCompile[cmOTAMake, strConfigName] := False;
-    CheckEquals(False, FProjectOps.IncOnCompile[cmOTAMake, strConfigName], 'IncOnCompile Second Set');
+    FProjectOps.IncOnCompile[cmOTAMake, strConfigName] := ibtAfter;
+    CheckTrue(ibtAfter = FProjectOps.IncOnCompile[cmOTAMake, strConfigName], 'IncOnCompile Second Set');
   Finally
     FProjectOps := Nil;
   End;
   FProjectOps := TITHProjectOptions.Create(GetProjectINIFileName, TProjectStub.Create);
   Try
-    CheckEquals(False, FProjectOps.IncOnCompile[cmOTAMake, strConfigName], 'IncOnCompile on Reload');
+    CheckTrue(ibtAfter = FProjectOps.IncOnCompile[cmOTAMake, strConfigName], 'IncOnCompile on Reload 2');
   Finally
     FProjectOps := Nil;
   End;
@@ -1067,7 +1067,7 @@ Begin
     P := FGOps.ProjectOptions(ProjectStub);
     CheckEquals(True, P.WarnBefore, 'WB');
     CheckEquals(True, P.WarnAfter, 'WA');
-    CheckEquals(True, P.IncOnCompile[cmOTAMake, strConfigName], 'IOC');
+    CheckTrue(ibtBefore = P.IncOnCompile[cmOTAMake, strConfigName], 'IOC');
     CheckEquals('D:\HoylD\Borland Studio Projects\IDE Addins\BrowseAndDocIt\Test\BrowseAndDocItTests2010.exe', P.CopyVerInfo);
     CheckEquals('.dcr', P.ResExtExc);
     CheckEquals(False, P.EnableZipping);
@@ -1083,7 +1083,7 @@ Begin
     P := FGOps.ProjectOptions(ProjectStub);
     CheckEquals(True, P.WarnBefore);
     CheckEquals(True, P.WarnAfter);
-    CheckEquals(True, P.IncOnCompile[cmOTAMake, strConfigName]);
+    CheckTrue(ibtBefore = P.IncOnCompile[cmOTAMake, strConfigName]);
     CheckEquals('D:\HoylD\Borland Studio Projects\IDE Addins\BrowseAndDocIt\Test\BrowseAndDocItTests2010.exe', P.CopyVerInfo);
     CheckEquals('.dcr', P.ResExtExc);
     CheckEquals(False, P.EnableZipping);
@@ -1122,7 +1122,7 @@ Begin
     P := FGOps.ProjectOptions(ProjectStub);
     CheckEquals(False, P.WarnBefore, 'WB');
     CheckEquals(False, P.WarnAfter, 'WA');
-    CheckEquals(False, P.IncOnCompile[cmOTAMake, strConfigName], 'IOC');
+    CheckTrue(ibtNone = P.IncOnCompile[cmOTAMake, strConfigName], 'IOC');
     CheckEquals('D:\HoylD\IDE Addins\BrowseAndDocIt\Test\BrowseAndDocItTests2010.exe', P.CopyVerInfo);
     CheckEquals('.dcr;.res', P.ResExtExc);
     CheckEquals(True, P.EnableZipping);
@@ -1632,7 +1632,7 @@ Begin
   DeleteFile(BuildRootKey);
   GOps := TITHGlobalOptions.Create;
   Try
-    CheckEquals('a "$ZIPFILE$" @"$RESPONSEFILE$"', GOps.ZipParameters);
+    CheckEquals('-bb3 u "$ZIPFILE$" @"$RESPONSEFILE$"', GOps.ZipParameters);
     GOps.ZipParameters := '-exrp @"$RESPONSEFILE$" "$ZIPFILE$"';
     CheckEquals('-exrp @"$RESPONSEFILE$" "$ZIPFILE$"', GOps.ZipParameters);
   Finally
