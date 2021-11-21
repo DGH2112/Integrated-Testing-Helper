@@ -1,10 +1,10 @@
 (**
 
-  This modulel contains a frame for the root node of the BADI Options frame in the IDE.
+  This module contains a frame for the root node of the BADI Options frame in the IDE.
 
   @Author  David Hoyle
-  @Version 1.001
-  @Date    05 Jun 2020
+  @Version 1.002
+  @Date    21 Nov 2021
 
   @license
 
@@ -125,7 +125,7 @@ End;
   This method initialises the options frame.
 
   @precon  None.
-  @postcon Upudates the labels with the current build information.
+  @postcon Updates the labels with the current build information.
 
   @nohint  GlobalOps Project, DlgType
 
@@ -224,7 +224,7 @@ End;
 
 (**
 
-  This method saves the optins frame.
+  This method saves the options frame.
 
   @precon  None.
   @postcon Nothing to save here.

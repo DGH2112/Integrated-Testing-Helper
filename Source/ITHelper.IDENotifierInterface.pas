@@ -4,8 +4,8 @@
   compilation events can be handled.
 
   @Author  David Hoyle.
-  @Date    12 Jun 2020
-  @Version 1.078
+  @Date    21 Nov 2021
+  @Version 1.086
 
   @license
 
@@ -180,7 +180,7 @@ ResourceString
   (** This is the warning shown if there are no before compilation tools. **)
   strBeforeCompileWARNING = 'WARNING: There are no Pre-Compilation tools configured (%s).';
   {$IFDEF VER230}
-  (** A resource string messge for broken Open Tools API version control XE2 ONLY!!!! **)
+  (** A resource string message for broken Open Tools API version control XE2 ONLY!!!! **)
   strMsgBroken = 'The Open Tools API''s ability to manipulale the build number of the ' +
     'version information is broken. Althought the number can be incremented this is ' +
     'not included in the EXE/DLL and this incrementation is lost when the project is ' +
@@ -198,12 +198,12 @@ ResourceString
     'Build from %d to %d.';
   (** A constant string for a base configuration in XE and below. **)
   strBASE = 'BASE';
-  (** A constant string for a base platform in XE and below. **)
-  strWin32 = 'Win32';
 
 Const
   (** This number of milliseconds in a second. **)
   iMilliSecInSec : Int64 = 1000;
+  (** A constant string for a base platform in XE and below. **)
+  strWin32 = 'Win32';
 
 (**
 
@@ -252,7 +252,7 @@ End;
   This is an implementation for the AfterCompile interface.
 
   @precon  None.
-  @postcon If the compile is not from CodeInsight then the before compilation
+  @postcon If the compile is not from Code Insight then the before compilation
            external tools associated with the compiled project are run.
 
   @nocheck MissingCONSTInParam
@@ -275,7 +275,7 @@ End;
   This is an implementation for the BeforeCompile interface.
 
   @precon  None.
-  @postcon If the compile is not from CodeInsight then the before compilation
+  @postcon If the compile is not from Code Insight then the before compilation
            external tools associated with the compiled project are run.
 
   @nocheck MissingCONSTInParam
@@ -314,7 +314,7 @@ End;
 
 (**
 
-  This method returns the active build configruation for the application and additinally checks for
+  This method returns the active build configuration for the application and additionally checks for
   XE2 and whether the version information is switched on as this is broken in XE2.
 
   @precon  Project must be a valid reference.
@@ -347,10 +347,10 @@ End;
 
 (**
 
-  This method clears the messages inthe message view of the appropriate period of time has elapsed.
+  This method clears the messages in the message view of the appropriate period of time has elapsed.
 
   @precon  None.
-  @postcon The message view is cleared is the time periodf has elapsed.
+  @postcon The message view is cleared if the time period has elapsed.
 
 **)
 Procedure TITHelperIDENotifier.ClearMessages;
@@ -431,7 +431,7 @@ End;
 
 (**
 
-  A constructor for the TTestingHelperIDENotifier class.
+  A constructor for the TITHelperIDENotifier class.
 
   @precon  None.
   @postcon Initialises the class.
@@ -478,7 +478,7 @@ End;
 
 (**
 
-  A destructor for the TTestingHelperIDENotifier class.
+  A destructor for the TITHelperIDENotifier class.
 
   @precon  None.
   @postcon Frees memory used by the class.
@@ -574,10 +574,10 @@ End;
 {$IFDEF DXE00}
 (**
 
-  This is a getter method for the CompielInformation property.
+  This is a getter method for the Compile Information property.
 
   @precon  None.
-  @postcon Retreives the compiling information and returns it.
+  @postcon Retrieves the compiling information and returns it.
 
   @return  a TOTAProjectCompileInfo
 
@@ -593,7 +593,7 @@ End;
 
 (**
 
-  This is an on idle message handler for the DGHCreateProcess method.
+  This is an on idle message handler for the DGH Create Process method.
 
   @precon  None.
   @postcon Ensures the application processes its message queue.
@@ -607,10 +607,10 @@ End;
 
 (**
 
-  This method increments the buld number of the passed project IF this is enabled in the options.
+  This method increments the build number of the passed project IF this is enabled in the options.
 
   @precon  ProjectOps must be a valid instance.
-  @postcon Increments the buld number of the passed project IF this is enabled in the options.
+  @postcon Increments the build number of the passed project IF this is enabled in the options.
 
   @param   eBuildType as a TITHIncrementBuildType as a constant
   @param   Ops        as a TITHEnabledOptions as a constant
@@ -781,7 +781,7 @@ End;
 
 (**
 
-  This method uninstall the project notifiers if the given module contains an IOTAProject interface.
+  This method un-install the project notifiers if the given module contains an IOTAProject interface.
 
   @precon  M must be a valid instance.
   @postcon If the module is an IOTAProject, the Project Notifier and Project Compile Notifier are
@@ -873,7 +873,7 @@ End;
 
 (**
 
-  This method processes information beofer a project is compiled.
+  This method processes information before a project is compiled.
 
   @precon  Project must be a valid instance.
   @postcon If the options are enabled those elements are processed before the application is compiled.
@@ -986,7 +986,7 @@ End;
 
 (**
 
-  This is an on process Msg handler for the DGHCreateProcess method.
+  This is an on process message handler for the DGH Create Process method.
 
   @precon  None.
   @postcon Outputs the messages from the process to the message window.
@@ -1035,7 +1035,7 @@ End;
 (**
 
   This method is called when a project is renamed to allow the project notifier collections to be updated
-  with the new filername.
+  with the new filename.
 
   @precon  None.
   @postcon The project notifier collections are updated with the new filename.
@@ -1053,10 +1053,10 @@ End;
 
 (**
 
-  This method runs any configured post-conpilation tools for the given project.
+  This method runs any configured post-compilation tools for the given project.
 
   @precon  ProjectOps an Project must be valid references.
-  @postcon Runs any configured post-conpilation tools for the given project.
+  @postcon Runs any configured post-compilation tools for the given project.
 
   @param   Ops        as a TITHEnabledOptions as a constant
   @param   ProjectOps as an IITHProjectOptions as a constant
@@ -1094,10 +1094,10 @@ End;
 
 (**
 
-  This method runs any configured pre-conpilation tools for the given project.
+  This method runs any configured pre-compilation tools for the given project.
 
   @precon  ProjectOps an Project must be valid references.
-  @postcon Runs any configured pre-conpilation tools for the given project.
+  @postcon Runs any configured pre-compilation tools for the given project.
 
   @param   Ops        as a TITHEnabledOptions as a constant
   @param   ProjectOps as an IITHProjectOptions as a constant
@@ -1138,7 +1138,7 @@ End;
 {$IFDEF DXE00}
 (**
 
-  This is a setter method for the CompileInformation property.
+  This is a setter method for the Compile Information property.
 
   @precon  None.
   @postcon Stores the compile information.
@@ -1212,10 +1212,11 @@ End;
 {$IFDEF DXE20}
 (**
 
-  This method updates the project version information in RAD Studio XE2 and above (multiple configs).
+  This method updates the project version information in RAD Studio XE2 and above (multiple
+  configurations).
 
   @precon  ActiveConfig must be a valid reference.
-  @postcon Udates the project version information in RAD Studio XE2 and above (multiple configs).
+  @postcon Updates the project version information in RAD Studio XE2 and above (multiple configurations).
 
   @param   ActiveConfig   as an IOTABuildConfiguration as a constant
   @param   recVersionInfo as a TITHVersionInfo as a constant
@@ -1246,7 +1247,7 @@ End;
   This method updates the project version information in RAD Studio XE and below.
 
   @precon  ProjectOps and Project must be valid references.
-  @postcon The IOTAProjects version information is updated.
+  @postcon The IOTAProject version information is updated.
 
   @param   ProjectOps     as an IITHProjectOptions as a constant
   @param   Project        as an IOTAProject as a constant
@@ -1363,7 +1364,7 @@ End;
 
   This method zips the projects files if this options is enabled.
 
-  @precon  ProjectOps and Project must be vaild references.
+  @precon  ProjectOps and Project must be valid references.
   @postcon Zips the projects files if this options is enabled.
 
   @param   Ops        as a TITHEnabledOptions as a constant

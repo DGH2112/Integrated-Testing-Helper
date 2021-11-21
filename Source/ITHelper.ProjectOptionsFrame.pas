@@ -1,11 +1,11 @@
 (**
   
   This module contains the project options (version control, etc) in a frame so that it can be placed 
-  in the project options dialgoue.
+  in the project options dialogue.
 
   @Author  David Hoyle
-  @Version 1.411
-  @Date    12 Jun 2020
+  @Version 1.413
+  @Date    21 Nov 2021
   
   @license
 
@@ -101,7 +101,7 @@ Type
     procedure lvIncrementOnCompileModeResize(Sender: TObject);
   Strict Private
     Type
-      (** A record to describe the information store for the list of compile mode configuations. **)
+      (** A record to describe the information store for the list of compile mode configurations. **)
       TITHConfigCompileModes = Record
         FConfigName  : String;
         FCompileMode : Array[TOTACompileMode] Of TITHIncrementBuildType;
@@ -142,7 +142,7 @@ Uses
 
 (**
 
-  This is an on click event handler for the GetvVersionInfo button.
+  This is an on click event handler for the Get Version Info button.
 
   @precon  None.
   @postcon Extracts the version information from the IDE.
@@ -227,7 +227,7 @@ End;
   Build) control.
 
   @precon  None.
-  @postcon Updates the FileVersion member of the version information strings.
+  @postcon Updates the File Version member of the version information strings.
 
   @param   Sender as a TObject
   @param   Button as a TUDBtnType
@@ -259,10 +259,10 @@ End;
 
 (**
 
-  This is an on click event handler for the Enabled checkbox.
+  This is an on click event handler for the Enabled check box.
 
   @precon  None.
-  @postcon Enables of disables the grouop box accordingly.
+  @postcon Enables of disables the group box accordingly.
 
   @param   Sender as a TObject
 
@@ -433,9 +433,9 @@ Procedure TframeProjectOptions.InitialiseOptions(Const GlobalOps: IITHGlobalOpti
 
 Var
   ProjectOps: IITHProjectOptions;
-  {$IFDEF DXE102}
+  {$IFDEF RS102}
   ITS : IOTAIDEThemingServices;
-  {$ENDIF DXE102}
+  {$ENDIF RS102}
 
 Begin
   FProject := Project;
@@ -457,7 +457,7 @@ Begin
     ProjectOps := Nil;
   End;
   chkEnabledClick(Nil);
-  {$IFDEF DXE102}
+  {$IFDEF RS102}
   If Supports(BorlandIDEServices, IOTAIDEThemingServices, ITS) And ITS.IDEThemingEnabled Then
     Begin 
       vleVersionInfo.Ctl3D := False;
@@ -468,12 +468,12 @@ Begin
       vleVersionInfo.GradientEndColor := ITS.StyleServices.GetSystemColor(clBtnFace);
       vleVersionInfo.Font.Color := ITS.StyleServices.GetSystemColor(clWindowText);
     End;
-  {$ENDIF DXE102}
+  {$ENDIF RS102}
 End;
 
 (**
 
-  This method implements the IsValidated interfac method for the frame.
+  This method implements the IsValidated interface method for the frame.
 
   @precon  None.
   @postcon No validation is currently required to true is returned.
@@ -489,7 +489,7 @@ End;
 
 (**
 
-  This is an on custom draw sub item event handler for the conpile mode list view.
+  This is an on custom draw sub item event handler for the compile mode list view.
 
   @precon  None.
   @postcon Colours No red and Yes green.
@@ -511,13 +511,13 @@ Const
 
 Var
   iConfig: Integer;
-  {$IFDEF DXE102}
+  {$IFDEF RS102}
   ITS : IOTAIDEThemingServices;
-  {$ENDIF DXE102}
+  {$ENDIF RS102}
 
 Begin
   Sender.Canvas.Font.Color := clWindowText;
-  {$IFDEF DXE102}
+  {$IFDEF RS102}
   If Supports(BorlandIDEServices, IOTAIDEThemingServices, ITS) And ITS.IDEThemingEnabled Then
     If cdsSelected In State Then
       Sender.Canvas.Font.Color := ITS.StyleServices.GetSystemColor(clHighlightText)
@@ -525,7 +525,7 @@ Begin
       Sender.Canvas.Font.Color := ITS.StyleServices.GetSystemColor(clWindowText);
   If Not Item.Selected Then
     Sender.Canvas.Font.Color := clBlack;
-  {$ENDIF DXE102}
+  {$ENDIF RS102}
   Sender.Canvas.Brush.Color := iLightRed;
   iConfig := FindConfig(Item.Caption);
   If iConfig > -1 Then
@@ -638,7 +638,7 @@ End;
 
 (**
 
-  This is an on resise event handler for the Increment on Compile Mode listview.
+  This is an on resize event handler for the Increment on Compile Mode list view.
 
   @precon  None.
   @postcon The caption columns is resized to fit all columns on the screen.
@@ -703,10 +703,10 @@ End;
 
 (**
 
-  This method saves the project options to the ini file.
+  This method saves the project options to the INI file.
 
   @precon  None.
-  @postcon Saves the project options to the ini file.
+  @postcon Saves the project options to the INI file.
 
   @nohint  DlgType
 

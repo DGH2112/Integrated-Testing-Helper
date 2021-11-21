@@ -2,9 +2,9 @@
 
   This module contains often used code for use through out this application.
 
-  @Version 1.063
+  @Version 1.072
   @Author  David Hoyle
-  @Date    12 Jun 2020
+  @Date    21 Nov 2021
 
   @license
 
@@ -46,11 +46,10 @@ Uses
   ITHelper.Types;
 
 Type
-  (** An enumerate to define the type of information to be returned from
-      GetProcInfo. **)
+  (** An enumerate to define the type of information to be returned from GetProcInfo. **)
   TProcInfoType = (pitEXE, pitParam, pitDir);
 
-  (** An enumerate to defien which message should be cleared from the IDE
+  (** An enumerate to define which message should be cleared from the IDE
       message window. **)
   TClearMessage = (cmCompiler, cmSearch, cmTool, cmGroup);
   (** A set of the above message types. **)
@@ -198,10 +197,10 @@ function FindMenuItem(Const strParentMenu : String): TMenuItem;
 
   (**
 
-    This method iterates the submenus of a main menu item.
+    This method iterates the sub-menus of a main menu item.
 
     @precon  Menu must be a valid menu item.
-    @postcon Iterates the submenus of a main menu item.
+    @postcon Iterates the sub-menus of a main menu item.
 
     @param   Menu as a TMenuItem as a constant
     @return  a TMenuItem
@@ -247,11 +246,11 @@ end;
 
 (**
 
-  This method removes any tool bar buttons that correpsond to actions from this
+  This method removes any tool bar buttons that correspond to actions from this
   expert so that there are no access violations once it is removed.
 
   @precon  None.
-  @postcon Removes any tool bar buttons that correpsond to actions from this
+  @postcon Removes any tool bar buttons that correspond to actions from this
            expert so that there are no access violations once it is removed.
 
 **)
@@ -378,7 +377,7 @@ End;
 {$IFNDEF CONSOLE_TESTRUNNER}
 (**
 
-  This method wraps the Tools API ApplyTheme method from the IDEThemingServices so that components that
+  This method wraps the Tools API Apply Theme method from the IDE Theming Services so that components that
   do not theme can be handled here on one place.
 
   @precon  Component must be a valid root component to be themed along with its children.
@@ -389,19 +388,19 @@ End;
 **)
 Class Procedure TITHToolsAPIFunctions.ApplyTheming(Const Component: TComponent);
 
-{$IFDEF DXE102}
+{$IFDEF RS102}
 Var
   ITS : IOTAIDEThemingServices250;
-{$ENDIF}
+{$ENDIF RS102}
 
 Begin
-  {$IFDEF DXE102}
+  {$IFDEF RS102}
   If Supports(BorlandIDEServices, IOTAIDEThemingServices, ITS) Then
     If ITS.IDEThemingEnabled Then
       ITS.ApplyTheme(Component);
-  {$ENDIF}
+  {$ENDIF RS110}
 End;
-{$ENDIF}
+{$ENDIF CONSOLE_TESTRUNNER}
 
 (**
 
@@ -444,7 +443,7 @@ End;
 
   This method does the following: Adds an image to the IDE if found in the project resource, creates a 
   menu item, creates an action in the IDE for the menu if one is required, associated the action with the
-  menu and adds the menu to the IDE as a sibiling or underneath the parent item as required.
+  menu and adds the menu to the IDE as a sibling or underneath the parent item as required.
 
   @precon  None.
   @postcon Returns a reference to the menu.
@@ -605,10 +604,10 @@ End;
 
 (**
 
-  This function returns the ITHelpers HTML Help file with an optional page reference.
+  This function returns the ITHelper`s HTML Help file with an optional page reference.
 
   @precon  None.
-  @postcon Returns the ITHelpers HTML Help file with an optional page reference.
+  @postcon Returns the ITHelper`s HTML Help file with an optional page reference.
 
   @param   strContext as a String as a constant
   @return  a String
@@ -681,31 +680,31 @@ end;
 Class Procedure TITHToolsAPIFunctions.RegisterFormClassForTheming(Const AFormClass : TCustomFormClass;
   Const Component : TComponent = Nil);
 
-{$IFDEF DXE102}
+{$IFDEF RS102}
 Var
-  {$IFDEF DXE104}
+  {$IFDEF RS104}
   ITS : IOTAIDEThemingServices;
   {$ELSE}
   ITS : IOTAIDEThemingServices250;
-  {$ENDIF DXE104}
-{$ENDIF}
+  {$ENDIF RS104}
+{$ENDIF RS102}
 
 Begin
-  {$IFDEF DXE102}
-  {$IFDEF DXE104}
+  {$IFDEF RS102}
+  {$IFDEF RS104}
   If Supports(BorlandIDEServices, IOTAIDEThemingServices, ITS) Then
   {$ELSE}
   If Supports(BorlandIDEServices, IOTAIDEThemingServices250, ITS) Then
-  {$ENDIF DXE104}
+  {$ENDIF RS104}
     If ITS.IDEThemingEnabled Then
       Begin
         ITS.RegisterFormClass(AFormClass);
         If Assigned(Component) Then
           ITS.ApplyTheme(Component);
       End;
-  {$ENDIF}
+  {$ENDIF RS102}
 End;
-{$ENDIF}
+{$ENDIF CONSOLE_TESTRUNNER}
 
 (**
 
@@ -760,7 +759,7 @@ End;
 {$IFNDEF CONSOLE_TESTRUNNER}
 (**
 
-  This method iterators the editor buffer checking for modified files. If one is modified it save the 
+  This method iterates the editor buffer checking for modified files. If one is modified it save the 
   file. If Prompt is true then you are prompted to save the file else it is automatically saved.
 
   @precon  None.
@@ -825,7 +824,7 @@ End;
   This method iterate through the files in the project and saves any files that have been modified.
 
   @precon  None.
-  @postcon An files int he project which have been modified are saved.
+  @postcon An files in the project which have been modified are saved.
 
   @param   MessageMgr as an IITHMessageManager as a constant
   @param   Project    as an IOTAProject as a constant

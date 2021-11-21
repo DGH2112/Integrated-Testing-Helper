@@ -4,9 +4,9 @@
 
   DUnit test for the Integrated Testing Helper.
 
-  @Version 1.012
+  @Version 1.014
   @Author  David Hoyle
-  @Date    05 Jun 2020
+  @Date    21 Nov 2021
 
   @nodocumentation
   @nometrics Disabled metrics
@@ -115,7 +115,7 @@ Type
   IBorlandIDEServices = Interface
   End;
 
-  TOTACompileMode = (cmOTAMake, cmOTABuild, cmOTACheck, cmOTAMakeUnit);
+  TOTACompileMode = (cmOTAMake, cmOTABuild, cmOTACheck, cmOTAMakeUnit, cmClean, cmLink);
   TOTACompileResult = (crOTAFailed, crOTASucceeded, crOTABackground);
 
   TOTAProjectCompileInfo = Record
