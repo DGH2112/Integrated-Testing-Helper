@@ -2,7 +2,7 @@
 
   This module contains often used code for use through out this application.
 
-  @Version 1.072
+  @Version 1.113
   @Author  David Hoyle
   @Date    21 Nov 2021
 
@@ -115,6 +115,8 @@ ResourceString
 Const
   (** A constant string for the build message window page. **)
   strBuild = 'Build';
+  (** A constant name suffix for images. **)
+  strImageResNameSuffix = 'Image';
 {$ENDIF}
 
 Var
@@ -147,9 +149,6 @@ Function FindMenuItem(Const strParentMenu: String): TMenuItem; Forward;
 **)
 Function AddImageToIDE(Const strImageName : String; Const iMaskColour : TColor) : Integer;
 
-Const
-  strImageResNameSuffix = 'Image';
-
 Var
   NS : INTAServices;
   ilImages : TImageList;
@@ -166,13 +165,17 @@ begin
           Try
             BM.LoadFromResourceName(hInstance, strImageName + strImageResNameSuffix);
             {$IFDEF D2005}
+            {$IFDEF RS110}
+            {$ELSE}
             ilImages.AddMasked(BM, iMaskColour);
             // EXCEPTION: Operation not allowed on sorted list
             // Result := NTAS.AddImages(ilImages, 'OTATemplateImages');
             Result := NS.AddImages(ilImages);
+            {$ENDIF RS110}
+            Result := NS.AddImage(strImageName + strImageResNameSuffix, [BM]);
             {$ELSE}
             Result := NS.AddMasked(BM, iMaskColour);
-            {$ENDIF}
+            {$ENDIF D2005}
           Finally
             BM.Free;
           End;
@@ -504,7 +507,11 @@ begin //FI:C101
           CA.OnUpdate := UpdateProc;
           CA.ShortCut := TextToShortCut(strShortCut);
           CA.Tag := TextToShortCut(strShortCut);
+          {$IFDEF RS110}
+          CA.ImageName := strName + strImageResNameSuffix;
+          {$ELSE}
           CA.ImageIndex := iImageIndex;
+          {$ENDIF RS110}
           CA.Category := strITHelperMenuCategory;
           FOTAActions.Add(CA);
         End Else
