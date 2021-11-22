@@ -2,7 +2,7 @@
 
   This module contains often used code for use through out this application.
 
-  @Version 1.113
+  @Version 1.114
   @Author  David Hoyle
   @Date    21 Nov 2021
 
@@ -166,13 +166,13 @@ begin
             BM.LoadFromResourceName(hInstance, strImageName + strImageResNameSuffix);
             {$IFDEF D2005}
             {$IFDEF RS110}
+            Result := NS.AddImage(strImageName + strImageResNameSuffix, [BM]);
             {$ELSE}
             ilImages.AddMasked(BM, iMaskColour);
             // EXCEPTION: Operation not allowed on sorted list
             // Result := NTAS.AddImages(ilImages, 'OTATemplateImages');
             Result := NS.AddImages(ilImages);
             {$ENDIF RS110}
-            Result := NS.AddImage(strImageName + strImageResNameSuffix, [BM]);
             {$ELSE}
             Result := NS.AddMasked(BM, iMaskColour);
             {$ENDIF D2005}
