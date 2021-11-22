@@ -10,6 +10,7 @@ object frameProjectOptions: TframeProjectOptions
   Font.Style = []
   ParentFont = False
   TabOrder = 0
+  PixelsPerInch = 96
   object lblResExts: TLabel
     AlignWithMargins = True
     Left = 3
@@ -248,7 +249,7 @@ object frameProjectOptions: TframeProjectOptions
         AlignWithMargins = True
         Left = 280
         Top = 3
-        Width = 81
+        Width = 82
         Height = 27
         Align = alClient
         ReadOnly = True
@@ -258,7 +259,7 @@ object frameProjectOptions: TframeProjectOptions
       end
       object edtRelease: TEdit
         AlignWithMargins = True
-        Left = 470
+        Left = 471
         Top = 3
         Width = 81
         Height = 27
@@ -266,42 +267,47 @@ object frameProjectOptions: TframeProjectOptions
         ReadOnly = True
         TabOrder = 2
         Text = '0'
+        ExplicitLeft = 470
         ExplicitWidth = 65
       end
       object lblRelease: TLabel
         AlignWithMargins = True
-        Left = 383
+        Left = 384
         Top = 3
         Width = 81
         Height = 27
         Align = alClient
         Caption = '&Release'
         Layout = tlCenter
+        ExplicitLeft = 383
         ExplicitWidth = 45
         ExplicitHeight = 16
       end
       object lblBuild: TLabel
         AlignWithMargins = True
-        Left = 573
+        Left = 574
         Top = 3
         Width = 81
         Height = 27
         Align = alClient
         Caption = '&Build'
         Layout = tlCenter
+        ExplicitLeft = 573
         ExplicitWidth = 27
         ExplicitHeight = 16
       end
       object edtBuild: TEdit
         AlignWithMargins = True
-        Left = 660
+        Left = 661
         Top = 3
-        Width = 65
+        Width = 81
         Height = 27
         Align = alClient
         ReadOnly = True
         TabOrder = 3
         Text = '0'
+        ExplicitLeft = 660
+        ExplicitWidth = 65
       end
       object upMajor: TUpDown
         Left = 174
@@ -316,7 +322,7 @@ object frameProjectOptions: TframeProjectOptions
         ExplicitLeft = 155
       end
       object upMinor: TUpDown
-        Left = 364
+        Left = 365
         Top = 3
         Width = 16
         Height = 27
@@ -328,7 +334,7 @@ object frameProjectOptions: TframeProjectOptions
         ExplicitLeft = 345
       end
       object upRelease: TUpDown
-        Left = 554
+        Left = 555
         Top = 3
         Width = 16
         Height = 27
@@ -340,7 +346,7 @@ object frameProjectOptions: TframeProjectOptions
         ExplicitLeft = 535
       end
       object upBuild: TUpDown
-        Left = 725
+        Left = 745
         Top = 3
         Width = 16
         Height = 27
@@ -349,6 +355,7 @@ object frameProjectOptions: TframeProjectOptions
         Max = 1000000
         TabOrder = 7
         OnClick = BuildChange
+        ExplicitLeft = 725
       end
     end
     object gpnlResource: TGridPanel
@@ -400,7 +407,7 @@ object frameProjectOptions: TframeProjectOptions
         AlignWithMargins = True
         Left = 3
         Top = 3
-        Width = 289
+        Width = 290
         Height = 27
         Align = alClient
         Caption = 'Resource Path & &Name (exc Ext)'
@@ -409,17 +416,18 @@ object frameProjectOptions: TframeProjectOptions
         ExplicitHeight = 16
       end
       object edtResourceName: TEdit
-        Left = 295
+        Left = 296
         Top = 4
         Width = 296
         Height = 24
         Anchors = []
         TabOrder = 0
         Text = 'edtResourceName'
+        ExplicitLeft = 295
       end
       object btnGetVersionInfo: TButton
         AlignWithMargins = True
-        Left = 594
+        Left = 595
         Top = 3
         Width = 169
         Height = 27
@@ -429,6 +437,7 @@ object frameProjectOptions: TframeProjectOptions
         ParentDoubleBuffered = False
         TabOrder = 1
         OnClick = btnGetVersionInfoClick
+        ExplicitLeft = 594
       end
     end
   end
@@ -486,14 +495,12 @@ object frameProjectOptions: TframeProjectOptions
       AlignWithMargins = True
       Left = 3
       Top = 3
-      Width = 357
-      Height = 27
+      Width = 176
+      Height = 16
       Align = alClient
       Caption = '&Copy Version Information from'
       FocusControl = edtVersionInfo
       Layout = tlCenter
-      ExplicitWidth = 176
-      ExplicitHeight = 16
     end
     object edtVersionInfo: TEdit
       AlignWithMargins = True

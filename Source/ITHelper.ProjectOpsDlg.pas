@@ -4,8 +4,8 @@
   the active project can be edited.
 
   @Author  David Hoyle
-  @Version 1.313
-  @Date    12 Jun 2020
+  @Version 1.321
+  @Date    21 Nov 2021
 
   @license
 
@@ -219,10 +219,11 @@ End;
 
 (**
 
-  This is an OnFormCreate Event Handler for the TfrmITHProjectOptionsDialogue class.
+  This is an On Form Create Event Handler for the TfrmITHProjectOpsDlg class.
 
   @precon  None.
-  @postcon Creates the options frame dynamically (so any changes in the frames take effect in this dlg).
+  @postcon Creates the options frame dynamically (so any changes in the frames take effect in this
+           dialogue).
 
   @param   Sender as a TObject
 
@@ -240,7 +241,7 @@ Const
 
 Var
   F: Tframe;
-  {$IFDEF DXE102}
+  {$IFDEF RS102}
   ITS : IOTAIDEThemingServices;
   {$ENDIF DEX102}
 
@@ -249,51 +250,51 @@ Begin
   F.Name := strProjectOptionsFrameName;
   F.Parent := tabProjectOptions;
   F.Align := alClient;
-  {$IFDEF DXE102}
+  {$IFDEF RS102}
   F.ParentBackground := False;
   If Supports(BorlandIDEServices, IOTAIDEThemingServices, ITS) And ITS.IDEThemingEnabled Then
     F.Color := ITS.StyleServices.GetSystemColor(clBtnFace);
-  {$ENDIF DXE102}
+  {$ENDIF RS102}
   If Not Supports(F, IITHOptionsFrame, FProjectOptions) Then
     Raise Exception.Create(strIITHOptionsFrameNotSupported);
   F := TframeExternalTools.Create(Self);
   F.Name := strBeforeCompileToolsName;
   F.Parent := tabBeforeCompileTools;
   F.Align := alClient;
-  {$IFDEF DXE102}
+  {$IFDEF RS102}
   F.ParentBackground := False;
   If Supports(BorlandIDEServices, IOTAIDEThemingServices, ITS) And ITS.IDEThemingEnabled Then
     F.Color := ITS.StyleServices.GetSystemColor(clBtnFace);
-  {$ENDIF DXE102}
+  {$ENDIF RS102}
   If Not Supports(F, IITHOptionsFrame, FBeforeCompileTools) Then
     Raise Exception.Create(strIITHOptionsFrameNotsupported);
   F := TframeExternalTools.Create(Self);
   F.Name := strAfterCompileToolsName;
   F.Parent := tabAfterCompileTools;
   F.Align := alClient;
-  {$IFDEF DXE102}
+  {$IFDEF RS102}
   F.ParentBackground := False;
   If Supports(BorlandIDEServices, IOTAIDEThemingServices, ITS) And ITS.IDEThemingEnabled Then
     F.Color := ITS.StyleServices.GetSystemColor(clBtnFace);
-  {$ENDIF DXE102}
+  {$ENDIF RS102}
   If Not Supports(F, IITHOptionsFrame, FAfterCompileTools) Then
     Raise Exception.Create(strIITHOptionsFrameNotSupported);
   F := TframeZipping.Create(Self);
   F.Name := strZippingName;
   F.Parent := tabZipping;
   F.Align := alClient;
-  {$IFDEF DXE102}
+  {$IFDEF RS102}
   F.ParentBackground := False;
   If Supports(BorlandIDEServices, IOTAIDEThemingServices, ITS) And ITS.IDEThemingEnabled Then
     F.Color := ITS.StyleServices.GetSystemColor(clBtnFace);
-  {$ENDIF DXE102}
+  {$ENDIF RS102}
   If Not Supports(F, IITHOptionsFrame, FZipping) Then
     Raise Exception.Create(strIITHOptionsFrameNotSupported);
 End;
 
 (**
 
-  This method loads the position settings for the options dialogue from the ini file.
+  This method loads the position settings for the options dialogue from the INI file.
 
   @precon  None.
   @postcon The dialogue is positioned on the screen where it was last time.
@@ -320,10 +321,10 @@ End;
 
 (**
 
-  This method saves the current position of the options dialogue to the ini file.
+  This method saves the current position of the options dialogue to the INI file.
 
   @precon  None.
-  @postcon The options dialogue position and size is saved to the ini file.
+  @postcon The options dialogue position and size is saved to the INI file.
 
   @param   GlobalOps as an IITHGlobalOptions as a constant
 

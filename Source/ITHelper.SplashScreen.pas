@@ -3,8 +3,8 @@
   This module contains code for installing a splash screen in the RAD Studio IDE.
 
   @Author  David Hoyle
-  @Version 1.001
-  @Date    05 Jun 2020
+  @Version 1.147
+  @Date    21 Nov 2021
   
   @license
 
@@ -40,8 +40,9 @@ Implementation
 Uses
   ToolsAPI,
   SysUtils,
-  Windows,
+  Graphics,
   Forms,
+  Windows,
   ITHelper.CommonFunctions,
   ITHelper.Constants, 
   ITHelper.ResourceStrings;
@@ -64,33 +65,49 @@ Const
   {$ENDIF}
 
 Var
+  {$IFDEF RS110}
+  BitMap : Graphics.TBitMap;
+  {$ELSE}
   bmSplashScreen : HBITMAP;
+  {$ENDIF RS 110}
   recVersionInfo : TITHVersionInfo;
   SS : IOTASplashScreenServices;
   strModuleName: String;
   iSize: Cardinal;
 
 Begin
-  bmSplashScreen := LoadBitmap(hInstance, strITHelperSplashScreen);
   SetLength(strModuleName, MAX_PATH);
   iSize := GetModuleFileName(hInstance, PChar(strModuleName), MAX_PATH);
   SetLength(strModuleName, iSize);
   BuildNumber(strModuleName, recVersionInfo);
   If Supports(SplashScreenServices, IOTASplashScreenServices, SS) Then
     Begin
+      {$IFDEF RS110}
+      BitMap := Graphics.TBitMap.Create();
+      Try
+        BitMap.LoadFromResourceName(hInstance, strITHelperSplashScreen);
+        SS.AddPluginBitmap(
+          Format(strSplashScreenName, [recVersionInfo.FMajor, recVersionInfo.FMinor,
+            Copy(strRevisions, recVersionInfo.FBugFix + 1, 1), Application.Title]),
+          [BitMap],
+          {$IFDEF DEBUG} True {$ELSE} False {$ENDIF},
+          Format(strSplashScreenBuild, [recVersionInfo.FMajor, recVersionInfo.FMinor,
+            recVersionInfo.FBugfix, recVersionInfo.FBuild])
+        );
+      Finally
+        BitMap.Free;
+      End;
+      {$ELSE}
+      bmSplashScreen := LoadBitmap(hInstance, strITHelperSplashScreen);
       SS.AddPluginBitmap(
-        Format(strSplashScreenName, [
-          recVersionInfo.FMajor,
-          recVersionInfo.FMinor,
-          Copy(strRevisions, recVersionInfo.FBugFix + 1, 1),
-          Application.Title]),
+        Format(strSplashScreenName, [recVersionInfo.FMajor, recVersionInfo.FMinor,
+          Copy(strRevisions, recVersionInfo.FBugFix + 1, 1), Application.Title]),
         bmSplashScreen,
         {$IFDEF DEBUG} True {$ELSE} False {$ENDIF},
-        Format(strSplashScreenBuild, [
-          recVersionInfo.FMajor,
-          recVersionInfo.FMinor,
-          recVersionInfo.FBugfix,
-          recVersionInfo.FBuild]));
+        Format(strSplashScreenBuild, [recVersionInfo.FMajor, recVersionInfo.FMinor,
+          recVersionInfo.FBugfix, recVersionInfo.FBuild])
+      );
+      {$ENDIF RS110}
     End;
 End;
 

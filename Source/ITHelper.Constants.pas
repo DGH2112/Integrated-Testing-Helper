@@ -2,9 +2,9 @@
   
   This module contains constants for use through the application.
 
-  @Version 1.001
+  @Version 1.011
   @Author  David Hoyle
-  @Date    05 Jun 2020
+  @Date    21 Nov 2021
   
   @license
 
@@ -40,7 +40,16 @@ Const
   (** A constant to represent the bug fix revisions for the version number. **)
   strRevisions = ' abcdefghijklmnopqrstuvwxyz';
   (** A constant array of strings for label the compile modes. **)
-  astrCompileMode : Array[TOTACompileMode] Of String = ('Make', 'Build', 'Check', 'MakeUnit');
+  astrCompileMode : Array[TOTACompileMode] Of String = (
+    'Make',
+    'Build',
+    'Check',
+    'MakeUnit'
+    {$IFDEF RS110},
+    'Clean',
+    'Link'
+    {$ENDIF RS110}
+  );
   {$IFDEF D2010}
   (** A constant array of strings for label the compile results. **)
   astrCompileResult : Array[TOTACompileResult] Of String = ('Failed', 'Succeeded', 'Background');

@@ -13,13 +13,12 @@ object frmITHProjectOpsDlg: TfrmITHProjectOpsDlg
   Font.Height = -13
   Font.Name = 'Tahoma'
   Font.Style = []
-  OldCreateOrder = True
   Position = poDesigned
   OnCreate = FormCreate
+  PixelsPerInch = 96
   DesignSize = (
     784
     565)
-  PixelsPerInch = 96
   TextHeight = 16
   object pgcProjectOptions: TPageControl
     Left = 8
@@ -35,26 +34,14 @@ object frmITHProjectOpsDlg: TfrmITHProjectOpsDlg
     object tabBeforeCompileTools: TTabSheet
       Caption = 'Before Compilation Tools'
       ImageIndex = 1
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
     end
     object tabAfterCompileTools: TTabSheet
       Caption = 'After Compilation Tools'
       ImageIndex = 2
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
     end
     object tabZipping: TTabSheet
       Caption = 'Zipping'
       ImageIndex = 3
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
     end
   end
   object btnHelp: TButton

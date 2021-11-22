@@ -3,8 +3,8 @@
   This module contains interfaces for use throughout the plug-in to minimise coupling.
 
   @Author  David Hoyle
-  @Version 1.171
-  @Date    09 Jun 2020
+  @Version 1.173
+  @Date    21 Nov 2021
 
   @license
 
@@ -243,9 +243,9 @@ Type
     **)
     Property ExcPatterns: String Read GetExcPatterns Write SetExcPatterns;
     (**
-      This property gets and sets the additional fiels to zip.
+      This property gets and sets the additional files to zip.
       @precon  None.
-      @postcon Gets and sets the additional fiels to zip.
+      @postcon Gets and sets the additional files to zip.
       @return  a TStringList
     **)
     Property AddZipFiles: TStringList Read GetAddZipFiles;
@@ -389,7 +389,7 @@ Type
     Function  BuildResponseFile(Const strBasePath, strProject, strZIPName: String) : Boolean;
     Function  FileList : String;
     (**
-      This property returns the filename of the repsonse file for zipping information.
+      This property returns the filename of the response file for zipping information.
       @precon  None.
       @postcon The response filename is returned.
       @return  a String
@@ -441,7 +441,7 @@ Type
     **)
     Property Count : Integer Read GetCount;
     (**
-      This property returns a refernecee to the indexed message.
+      This property returns a reference to the indexed message.
       @precon  iIndex must be a valid index.
       @postcon The indexed message is returned from the managers collection.
       @param   iIndex as an Integer as a constant
@@ -451,7 +451,7 @@ Type
     (**
       This property determines the last time a message was output.
       @precon  None.
-      @postcon returns the tickcount (in milliseconds) from the last message.
+      @postcon returns the tick count (in milliseconds) from the last message.
       @return  an Int64
     **)
     Property LastMessage : Int64 Read GetLastMessage;

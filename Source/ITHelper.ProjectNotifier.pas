@@ -1,11 +1,11 @@
 (**
 
-  This module contains a class that implements a Project Notifiers so that changes int he project can be
+  This module contains a class that implements a Project Notifiers so that changes in the project can be
   tracked. Used to rename to .ITHelper support file.
 
   @Author  David Hoyle.
-  @Version 1.010
-  @Date    12 Jun 2020
+  @Version 1.011
+  @Date    21 Nov 2021
 
   @license
 
@@ -256,7 +256,7 @@ End;
   A constructor for the TITHProjectNotifier class.
 
   @precon  None.
-  @postcon Saves a reference tot he Mesage Manager.
+  @postcon Saves a reference tot he Message Manager.
 
   @param   MessageMgr     as an IITHMessageManager as a constant
   @param   RenameNotifier as a TITHRenameNotifier as a constant
@@ -304,7 +304,7 @@ End;
 
 (**
 
-  This is a getter method for the OverwriteFileName property.
+  This is a getter method for the Overwrite File Name property.
 
   @precon  None.
   @postcon Not Used.
@@ -327,10 +327,10 @@ End;
 
 (**
 
-  This is a getter method for the OverwriteFileNameCount property.
+  This is a getter method for the Overwrite File Name Count property.
 
   @precon  None.
-  @postcon Returns zero sa we are not using this functionality.
+  @postcon Returns zero as we are not using this functionality.
 
   @return  an Integer
 
@@ -345,7 +345,7 @@ End;
 
 (**
 
-  This method is called whena  project is modified.
+  This method is called when a project is modified.
 
   @precon  None.
   @postcon Not Used.
@@ -421,7 +421,7 @@ End;
   This method is called when a project is renamed.
 
   @precon  None.
-  @postcon Renames the .ITHelper file in-line with th name change of the project.
+  @postcon Renames the .ITHelper file in-line with the name change of the project.
 
   @nocheck EmptyMethod
   @nohint  AOldFilename ANewFilename
@@ -495,7 +495,7 @@ End;
 
 (**
 
-  This is a setter method for the SaveFileName property.
+  This is a setter method for the Save File Name property.
 
   @precon  None.
   @postcon Not Used.
