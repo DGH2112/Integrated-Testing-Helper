@@ -12,21 +12,21 @@ Tools wise, I generally use [SourceTree](https://www.sourcetreeapp.com/) but tha
 
 Having not done this before as I've always been the sole contributor to my repositories so I borrowed the essense of the following from the [DUnitX](https://github.com/VSoftTechnologies/DUnitX) project:
 
-1. Create a GitHub Account (https://github.com/join);
+1. Create a [GitHub Account](https://github.com/join);
 2. Fork the [Integrated Testing Helper](https://www.davidghoyle.co.uk/WordPress/?page_id=874)
    Repository and setup your local repository as follows:
-     * Fork the repository (https://help.github.com/articles/fork-a-repo);
+     * [Fork the repository](https://help.github.com/articles/fork-a-repo);
      * Clone your Fork to your local machine;
      * Configure upstream remote to the **Development**
        [Integrated Testing Helper](https://www.davidghoyle.co.uk/WordPress/?page_id=874)
-       repository (https://github.com/DGH2112/Integrated-Testing-Helper);
+       [repository](https://github.com/DGH2112/Integrated-Testing-Helper);
 3. For each change you want to make:
      * Create a new **Feature** or **BugFix** branch for your change;
      * Make your change in your new branch;
      * **Verify code compiles for ALL supported RAD Studio version (see below) and unit tests still pass**;
      * Commit change to your local repository;
      * Push change to your remote repository;
-     * Submit a Pull Request (https://help.github.com/articles/using-pull-requests);
+     * Submit a [Pull Request](https://help.github.com/articles/using-pull-requests);
      * Note: local and remote branches can be deleted after pull request has been accepted.
 
 **Note:** Getting changes from others requires [Syncing your Local repository](https://help.github.com/articles/syncing-a-fork) with the **Development** [Integrated Testing Helper](https://www.davidghoyle.co.uk/WordPress/?page_id=874) repository. This can happen at any time.
@@ -51,4 +51,4 @@ The plug-in hooks the before and after compilation events of the IDE by implemen
 
 regards
 
-David Hoyle Sep 2019.
+David Hoyle Nov 2021
