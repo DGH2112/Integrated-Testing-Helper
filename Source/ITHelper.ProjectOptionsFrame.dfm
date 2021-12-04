@@ -10,7 +10,6 @@ object frameProjectOptions: TframeProjectOptions
   Font.Style = []
   ParentFont = False
   TabOrder = 0
-  PixelsPerInch = 96
   object lblResExts: TLabel
     AlignWithMargins = True
     Left = 3
