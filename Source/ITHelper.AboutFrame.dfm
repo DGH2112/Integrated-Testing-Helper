@@ -10,7 +10,6 @@ object frameAboutITHelper: TframeAboutITHelper
   Font.Style = []
   ParentFont = False
   TabOrder = 0
-  PixelsPerInch = 96
   object pnlFudgePanel: TPanel
     Left = 0
     Top = 0
