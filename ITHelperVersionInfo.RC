@@ -1,8 +1,8 @@
 LANGUAGE LANG_ENGLISH,SUBLANG_ENGLISH_US
 
 1 VERSIONINFO LOADONCALL MOVEABLE DISCARDABLE IMPURE
-FILEVERSION 2, 1, 0, 2006
-PRODUCTVERSION 2, 1, 0, 2006
+FILEVERSION 2, 1, 1, 2007
+PRODUCTVERSION 2, 1, 1, 2007
 FILEFLAGSMASK VS_FFI_FILEFLAGSMASK
 FILEOS VOS__WINDOWS32
 FILETYPE VFT_APP
@@ -13,13 +13,13 @@ FILETYPE VFT_APP
     {
       VALUE "CompanyName", "Season's Fall Music\000"
       VALUE "FileDescription", "Integrated Testing Helper for Embarcadero RAD Studio\000"
-      VALUE "FileVersion", "2.1.0.2006\000"
+      VALUE "FileVersion", "2.1.1.2007\000"
       VALUE "InternalName", "ITHelper\000"
       VALUE "LegalCopyright", "Season's Fall Music\000"
       VALUE "LegalTrademarks", "Season's Fall Music\000"
       VALUE "OriginalFilename", "ITHelper\000"
       VALUE "ProductName", "ITHelper\000"
-      VALUE "ProductVersion", "2.1\000"
+      VALUE "ProductVersion", "2.1a\000"
       VALUE "Comments", "ITHelper: A RAD Studio IDE adding for automating pre and post compilation processing.\000"
     }
   }

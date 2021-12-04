@@ -9,8 +9,8 @@ IncludeInProject=1
 CompileWithBRCC32=0
 MajorVer=2
 MinorVer=1
-ReleaseVer=0
-BuildVer=2006
+ReleaseVer=1
+BuildVer=2007
 ResourceName=ITHelperVersionInfo
 IncBuild.Make.Base=0
 IncBuild.Build.Base=0
@@ -39,13 +39,13 @@ ExclusionFiles=
 [VersionInfo]
 CompanyName=Season's Fall Music
 FileDescription=Integrated Testing Helper for Embarcadero RAD Studio
-FileVersion=2.1.0.2006
+FileVersion=2.1.1.2007
 InternalName=ITHelper
 LegalCopyright=Season's Fall Music
 LegalTrademarks=Season's Fall Music
 OriginalFilename=ITHelper
 ProductName=ITHelper
-ProductVersion=2.1
+ProductVersion=2.1a
 Comments=ITHelper: A RAD Studio IDE adding for automating pre and post compilation processing.
 
 [Pre-Compilation]
